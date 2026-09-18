@@ -1,0 +1,1242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0" xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packageId="https://metadatacatalogue.lifewatch.eu/srv/eng/catalog.search#/metadata/ba722be8-c131-4e62-b37f-9d90ef7ebee8" system="https://metadatacatalogue.lifewatch.eu" scope="system" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0 https://metadatacatalogue.lifewatch.eu/xml/schemas/eml-gbif/schema/eml.xsd">
+  <dataset>
+    <alternateIdentifier>ba722be8-c131-4e62-b37f-9d90ef7ebee8</alternateIdentifier>
+    <title>Pollen list from sediments and archaebotanical layers in the BRAIN database - id NSM3</title>
+    <creator>
+      <individualName>
+        <givenName>Anna Maria</givenName>
+        <surName>Mercuri</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Full Professor</positionName>
+      <electronicMailAddress>annamaria.mercuri@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0001-6138-4165</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Assunta</givenName>
+        <surName>Florenzano</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Associate Professor</positionName>
+      <electronicMailAddress>assunta.florenzano@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0003-4759-6406</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Eleonora</givenName>
+        <surName>Clò</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Researcher</positionName>
+      <electronicMailAddress>eleonora.clo@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0002-1831-3908</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Jessica</givenName>
+        <surName>Zappa</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Researcher</positionName>
+      <electronicMailAddress>jessica.zappa@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0009-0009-7515-8850</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Giovanna</givenName>
+        <surName>Bosi</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Researcher</positionName>
+      <electronicMailAddress>giovanna.bosi@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0003-2273-2336</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Elisa</givenName>
+        <surName>Furia</surName>
+      </individualName>
+      <organizationName>University of Rome Tor Vergata</organizationName>
+      <positionName>PhD</positionName>
+      <electronicMailAddress>elisa.furia@students.uniroma2.eu</electronicMailAddress>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Cristina</givenName>
+        <surName>Ricucci</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>PhD Student</positionName>
+      <electronicMailAddress>cristina.ricucci@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0002-3601-8574</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Matteo</givenName>
+        <surName>Di Lena</surName>
+      </individualName>
+      <organizationName>SIDEL S.p.a.</organizationName>
+      <positionName>Employee</positionName>
+      <electronicMailAddress>matte.dile@hotmail.it</electronicMailAddress>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Federico</givenName>
+        <surName>Camerini</surName>
+      </individualName>
+      <organizationName>AD Consulting S.p.a.</organizationName>
+      <positionName>Employee</positionName>
+      <electronicMailAddress>federico.camerini@adcgroup.com</electronicMailAddress>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Lorenzo</givenName>
+        <surName>Braga</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>PhD Student</positionName>
+      <electronicMailAddress>lorenzo.braga@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0002-0311-7146</userId>
+    </creator>
+    <metadataProvider>
+      <individualName>
+        <givenName>Anna Maria</givenName>
+        <surName>Mercuri</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Full Professor</positionName>
+      <electronicMailAddress>annamaria.mercuri@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0001-6138-4165</userId>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Assunta</givenName>
+        <surName>Florenzano</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Associate Professor</positionName>
+      <electronicMailAddress>assunta.florenzano@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0003-4759-6406</userId>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Eleonora</givenName>
+        <surName>Clò</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Researcher</positionName>
+      <electronicMailAddress>eleonora.clo@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0002-1831-3908</userId>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Jessica</givenName>
+        <surName>Zappa</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Researcher</positionName>
+      <electronicMailAddress>jessica.zappa@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0009-0009-7515-8850</userId>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Giovanna</givenName>
+        <surName>Bosi</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Researcher</positionName>
+      <electronicMailAddress>giovanna.bosi@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0003-2273-2336</userId>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Elisa</givenName>
+        <surName>Furia</surName>
+      </individualName>
+      <organizationName>University of Rome Tor Vergata</organizationName>
+      <positionName>PhD</positionName>
+      <electronicMailAddress>elisa.furia@students.uniroma2.eu</electronicMailAddress>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Cristina</givenName>
+        <surName>Ricucci</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>PhD Student</positionName>
+      <electronicMailAddress>cristina.ricucci@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0002-3601-8574</userId>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Matteo</givenName>
+        <surName>Di Lena</surName>
+      </individualName>
+      <organizationName>SIDEL S.p.a.</organizationName>
+      <positionName>Employee</positionName>
+      <electronicMailAddress>matte.dile@hotmail.it</electronicMailAddress>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Federico</givenName>
+        <surName>Camerini</surName>
+      </individualName>
+      <organizationName>AD Consulting S.p.a.</organizationName>
+      <positionName>Employee</positionName>
+      <electronicMailAddress>federico.camerini@adcgroup.com</electronicMailAddress>
+    </metadataProvider>
+    <metadataProvider>
+      <individualName>
+        <givenName>Lorenzo</givenName>
+        <surName>Braga</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>PhD Student</positionName>
+      <electronicMailAddress>lorenzo.braga@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0002-0311-7146</userId>
+    </metadataProvider>
+    <associatedParty>
+      <individualName>
+        <givenName>Ilaria</givenName>
+        <surName>Rosati</surName>
+      </individualName>
+      <organizationName>National Research Council (CNR), Institute of Research on Terrestrial Ecosystems (IRET)</organizationName>
+      <positionName>Technologist</positionName>
+      <electronicMailAddress>ilaria.rosati@cnr.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0003-3422-7230</userId>
+      <role>Custodian Steward</role>
+    </associatedParty>
+    <associatedParty>
+      <individualName>
+        <givenName>Andrea</givenName>
+        <surName>Tarallo</surName>
+      </individualName>
+      <organizationName>National Research Council (CNR), Institute of Research on Terrestrial Ecosystems (IRET)</organizationName>
+      <positionName>Technologist</positionName>
+      <electronicMailAddress>andrea.tarallo@cnr.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0002-2749-8588</userId>
+      <role>Information Manager</role>
+    </associatedParty>
+    <associatedParty>
+      <individualName>
+        <givenName>Mariantonietta</givenName>
+        <surName>La Marra</surName>
+      </individualName>
+      <organizationName>University of Salento</organizationName>
+      <positionName>Research fellow</positionName>
+      <electronicMailAddress>mariantonietta.lamarra@unisalento.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0009-0002-2070-7778</userId>
+      <role>Information Manager</role>
+    </associatedParty>
+    <pubDate>2016-02-19</pubDate>
+    <language>English</language>
+    <abstract>
+      <para>Ca’ Rigo (San Marino). Dataset including pollen counts from sediment samples collected from the site of Ca’ Rigo (San Marino; 43°56'34" N, 12°26'46" E, 410 m a.s.l.; chronology: from 6th to 4th century BC). The dataset was created as part of the National Biodiversity Future Center (NBFC, Palermo, Italy). The site is included in the BRAIN database (https://brainplants.successoterra.net/Sites_List.html?idcomb=nsm3).</para>
+    </abstract>
+    <keywordSet>
+      <keyword>Paleobotany</keyword>
+      <keywordThesaurus>AGROVOC</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>Biodiversity</keyword>
+      <keywordThesaurus>Biodiversity Thesaurus</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>Plants</keyword>
+      <keyword>Pollen</keyword>
+      <keywordThesaurus>Environmental Thesaurus</keywordThesaurus>
+    </keywordSet>
+    <intellectualRights />
+    <licensed>
+      <licenseName>cc-by</licenseName>
+      <url>http://creativecommons.org/licenses/by/4.0/</url>
+    </licensed>
+    <distribution>
+      <online>
+        <onlineDescription>Info and download page on LifeWatch Italy Data Portal</onlineDescription>
+        <url>https://data.lifewatchitaly.eu/handle/123456789/326338</url>
+      </online>
+    </distribution>
+    <coverage>
+      <geographicCoverage>
+        <geographicDescription>Ca’ Rigo (San Marino)</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>12.45</westBoundingCoordinate>
+          <eastBoundingCoordinate>12.45</eastBoundingCoordinate>
+          <northBoundingCoordinate>43.94</northBoundingCoordinate>
+          <southBoundingCoordinate>43.94</southBoundingCoordinate>
+          <boundingAltitudes>
+            <altitudeMinimum>410</altitudeMinimum>
+            <altitudeMaximum>410</altitudeMaximum>
+            <altitudeUnits>meter</altitudeUnits>
+          </boundingAltitudes>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <taxonomicCoverage>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Abies alba</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Acer campestre</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Adonis aestivalis</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Alchemilla</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Allium</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Alnus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Alnus glutinosa</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Anemone</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Anthemis</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Apiaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Artemisia</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Aster</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Asteraceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Avena</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Beta vulgaris</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Betula</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Buxus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Carduus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Carpinus betulus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Caryophyllaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Castanea sativa</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Centaurea nigra</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Chenopodiaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Tribe</taxonRankName>
+          <taxonRankValue>Cichorieae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Cirsium</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Convolvulus arvensis</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Cornus mas</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Corylus avellana</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Cyperaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Daucus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Dipsacus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Fabaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Fagus sylvatica</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Fraxinus excelsior</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Fraxinus ornus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Galium</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Hedera helix</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Hedysarum</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Helianthemum</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Helleborus niger</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Hippophae fluviatilis</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Hordeum</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Hornungia</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Humulus lupulus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Hydrocharis morsus-ranae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Ilex aquifolium</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Juglans regia</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Juncus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Juniperus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Lamiaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Lathyrus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Lemna</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Ligustrum</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Liliaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Malva sylvestris</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Medicago</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Mentha</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Myrtus communis</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Nymphaea alba</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Olea europaea</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Orobanche</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Panicum</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Papaver rhoeas</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Phragmites australis</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Pinus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Plantago</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Plantago lanceolata</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Poaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Quercus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Quercus ilex</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Ranunculaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Ranunculus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Reseda</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Rosaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Salix</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Saxifraga</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Scirpus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Family</taxonRankName>
+          <taxonRankValue>Scrophulariaceae</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Sinapis</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Sparganium emersum</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Stachys sylvatica</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Taxus baccata</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Tilia cordata</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Tribulus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Trifolium</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Ulmus</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Urtica dioica</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Genus</taxonRankName>
+          <taxonRankValue>Utricularia</taxonRankValue>
+        </taxonomicClassification>
+        <taxonomicClassification>
+          <taxonRankName>Species</taxonRankName>
+          <taxonRankValue>Vitis vinifera</taxonRankValue>
+        </taxonomicClassification>
+      </taxonomicCoverage>
+    </coverage>
+    <annotation>
+      <propertyURI label="keyword">http://www.w3.org/ns/dcat#keyword</propertyURI>
+      <valueURI label="biodiversity">http://data.loterre.fr/ark:/67375/BLH-FHNG3BCR-H</valueURI>
+    </annotation>
+    <annotation>
+      <propertyURI label="keyword">http://www.w3.org/ns/dcat#keyword</propertyURI>
+      <valueURI label="plants">http://vocabs.lter-europe.net/EnvThes/USLterCV_641</valueURI>
+    </annotation>
+    <annotation>
+      <propertyURI label="keyword">http://www.w3.org/ns/dcat#keyword</propertyURI>
+      <valueURI label="paleobotany">http://aims.fao.org/aos/agrovoc/c_5d0f858e</valueURI>
+    </annotation>
+    <annotation>
+      <propertyURI label="keyword">http://www.w3.org/ns/dcat#keyword</propertyURI>
+      <valueURI label="pollen">http://vocabs.lter-europe.net/EnvThes/20578</valueURI>
+    </annotation>
+    <contact>
+      <individualName>
+        <givenName>Anna Maria</givenName>
+        <surName>Mercuri</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Full Professor</positionName>
+      <electronicMailAddress>annamaria.mercuri@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0001-6138-4165</userId>
+    </contact>
+    <contact>
+      <individualName>
+        <givenName>Assunta</givenName>
+        <surName>Florenzano</surName>
+      </individualName>
+      <organizationName>University of Modena and Reggio Emilia</organizationName>
+      <positionName>Associate Professor</positionName>
+      <electronicMailAddress>assunta.florenzano@unimore.it</electronicMailAddress>
+      <userId directory="https://orcid.org/">0000-0003-4759-6406</userId>
+    </contact>
+    <methods>
+      <methodStep>
+        <description />
+      </methodStep>
+      <methodStep>
+        <description />
+      </methodStep>
+    </methods>
+    <project>
+      <title>BRAIN - Holocene archaeo-data for assessing plant-cultural diversity in Italy and other Mediterranean regions</title>
+      <personnel>
+        <individualName>
+          <givenName>Anna Maria</givenName>
+          <surName>Mercuri</surName>
+        </individualName>
+        <organizationName>University of Modena and Reggio Emilia</organizationName>
+        <positionName>Full Professor</positionName>
+        <electronicMailAddress>annamaria.mercuri@unimore.it</electronicMailAddress>
+        <userId directory="https://orcid.org/">0000-0001-6138-4165</userId>
+        <role>Principal Investigator</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Assunta</givenName>
+          <surName>Florenzano</surName>
+        </individualName>
+        <organizationName>University of Modena and Reggio Emilia</organizationName>
+        <positionName>Associate Professor</positionName>
+        <electronicMailAddress>assunta.florenzano@unimore.it</electronicMailAddress>
+        <userId directory="https://orcid.org/">0000-0003-4759-6406</userId>
+        <role>Principal Investigator</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Eleonora</givenName>
+          <surName>Clò</surName>
+        </individualName>
+        <organizationName>University of Modena and Reggio Emilia</organizationName>
+        <positionName>Researcher</positionName>
+        <electronicMailAddress>eleonora.clo@unimore.it</electronicMailAddress>
+        <userId directory="https://orcid.org/">0000-0002-1831-3908</userId>
+        <role>Custodian Steward</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Jessica</givenName>
+          <surName>Zappa</surName>
+        </individualName>
+        <organizationName>University of Modena and Reggio Emilia</organizationName>
+        <positionName>Researcher</positionName>
+        <electronicMailAddress>jessica.zappa@unimore.it</electronicMailAddress>
+        <userId directory="https://orcid.org/">0009-0009-7515-8850</userId>
+        <role>Custodian Steward</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Giovanna</givenName>
+          <surName>Bosi</surName>
+        </individualName>
+        <organizationName>University of Modena and Reggio Emilia</organizationName>
+        <positionName>Researcher</positionName>
+        <electronicMailAddress>giovanna.bosi@unimore.it</electronicMailAddress>
+        <userId directory="https://orcid.org/">0000-0003-2273-2336</userId>
+        <role>Custodian Steward</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Elisa</givenName>
+          <surName>Furia</surName>
+        </individualName>
+        <organizationName>University of Rome Tor Vergata</organizationName>
+        <positionName>PhD</positionName>
+        <electronicMailAddress>elisa.furia@students.uniroma2.eu</electronicMailAddress>
+        <role>Custodian Steward</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Cristina</givenName>
+          <surName>Ricucci</surName>
+        </individualName>
+        <organizationName>University of Modena and Reggio Emilia</organizationName>
+        <positionName>PhD Student</positionName>
+        <electronicMailAddress>cristina.ricucci@unimore.it</electronicMailAddress>
+        <userId directory="https://orcid.org/">0000-0002-3601-8574</userId>
+        <role>Custodian Steward</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Matteo</givenName>
+          <surName>Di Lena</surName>
+        </individualName>
+        <organizationName>SIDEL S.p.a.</organizationName>
+        <positionName>Employee</positionName>
+        <electronicMailAddress>matte.dile@hotmail.it</electronicMailAddress>
+        <role>Custodian Steward</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Federico</givenName>
+          <surName>Camerini</surName>
+        </individualName>
+        <organizationName>AD Consulting S.p.a.</organizationName>
+        <positionName>Employee</positionName>
+        <electronicMailAddress>federico.camerini@adcgroup.com</electronicMailAddress>
+        <role>Custodian Steward</role>
+      </personnel>
+      <personnel>
+        <individualName>
+          <givenName>Lorenzo</givenName>
+          <surName>Braga</surName>
+        </individualName>
+        <organizationName>University of Modena and Reggio Emilia</organizationName>
+        <positionName>PhD Student</positionName>
+        <electronicMailAddress>lorenzo.braga@unimore.it</electronicMailAddress>
+        <userId directory="https://orcid.org/">0000-0002-0311-7146</userId>
+        <role>Custodian Steward</role>
+      </personnel>
+    </project>
+    <dataTable>
+      <entityName>BRAIN_NSM3.csv</entityName>
+      <physical>
+        <objectName>BRAIN_NSM3.csv</objectName>
+        <size unit="byte">26734</size>
+        <authentication>MD5:9f5215359883c7fcd4acf6f8a6243fed</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>;</fieldDelimiter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>catalogNumber</attributeName>
+          <attributeLabel>Catalog Number</attributeLabel>
+          <attributeDefinition>An identifier (preferably unique) for the record within the data set or collection.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Catalog Number">http://rs.tdwg.org/dwc/terms/catalogNumber</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>decimalLatitude</attributeName>
+          <attributeLabel>Decimal Latitude</attributeLabel>
+          <attributeDefinition>The geographic latitude of the geographic center of a Location (in decimal degrees, using the spatial reference system WGS84). Positive values are north of the Equator, negative values are south of it. Legal values lie between -90 and 90, inclusive.</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>degree</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Decimal Latitude">http://rs.tdwg.org/dwc/terms/decimalLatitude</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>decimalLongitude</attributeName>
+          <attributeLabel>Decimal Longitude</attributeLabel>
+          <attributeDefinition>The geographic longitude of the geographic center of a Location (in decimal degrees, using the spatial reference system WGS84). Positive values are east of the Prime Meridian, and negative values are west of it. Legal values lie between -180 and 180, inclusive.</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>degree</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Decimal Longitude">http://rs.tdwg.org/dwc/terms/decimalLongitude</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>verbatimLocality</attributeName>
+          <attributeLabel>Verbatim Locality</attributeLabel>
+          <attributeDefinition>The original textual description of the place.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Verbatim Locality">http://rs.tdwg.org/dwc/terms/verbatimLocality</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>locality</attributeName>
+          <attributeLabel>Locality</attributeLabel>
+          <attributeDefinition>The specific description of the place. This term may contain information modified from the original to correct perceived errors or standardize the description.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Locality">http://rs.tdwg.org/dwc/terms/locality</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>stateProvince</attributeName>
+          <attributeLabel>State Province</attributeLabel>
+          <attributeDefinition>The name of the next smaller administrative region than country (state, province, canton, department, region, etc.) in which the location occurs.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="State Province">http://rs.tdwg.org/dwc/terms/stateProvince</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>county</attributeName>
+          <attributeLabel>County</attributeLabel>
+          <attributeDefinition>The full, unabbreviated name of the next smaller administrative region than stateProvince (county, shire, department, etc.) in which the location occurs.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="County">http://rs.tdwg.org/dwc/terms/county</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>eventID</attributeName>
+          <attributeLabel>Event ID</attributeLabel>
+          <attributeDefinition>An identifier for the set of information associated with an Event (something that occurs at a place and time). May be a global unique identifier or an identifier specific to the data set.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="hasCode">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasCode</propertyURI>
+            <valueURI label="Event ID">http://rs.tdwg.org/dwc/terms/eventID</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>eventDate</attributeName>
+          <attributeLabel>Event Date</attributeLabel>
+          <attributeDefinition>The date-time or interval during which an Event occurred. For occurrences, this is the date-time when the event was recorded.</attributeDefinition>
+          <measurementScale>
+            <dateTime>
+              <formatString>YYYY-MM-DD</formatString>
+            </dateTime>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Event Date">http://rs.tdwg.org/dwc/terms/eventDate</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>eventRemarks</attributeName>
+          <attributeLabel>Event Remarks</attributeLabel>
+          <attributeDefinition>Comments or notes about the event.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Event Remarks">http://rs.tdwg.org/dwc/terms/eventRemarks</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>verbatimIdentification</attributeName>
+          <attributeLabel>Verbatim Identification</attributeLabel>
+          <attributeDefinition>A string representing the taxonomic identification as it appeared in the original record.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Verbatim Identification">http://rs.tdwg.org/dwc/terms/verbatimIdentification</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>scientificName</attributeName>
+          <attributeLabel>Scientific Name</attributeLabel>
+          <attributeDefinition>The scientificname, with authorship and date information if known, as it originally appeared before of the taxonomic check.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Scientific Name">http://rs.tdwg.org/dwc/terms/scientificName</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>scientificNameAuthorship</attributeName>
+          <attributeLabel>Scientific Name Authorship</attributeLabel>
+          <attributeDefinition>The authorship information for the scientificName formatted according to the conventions of the applicable nomenclaturalCode.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Scientific Name Authorship">http://rs.tdwg.org/dwc/terms/scientificNameAuthorship</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>acceptedNameUsage</attributeName>
+          <attributeLabel>Accepted Name Usage</attributeLabel>
+          <attributeDefinition>The full scientific name, with authorship and date information if known. When forming part of an Identification, this should be the name in lowest level taxonomic rank that can be determined. This term should not contain identification qualifications, which should instead be supplied in the IdentificationQualifier term.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Accepted Name Usage">http://rs.tdwg.org/dwc/terms/acceptedNameUsage</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>acceptedNameUsageID</attributeName>
+          <attributeLabel>Accepted Name Usage ID</attributeLabel>
+          <attributeDefinition>An identifier for the name usage (documented meaning of the name according to a source) of the currently valid (zoological) or accepted (botanical) taxon.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Accepted Name Usage ID">http://rs.tdwg.org/dwc/terms/acceptedNameUsageID</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>kingdom</attributeName>
+          <attributeLabel>Kingdom</attributeLabel>
+          <attributeDefinition>The full scientific name of the kingdom in which the taxon is classified.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Kingdom">http://rs.tdwg.org/dwc/terms/kingdom</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>phylum</attributeName>
+          <attributeLabel>Phylum</attributeLabel>
+          <attributeDefinition>The full scientific name of the phylum or division in which the taxon is classified.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Phylum">http://rs.tdwg.org/dwc/terms/phylum</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>class</attributeName>
+          <attributeLabel>Class</attributeLabel>
+          <attributeDefinition>The full scientific name of the class in which the taxon is classified.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Class">http://rs.tdwg.org/dwc/terms/class</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>order</attributeName>
+          <attributeLabel>Order</attributeLabel>
+          <attributeDefinition>The full scientific name of the order in which the taxon is classified.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Order">http://rs.tdwg.org/dwc/terms/order</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>family</attributeName>
+          <attributeLabel>Family</attributeLabel>
+          <attributeDefinition>The full scientific name of the family in which the taxon is classified.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Family">http://rs.tdwg.org/dwc/terms/family</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>genus</attributeName>
+          <attributeLabel>Genus</attributeLabel>
+          <attributeDefinition>The full scientific name of the genus in which the taxon is classified.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Genus">http://rs.tdwg.org/dwc/terms/genus</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>identificationRemarks</attributeName>
+          <attributeLabel>Identification Remarks</attributeLabel>
+          <attributeDefinition>Comments or notes about the Identification.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Identification Remarks">http://rs.tdwg.org/dwc/terms/identificationRemarks</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>FossilSpecimen</attributeName>
+          <attributeLabel>Fossil Specimen</attributeLabel>
+          <attributeDefinition>A preserved specimen that is a fossil.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Fossil Specimen">http://rs.tdwg.org/dwc/terms/FossilSpecimen</valueURI>
+          </annotation>
+        </attribute>
+        <attribute>
+          <attributeName>taxonRemarks</attributeName>
+          <attributeLabel>Taxon Remarks</attributeLabel>
+          <attributeDefinition>Comments or notes about the taxon or name.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Any Text</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="has context">http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasContext</propertyURI>
+            <valueURI label="Taxon Remarks">http://rs.tdwg.org/dwc/terms/taxonRemarks</valueURI>
+          </annotation>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>90</numberOfRecords>
+    </dataTable>
+  </dataset>
+</eml:eml>
+

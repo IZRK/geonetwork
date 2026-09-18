@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<eml:eml xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packageId="b4e2033f-f564-4f7b-aac3-a88eaf77555e" system="https://metadata.izrk.zrc-sazu.si" scope="system" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0 https://metadatacatalogue.lifewatch.eu/xml/schemas/eml-gbif/schema/eml.xsd" xml:lang="en">
+  <dataset>
+    <alternateIdentifier>b4e2033f-f564-4f7b-aac3-a88eaf77555e</alternateIdentifier>
+    <title>IZRK EML-GBIF dataset template</title>
+    <creator>
+      <individualName>
+        <givenName />
+        <surName />
+      </individualName>
+      <organizationName />
+      <positionName />
+      <electronicMailAddress />
+      <userId directory="" />
+    </creator>
+    <metadataProvider>
+      <individualName>
+        <givenName />
+        <surName />
+      </individualName>
+      <organizationName />
+      <positionName />
+      <electronicMailAddress />
+      <userId directory="" />
+    </metadataProvider>
+    <associatedParty>
+      <individualName>
+        <givenName />
+        <surName />
+      </individualName>
+      <organizationName />
+      <positionName />
+      <electronicMailAddress />
+      <userId directory="" />
+      <role />
+    </associatedParty>
+    <pubDate />
+    <language />
+    <abstract>
+      <para />
+    </abstract>
+    <keywordSet>
+      <keyword />
+      <keywordThesaurus />
+    </keywordSet>
+    <intellectualRights />
+    <licensed>
+      <licenseName />
+      <url />
+    </licensed>
+    <distribution>
+      <online>
+        <onlineDescription />
+        <url />
+      </online>
+    </distribution>
+    <coverage>
+      <geographicCoverage>
+        <geographicDescription />
+        <boundingCoordinates>
+          <westBoundingCoordinate />
+          <eastBoundingCoordinate />
+          <northBoundingCoordinate />
+          <southBoundingCoordinate />
+          <boundingAltitudes>
+            <altitudeMinimum />
+            <altitudeMaximum />
+            <altitudeUnits />
+          </boundingAltitudes>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <taxonomicCoverage>
+        <taxonomicClassification>
+          <taxonRankName />
+          <taxonRankValue />
+        </taxonomicClassification>
+      </taxonomicCoverage>
+    </coverage>
+    <annotation>
+      <propertyURI label="" />
+      <valueURI label="" />
+    </annotation>
+    <contact>
+      <individualName>
+        <givenName />
+        <surName />
+      </individualName>
+      <organizationName />
+      <positionName />
+      <electronicMailAddress />
+      <userId directory="" />
+    </contact>
+    <methods>
+      <methodStep>
+        <description />
+      </methodStep>
+    </methods>
+    <project>
+      <title />
+      <personnel>
+        <individualName>
+          <givenName />
+          <surName />
+        </individualName>
+        <organizationName />
+        <positionName />
+        <electronicMailAddress />
+        <userId directory="" />
+        <role />
+      </personnel>
+    </project>
+    <dataTable>
+      <entityName />
+      <physical>
+        <objectName />
+        <size unit="" />
+        <authentication />
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines />
+            <attributeOrientation />
+            <simpleDelimited>
+              <fieldDelimiter />
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName />
+          <attributeLabel />
+          <attributeDefinition />
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition />
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+            <ratio>
+              <unit>
+                <standardUnit />
+              </unit>
+              <numericDomain>
+                <numberType />
+              </numericDomain>
+            </ratio>
+            <dateTime>
+              <formatString />
+            </dateTime>
+          </measurementScale>
+          <annotation>
+            <propertyURI label="" />
+            <valueURI label="" />
+          </annotation>
+        </attribute>
+      </attributeList>
+      <numberOfRecords />
+    </dataTable>
+  </dataset>
+</eml:eml>

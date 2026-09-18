@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+        xsi:noNamespaceSchemaLocation="../../../../../../config-editor.xsd">
+
+  <fields>
+    <for name="abstract" use="textarea"/>
+    <for name="additionalInfo" use="textarea"/>
+    <for name="description" use="textarea"/>
+    <for name="funding" use="textarea"/>
+    <for name="intellectualRights" use="textarea"/>
+    <for name="purpose" use="textarea"/>
+    <for name="samplingDescription" use="textarea"/>
+    <for name="pubDate" use="date"/>
+    <for name="calendarDate" use="date"/>
+    <for name="language" use="data-gn-language-picker"/>
+    <for name="keyword" use="data-gn-keyword-picker"/>
+  </fields>
+
+  <views>
+    <view name="default" default="true" upAndDownControlHidden="true">
+      <sidePanel>
+        <directive data-gn-need-help="creating-metadata"/>
+        <directive data-gn-validation-report=""/>
+        <directive data-gn-overview-manager=""
+                   data-file-types=".png,.gif,.jpeg,.jpg"/>
+        <directive data-gn-distribution-resources-panel="gnCurrentEdit.metadata"
+                   data-mode="viewConfig.distributionConfig.layout || ''"
+                   data-editor-config="default"
+                   data-related-config="[{
+                                          title: 'links',
+                                          filter: 'protocol:.*',
+                                          editActions: ['addOnlinesrc']
+                                        }]"/>
+        <directive data-gn-associated-resources-panel="gnCurrentEdit.metadata"/>
+      </sidePanel>
+      <tab id="default" default="true" mode="flat">
+        <section xpath="/eml:eml/dataset"/>
+      </tab>
+      <flatModeExceptions>
+        <for name="keyword"/>
+        <for name="creator"/>
+        <for name="associatedParty"/>
+        <for name="contact"/>
+        <for name="metadataProvider"/>
+      </flatModeExceptions>
+    </view>
+    <view name="advanced" upAndDownControlHidden="true">
+      <sidePanel>
+        <directive data-gn-need-help="creating-metadata"/>
+        <directive data-gn-validation-report=""/>
+        <directive data-gn-overview-manager=""
+                   data-file-types=".png,.gif,.jpeg,.jpg"/>
+        <directive data-gn-distribution-resources-panel="gnCurrentEdit.metadata"
+                   data-mode="viewConfig.distributionConfig.layout || ''"
+                   data-editor-config="default"
+                   data-related-config="[{
+                                          title: 'links',
+                                          filter: 'protocol:.*',
+                                          editActions: ['addOnlinesrc']
+                                        }]"/>
+        <directive data-gn-associated-resources-panel="gnCurrentEdit.metadata"/>
+      </sidePanel>
+      <tab id="advanced" default="true">
+        <section xpath="/eml:eml"/>
+      </tab>
+    </view>
+    <view name="xml">
+      <sidePanel>
+        <directive data-gn-need-help="creating-metadata"/>
+        <directive data-gn-validation-report=""/>
+      </sidePanel>
+      <tab id="xml" default="true"/>
+    </view>
+  </views>
+
+  <batchEditing>
+    <section name="identification">
+      <field name="title" xpath="dataset/title"/>
+      <field name="abstract" xpath="dataset/abstract"/>
+    </section>
+  </batchEditing>
+</editor>

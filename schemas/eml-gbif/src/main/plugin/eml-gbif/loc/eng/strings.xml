@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<strings>
+		<default>Simple</default>
+		<advanced>Full</advanced>
+		<xml>XML</xml>
+		<associatedResources>Associated resources</associatedResources>
+		<linkToPortal>Link to portal</linkToPortal>
+		<linkToPortal-help>Open this record in the catalogue.</linkToPortal-help>
+		<logo>Logo</logo>
+		<noThesaurusName>Keywords</noThesaurusName>
+		<overview>Overview</overview>
+		<overviews>Overview</overviews>
+		<providedBy>Provided by</providedBy>
+		<shareOnSocialSite>Share</shareOnSocialSite>
+		<spatialExtent>Spatial extent</spatialExtent>
+		<viewMode>Display mode</viewMode>
+		<aggregationlink>Search for other records in this Aggregation Set</aggregationlink>
+	<childidentifierlink>Show Child records</childidentifierlink>
+	<credit>Credit</credit>
+	<creditlink>Search for other records with this Credit</creditlink>
+	<lineage>Lineage</lineage>
+	<metadataInfo>Metadata Info</metadataInfo>
+	<parentidentifierlink>Show Parent record</parentidentifierlink>
+	<referenceSystemInfo>Reference System Info</referenceSystemInfo>
+	<siblingidentifierlink>Show Sibling records</siblingidentifierlink>
+	<spatialExtentTab>Spatial Extent</spatialExtentTab>
+	<temporalExtentTab>Temporal Ext.</temporalExtentTab>
+	<otherInfo>Other Information</otherInfo>
+	<xml_eml-gbif>Save this metadata as an EML-GBIF XML file</xml_eml-gbif>
+	<xml_eml-gbifTorifcs>Save this metadata as an ANDS rifcs XML file</xml_eml-gbifTorifcs>
+</strings>
