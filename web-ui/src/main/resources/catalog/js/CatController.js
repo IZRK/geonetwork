@@ -741,6 +741,12 @@
               list: [
                 {
                   label: "defaultView",
+                  views: [
+                    {
+                      if: { documentStandard: "eml-gbif" },
+                      url: "/formatters/xsl-view?root=div&view=portal"
+                    }
+                  ],
                   // Conditional views can be used to configure custom
                   // formatter to use depending on metadata properties.
                   // 'views': [{
@@ -1631,6 +1637,88 @@
       return "eng";
     }
   });
+
+  // Older records and search-index entries may still contain attachment URLs
+  // generated while the public GeoNetwork host was configured as localhost.
+  // Keep this fallback limited to GeoNetwork's own record API so external
+  // metadata links are not changed.
+  var izrkLoopbackRecordUrl =
+    /https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?(\/srv\/api\/records\/[^"' )]+)/gi;
+
+  function normalizeIzrkRecordUrl(value) {
+    if (typeof value !== "string") {
+      return value;
+    }
+    return value.replace(izrkLoopbackRecordUrl, "$1");
+  }
+
+  function normalizeIzrkElement(element) {
+    ["src", "href", "style"].forEach(function (attribute) {
+      if (!element.hasAttribute(attribute)) {
+        return;
+      }
+
+      var value = element.getAttribute(attribute);
+      var normalized = normalizeIzrkRecordUrl(value);
+      if (normalized !== value) {
+        element.setAttribute(attribute, normalized);
+      }
+    });
+  }
+
+  function normalizeIzrkTree(root) {
+    if (root.nodeType === 1) {
+      normalizeIzrkElement(root);
+    }
+
+    if (!root.querySelectorAll) {
+      return;
+    }
+
+    angular.forEach(root.querySelectorAll("[src], [href], [style]"), function (
+      element
+    ) {
+      normalizeIzrkElement(element);
+    });
+  }
+
+  function installIzrkRecordUrlFallback() {
+    if (!document.body) {
+      return;
+    }
+
+    normalizeIzrkTree(document.body);
+
+    if (!window.MutationObserver) {
+      return;
+    }
+
+    var observer = new window.MutationObserver(function (mutations) {
+      angular.forEach(mutations, function (mutation) {
+        if (mutation.type === "attributes") {
+          normalizeIzrkElement(mutation.target);
+          return;
+        }
+
+        angular.forEach(mutation.addedNodes, function (node) {
+          normalizeIzrkTree(node);
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["src", "href", "style"],
+      childList: true,
+      subtree: true
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installIzrkRecordUrlFallback);
+  } else {
+    installIzrkRecordUrlFallback();
+  }
 
   /**
    * The catalogue controller takes care of

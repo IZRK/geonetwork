@@ -1,103 +1,63 @@
-<ul class="nav navbar-nav" ng-show="::getApplicationInfoVisible()">
-  <li class="navbar-text">
-    <span
-      data-translate=""
-      data-translate-values="{platform: '{{info['system/platform/name']}}', version: '{{info['system/platform/version']}}', subversion: '{{info['system/platform/subVersion']}}'}"
+<div class="row izrk-footer-content">
+  <div class="col-lg-3 col-sm-12">
+    <img
+      src="https://i.imgur.com/nU6E1KV.png"
+      alt="IZRK Metadata Portal"
+      class="izrk-footer-logo"
+    />
+  </div>
+  <div class="col-lg-3 col-sm-12">
+    The <b>IZRK Metadata Portal</b> was developed at the Data Centre of the Karst Research
+    Institute ZRC SAZU from 2021 to 2022 using the
+    <a href="https://geonetwork-opensource.org" target="_blank" rel="noopener">
+      GeoNetwork</a
     >
-      versionDetails</span
-    >
-  </li>
-  <li>
-    <a href="http://geonetwork-opensource.org/">
-      <span data-translate="">about</span>
-    </a>
-  </li>
-  <li ng-show="::getContactusVisible()">
-    <a href="contact.us">
-      <span data-translate="">contact</span>
-    </a>
-  </li>
-  <li class="hidden-sm">
-    <a href="https://github.com/geonetwork/core-geonetwork">
-      <span class="fa fa-fw fa-brands fa-github"></span>
-      <span data-translate="">github</span>
-    </a>
-  </li>
-  <li>
-    <a href="../../doc/api" title="{{'learnTheApi' | translate}}">API</a>
-  </li>
-</ul>
-<ul
-  class="nav navbar-nav"
-  gn-static-pages-list-viewer
-  data-section="footer"
-  data-language="{{lang}}"
-></ul>
-<ul class="nav navbar-nav" ng-show="getSocialLinksVisible()">
-  <li class="navbar-text">
-    <span data-translate="">shareOn</span>
-  </li>
-  <li>
-    <a
-      href="https://twitter.com/share?url={{socialMediaLink | encodeURIComponent}}"
-      target="_blank"
-      title="{{'shareOnTwitter' | translate}}"
-      aria-label="{{'shareOnTwitter' | translate}}"
-    >
-      <span class="fa-brands fa-x-twitter"></span>
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://www.facebook.com/sharer.php?u={{socialMediaLink | encodeURIComponent}}"
-      target="_blank"
-      title="{{'shareOnFacebook' | translate}}"
-      aria-label="{{'shareOnFacebook' | translate}}"
-    >
-      <span class="fa-brands fa-facebook-f"></span>
-    </a>
-  </li>
-  <li>
-    <a
-      href="http://www.linkedin.com/shareArticle?mini=true&amp;url={{socialMediaLink | encodeURIComponent}}"
-      target="_blank"
-      title="{{'shareOnLinkedIn' | translate}}"
-      aria-label="{{'shareOnLinkedIn' | translate}}"
-    >
-      <span class="fa-brands fa-linkedin-in"></span>
-    </a>
-  </li>
-  <li>
-    <a
-      href="mailto:?subject={{info.site.name}}&amp;body={{socialMediaLink | encodeURIComponent}}"
-      target="_blank"
-      title="{{'shareByEmail' | translate}}"
-      aria-label="{{'shareByEmail' | translate}}"
-    >
-      <span class="fa fa-envelope-o"></span>
-    </a>
-  </li>
-  <li>
-    <a
-      href=""
-      data-ng-click="getPermalink('', socialMediaLink)"
-      title="{{'permalink' | translate}}"
-      aria-label="{{'permalink' | translate}}"
-    >
-      <span class="fa fa-fw fa-link"></span
-    ></a>
-  </li>
-  <li
-    data-ng-if="info['microservices/enabled'] === true"
-    data-ng-repeat="rssFeed in rssFeeds"
-  >
-    <a
-      href="../../api/collections/{{nodeId === 'srv' ? 'main' : nodeId}}/items?{{rssFeed.url}}"
-      title="{{rssFeed.label | translate}}"
-      aria-label="{{rssFeed.label | translate}}"
-    >
-      <span data-ng-if="rssFeeds.length > 1"> {{rssFeed.label | translate}} </span>
-      <span class="fa fa-fw fa-rss"></span>
-    </a>
-  </li>
-</ul>
+    platform to build a system management and user interface for multidisciplinary
+    environmental data mining and access to data products. The architecture of the new
+    metadata portal is compliant with FAIR data principles and data lifecycle, and is
+    collecting and mapping various datasets, databases, research sites and instruments,
+    virtual laboratories, workflows, and codes. The portal offers data for
+    multidisciplinary KARST database and for multidisciplinary research that covers all
+    domains and functionalities of a karst landscape. Moreover, the portal is designed to
+    provide a temporal and spatial link between specific sites and their data as part of
+    three main projects:
+    <ul>
+      <li>
+        <a href="https://lifewatch.zrc-sazu.si" target="_blank" rel="noopener">
+          RI-SI-LifeWatch (2019 - 2021)</a
+        >
+      </li>
+      <li>
+        <a href="https://epos-ip.zrc-sazu.si" target="_blank" rel="noopener">
+          RI-SI-EPOS (2019 - 2021)</a
+        >
+      </li>
+      <li>
+        <a href="https://lter.zrc-sazu.si" target="_blank" rel="noopener">
+          eLTER RI (2020 - 2025)</a
+        >
+      </li>
+    </ul>
+  </div>
+  <div class="col-lg-3 col-sm-12">
+    <b>Publisher</b>
+    <br />
+    <a href="https://izrkp.zrc-sazu.si" target="_blank" rel="noopener">
+      Karst research Institute ZRC SAZU</a
+    >, Postojna, Slovenia
+    <br />
+    <b>ISSN 2820-588X</b>
+    <br />
+    <br />
+    <b>Year of preparation</b>
+    <br />
+    2021 - 2022
+    <br />
+    <br />
+    <b>Design and editing</b>
+    <br />
+    Magdalena Aljančič, Žan Kafol, Tanja Pipan, Stanka Šebela, Jasmina Čeligoj Biščak,
+    Nataša Ravbar
+  </div>
+  <div class="col-lg-3 col-sm-12"></div>
+</div>

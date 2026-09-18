@@ -80,6 +80,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -362,7 +363,7 @@ public class AttachmentsApi {
 
         // Set headers for downloads
         response.setContentType(fileMediaType.toString());
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(fileName).build().toString());
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, attachmentDisposition(fileName));
 
         // Get the resource or a range of it
         if (range != null) {
@@ -486,8 +487,7 @@ public class AttachmentsApi {
             // Resized image headers
             response.setStatus(HttpStatus.OK.value());
             response.setContentType(MediaType.IMAGE_PNG_VALUE);
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                ContentDisposition.attachment().filename(pngFilename).build().toString());
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, attachmentDisposition(pngFilename));
             response.setContentLength(outputStream.size());
             response.setDateHeader(HttpHeaders.LAST_MODIFIED, System.currentTimeMillis());
 
@@ -510,5 +510,12 @@ public class AttachmentsApi {
             }
             outputStream.flush();
         }
+    }
+
+    private String attachmentDisposition(String fileName) {
+        return ContentDisposition.attachment()
+            .filename(fileName, StandardCharsets.UTF_8)
+            .build()
+            .toString();
     }
 }

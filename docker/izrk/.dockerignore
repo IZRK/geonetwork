@@ -1,0 +1,7 @@
+data/
+*.log
+*.tmp
+*.tar
+*.tar.gz
+*.zip
+!geonetwork.war

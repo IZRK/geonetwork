@@ -1,3 +1,143 @@
 /* Define custom node style here */
 .body {
 }
+
+.izrk-header-row {
+  display: flex;
+  align-items: center;
+  min-height: 96px;
+}
+
+.izrk-header-brand a {
+  display: inline-flex;
+  align-items: center;
+  color: #1f3f39;
+  font-size: 24px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.izrk-header-logo {
+  width: 64px;
+  height: 64px;
+  margin-right: 16px;
+}
+
+.izrk-header-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  font-weight: 600;
+}
+
+.izrk-home-intro {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.izrk-home-intro h1 {
+  margin-top: 6px;
+  color: #1f3f39;
+  font-size: 32px;
+}
+
+.izrk-home-intro p {
+  color: #4a5c58;
+  font-size: 16px;
+}
+
+.izrk-home-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.izrk-home-filters .btn {
+  border-color: #8baaa0;
+  color: #1f3f39;
+}
+
+.izrk-search-row {
+  clear: both;
+}
+
+.izrk-project-logos {
+  clear: both;
+  display: block;
+  margin-top: 36px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.izrk-project-logos a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 118px;
+}
+
+.izrk-project-logos img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+.gn-search-page {
+  padding-bottom: 0;
+}
+
+.gn-bottom-bar {
+  height: auto !important;
+  position: static !important;
+  background: #002d59 !important;
+  border: 0;
+  border-radius: 0;
+  color: #fff;
+  margin-bottom: 0;
+  padding: 30px 20px 40px 20px !important;
+}
+
+.gn-bottom-bar a {
+  color: #fff !important;
+  text-decoration: underline;
+}
+
+.gn-bottom-bar a:hover,
+.gn-bottom-bar a:focus {
+  color: #fff !important;
+}
+
+.gn-bottom-bar .izrk-footer-content a {
+  color: #fff !important;
+}
+
+.izrk-footer-content {
+  color: #fff;
+  line-height: 1.45;
+  margin: 0;
+  width: 100%;
+}
+
+.izrk-footer-logo {
+  max-width: 300px;
+  padding-bottom: 30px;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .izrk-header-row {
+    display: block;
+  }
+
+  .izrk-header-links {
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+
+  .izrk-project-logos a {
+    min-height: 96px;
+  }
+}

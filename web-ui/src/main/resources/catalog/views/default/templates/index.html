@@ -17,15 +17,20 @@
   data-ng-show="gnCfg.mods.header.enabled && gnCfg.mods.header.isLogoInHeader"
 >
   <div data-ng-class="fluidHeaderLayout ? 'container-fluid' : 'container'">
-    <div class="row">
-      <div class="col-md-12 text-{{gnCfg.mods.header.logoInHeaderPosition}}">
+    <div class="row izrk-header-row">
+      <div class="col-sm-6 izrk-header-brand">
         <a data-gn-active-tb-item="{{gnCfg.mods.home.appUrl}}">
           <img
-            class="{{gnCfg.mods.header.logoInHeaderPosition}}"
-            alt="{{'siteLogo' | translate}}"
-            data-ng-src="{{gnUrl + 'api/sources/' + info['node/id'] + '/logo?' + info['system/site/lastUpdate']}}"
+              class="izrk-header-logo"
+              alt="IZRK Metadata Portal"
+              src="../../catalog/views/default/images/izrk/logo.png"
           />
+          <span class="izrk-header-title">IZRK Metadata Portal</span>
         </a>
+      </div>
+      <div class="col-sm-6 izrk-header-links">
+        <a href="https://izrk.zrc-sazu.si/" target="_blank" rel="noopener">IZRK</a>
+        <a href="https://www.zrc-sazu.si/" target="_blank" rel="noopener">ZRC SAZU</a>
       </div>
     </div>
   </div>

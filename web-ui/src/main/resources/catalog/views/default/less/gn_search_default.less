@@ -50,7 +50,7 @@ a {
   clear: both;
   flex-grow: 1;
   position: relative;
-  padding-bottom: calc(~"@{gn-bottombar-height} + 10px");
+  padding-bottom: 0;
   .badge {
       margin-right: 5px;
       background-color: #333;
@@ -273,6 +273,8 @@ gn-wps-process-form {
 }
 
 // nojs styles
+@import "../../../style/izrk_record_style.less";
+
 .gn-nojs {
   .gn-top-search {
     padding: 30px 0;

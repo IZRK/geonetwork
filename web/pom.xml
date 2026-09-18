@@ -596,6 +596,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geonetwork-opensource.schemas</groupId>
+      <artifactId>gn-schema-eml-gbif</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.xmlunit</groupId>
       <artifactId>xmlunit-matchers</artifactId>
       <version>${xmlunit.version}</version>
@@ -1122,6 +1127,13 @@
                     <artifactItem>
                       <groupId>org.geonetwork-opensource.schemas</groupId>
                       <artifactId>gn-schema-iso19115-3.2018</artifactId>
+                      <type>zip</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>${schema-plugins.dir}</outputDirectory>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.geonetwork-opensource.schemas</groupId>
+                      <artifactId>gn-schema-eml-gbif</artifactId>
                       <type>zip</type>
                       <overWrite>false</overWrite>
                       <outputDirectory>${schema-plugins.dir}</outputDirectory>

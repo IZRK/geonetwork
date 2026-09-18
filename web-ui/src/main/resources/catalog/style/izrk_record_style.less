@@ -1,0 +1,196 @@
+// Styles shared by the portal formatter and the standalone HTML record.
+.izrk-taxonomy {
+  .izrk-taxon-rank {
+    margin-bottom: 1em;
+  }
+  h3 {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 0 0 0.35em;
+    small {
+      font-size: 0.9em;
+    }
+  }
+  .izrk-taxon-lineage {
+    margin: 0.25em 0;
+    font-size: 0.9em;
+    color: #555;
+  }
+  ul.izrk-taxon-list {
+    display: block;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    line-height: 1.8;
+    li {
+      display: inline;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: none;
+    }
+  }
+}
+
+.izrk-eml-portal {
+  overflow-wrap: anywhere;
+  .gn-card {
+    background-color: transparent;
+  }
+  h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 24px;
+    margin: 0 0 20px;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 0 0 8px;
+  }
+  .gn-section {
+    border-bottom: 1px solid #ddd;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .gn-abstract {
+    margin-top: 20px;
+  }
+  .gn-tab-content {
+    padding: 0;
+  }
+  .izrk-eml-facts, .izrk-eml-contacts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  .izrk-eml-contacts p {
+    margin-bottom: 4px;
+  }
+  .flex-row > div {
+    min-width: 0;
+  }
+  .badge-rounded {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  dl {
+    margin-bottom: 20px;
+    dt {
+      margin-bottom: 6px;
+    }
+    dd {
+      margin-left: 0;
+    }
+  }
+  dl.gn-table > dt {
+    font-size: 20px;
+    font-weight: normal;
+    margin-bottom: 16px;
+  }
+  .gn-keyword ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0;
+    list-style: none;
+    li {
+      padding: 4px 8px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+  }
+  @media (max-width: 991px) {
+    .izrk-eml-facts, .izrk-eml-contacts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 26px; }
+    .izrk-eml-facts, .izrk-eml-contacts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+// The no-JavaScript header has icon text nodes and no Bootstrap collapse script.
+// Keep icon and label aligned, and leave its navigation accessible on mobile.
+.gn-nojs .gn-top-bar {
+  .navbar-nav > li > a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    > .fa {
+      flex-shrink: 0;
+      line-height: 1;
+    }
+  }
+  @media (max-width: 767px) {
+    .navbar-toggle { display: none; }
+    .navbar-collapse.collapse {
+      display: block !important;
+      padding: 0 15px;
+    }
+    .navbar-nav {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0;
+    }
+  }
+}
+
+// Keep long catalogue identifiers and extent coordinates inside small screens.
+.gn-nojs .gn-metadata-view {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .gn-nojs .gn-full > .container {
+    width: 100%;
+    min-width: 0;
+  }
+  .gn-top-bar .navbar-header {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .gn-metadata-display .izrk-eml-portal h1 {
+    font-size: 26px;
+  }
+  .gn-nojs .gn-md-view {
+    dl > dt, dl > dd {
+      float: none;
+      width: 100%;
+      margin-left: 0;
+      white-space: normal;
+    }
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+  }
+  .gn-metadata-display .thumbnail.extent {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+    max-width: 300px;
+    margin: 16px 0;
+    .gn-img-extent {
+      order: -1;
+      grid-column: 1 / -1;
+      width: 100%;
+      height: auto;
+    }
+    .coord {
+      position: static;
+      width: 100%;
+      margin: 0;
+    }
+  }
+}
