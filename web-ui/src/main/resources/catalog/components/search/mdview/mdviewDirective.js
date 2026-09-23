@@ -271,9 +271,17 @@
 
               if (scope.hasExtent) {
                 $timeout(function () {
-                  scope.map
-                    .getView()
-                    .fit(scope.extentLayer.getSource().getExtent(), scope.map.getSize());
+                  var extent = scope.extentLayer.getSource().getExtent();
+                  var isPointExtent = extent[0] === extent[2] && extent[1] === extent[3];
+                  var fitOptions = {};
+                  if (isPointExtent) {
+                    fitOptions.maxZoom = 10;
+                  }
+                  var view = scope.map.getView();
+                  view.fit(extent, scope.map.getSize(), fitOptions);
+                  if (isPointExtent) {
+                    view.setZoom(10);
+                  }
                 }, 100);
               }
             };
@@ -443,7 +451,12 @@
         },
         link: function (scope, element, attrs, controller) {
           scope.isDefaultContactViewEnabled = function () {
-            return gnGlobalSettings.gnCfg.mods.recordview.isDefaultContactViewEnabled;
+            // Grouped record contacts show their details inline, without avatars.
+            return (
+              (scope.mode === "org-role" && scope.layout === "eml-cards") ||
+              (scope.mode === "org-role" && scope.layout === "icon") ||
+              gnGlobalSettings.gnCfg.mods.recordview.isDefaultContactViewEnabled
+            );
           };
 
           if (["default", "role", "org-role"].indexOf(scope.mode) == -1) {
@@ -462,13 +475,11 @@
 
           scope.calculateContacts = function () {
             if (scope.mode != "default") {
-              var groupByOrgAndMailOrName = function (resources) {
+              var groupByContactDetails = function (resources) {
                 return _.groupBy(resources, function (contact) {
-                  if (contact.email) {
-                    return contact.organisation + "#" + contact.email;
-                  } else {
-                    return contact.organisation + "#" + contact.individual;
-                  }
+                  // Only combine roles when all contact details match. A shared
+                  // mailbox does not imply the same person, address or phone.
+                  return angular.toJson(_.omit(contact, "role"));
                 });
               };
 
@@ -476,7 +487,7 @@
                 return _.map(resources, function (contact) {
                   var copy = angular.copy(contact[0]);
                   angular.extend(copy, {
-                    roles: _.map(contact, "role")
+                    roles: _.uniq(_.map(contact, "role"))
                   });
 
                   return copy;
@@ -484,13 +495,9 @@
               };
 
               if (scope.mode == "role") {
-                var contactsByOrgAndMailOrName = groupByOrgAndMailOrName(
-                  scope.mdContacts
-                );
+                var contactsByDetails = groupByContactDetails(scope.mdContacts);
 
-                var contactsWithAggregatedRoles = aggregateRoles(
-                  contactsByOrgAndMailOrName
-                );
+                var contactsWithAggregatedRoles = aggregateRoles(contactsByDetails);
 
                 /**
                  * Contacts format:
@@ -521,21 +528,22 @@
                 scope.mdContactsByOrgRole = _.groupBy(
                   scope.mdContacts,
                   function (contact) {
-                    if (contact.website !== "") {
-                      scope.orgWebsite[contact.organisation] = contact.website;
+                    // Optional organizations must not become the literal group
+                    // heading "undefined". Keep unaffiliated people and roles.
+                    var organisation = (contact.organisation || "").trim();
+                    if (organisation && contact.website) {
+                      scope.orgWebsite[organisation] = contact.website;
                     }
-                    return contact.organisation;
+                    return organisation;
                   }
                 );
 
                 for (var key in scope.mdContactsByOrgRole) {
                   var value = scope.mdContactsByOrgRole[key];
 
-                  var contactsByOrgAndMailOrName = groupByOrgAndMailOrName(value);
+                  var contactsByDetails = groupByContactDetails(value);
 
-                  scope.mdContactsByOrgRole[key] = aggregateRoles(
-                    contactsByOrgAndMailOrName
-                  );
+                  scope.mdContactsByOrgRole[key] = aggregateRoles(contactsByDetails);
                 }
               }
             }
@@ -557,7 +565,7 @@
                 roleTranslations.push($filter("translate")(rolesList[i]));
               }
 
-              return roleTranslations.join(",");
+              return roleTranslations.join(", ");
             } else {
               return "";
             }

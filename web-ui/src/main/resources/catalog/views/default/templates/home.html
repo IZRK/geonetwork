@@ -1,5 +1,5 @@
 <div
-  class="row gn-row-main hidden-print"
+  class="row gn-row-main izrk-home-hero hidden-print"
   data-ng-hide="gnCfg.mods.home.showSearch === false"
 >
   <div data-ng-class="fluidLayout ? 'container-fluid' : 'container'">
@@ -58,8 +58,8 @@
       </div>
 
       <div
-        class="col-md-6"
-        data-ng-class="{'col-md-offset-3': serviceMetadataForPortal == null}"
+        class="col-md-8"
+        data-ng-class="{'col-md-offset-2': serviceMetadataForPortal == null}"
         data-ng-if="!showHealthIndexError"
       >
         <div class="input-group gn-form-any">
@@ -67,7 +67,7 @@
             type="text"
             role="combobox"
             class="form-control input-lg"
-            autofocus=""
+            aria-label="Search the catalogue"
             autocomplete="off"
             data-ng-model="homeAnyField"
             data-ng-model-options="modelOptions"
@@ -109,42 +109,66 @@
         <a
           href="/srv/eng/catalog.search#/search?query_string={%22cat%22:%20{%22Karst%20DB%22:%20true}%20}"
         >
-          <img src="https://i.imgur.com/3Zmai41.png" height="90" alt="Karst DB" />
+          <img
+            src="../../catalog/views/default/images/izrk/projects/karst-db.png"
+            height="90"
+            alt="Karst DB"
+          />
         </a>
       </div>
       <div class="col-sm-2">
         <a
           href="https://metadata.izrk.zrc-sazu.si/srv/eng/catalog.search#/search?query_string={%22cat%22:%20{%22lifewatch%22:%20true}%20}"
         >
-          <img src="https://i.imgur.com/qsnlS4L.png" height="100" alt="LifeWatch" />
+          <img
+            src="../../catalog/views/default/images/izrk/projects/lifewatch.png"
+            height="100"
+            alt="LifeWatch"
+          />
         </a>
       </div>
       <div class="col-sm-2">
         <a
           href="/srv/eng/catalog.search#/search?query_string={%22cat%22:%20{%22RI-SI-LifeWatch%22:%20true}%20}"
         >
-          <img src="https://i.imgur.com/2LzzHT2.jpg" height="100" alt="RI-SI-LifeWatch" />
+          <img
+            src="../../catalog/views/default/images/izrk/projects/ri-si-lifewatch.jpg"
+            height="100"
+            alt="RI-SI-LifeWatch"
+          />
         </a>
       </div>
       <div class="col-sm-2">
         <a
           href="/srv/eng/catalog.search#/search?query_string=%7B%22cat%22:%7B%22EPOS%22:true%7D%7D"
         >
-          <img src="https://i.imgur.com/neLUP1R.jpg" height="100" alt="EPOS" />
+          <img
+            src="../../catalog/views/default/images/izrk/projects/epos.jpg"
+            height="100"
+            alt="EPOS"
+          />
         </a>
       </div>
       <div class="col-sm-2">
         <a
           href='/srv/eng/catalog.search#/search?query_string=%7B"cat":%20%7B"RI-SI-EPOS":%20true%7D%20%7D'
         >
-          <img src="https://i.imgur.com/1OiyXhw.jpg" height="100" alt="RI-SI-EPOS" />
+          <img
+            src="../../catalog/views/default/images/izrk/projects/ri-si-epos.jpg"
+            height="100"
+            alt="RI-SI-EPOS"
+          />
         </a>
       </div>
       <div class="col-sm-2">
         <a
           href='/srv/eng/catalog.search#/search?query_string=%7B"cat":%7B"elter":true%7D%7D'
         >
-          <img src="https://i.imgur.com/3UQCbuQ.png" height="100" alt="eLTER" />
+          <img
+            src="../../catalog/views/default/images/izrk/projects/elter.png"
+            height="100"
+            alt="eLTER"
+          />
         </a>
       </div>
     </div>
@@ -229,6 +253,7 @@
         <div
           data-ng-if="homeFacet"
           es-facet-cards="homeFacet.key"
+          data-template="../../catalog/views/default/templates/izrk-facet-cards.html"
           data-home-facet="homeFacet"
           data-search-info="searchInfo"
           data-agg-config="aggConfig"
@@ -246,6 +271,7 @@
         <div
           data-ng-if="homeFacet.lastKey"
           es-facet-cards="homeFacet.lastKey"
+          data-template="../../catalog/views/default/templates/izrk-facet-cards.html"
           data-home-facet="homeFacet"
           data-search-info="searchInfo"
           data-agg-config="aggConfig"

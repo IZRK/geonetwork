@@ -5,3 +5,5 @@ data/
 *.tar.gz
 *.zip
 !geonetwork.war
+izrk-deploy-*.tar.gz
+izrk-deploy-*.tar.gz.sha256

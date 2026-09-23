@@ -170,7 +170,55 @@
     </li>
   </ul>
 </div>
-<div data-ng-if="isDefaultContactViewEnabled()">
+<div
+  class="izrk-contact-organisations"
+  data-ng-if="mode == 'org-role' && layout == 'eml-cards'"
+>
+  <details
+    class="izrk-eml-contact-organisation"
+    data-ng-repeat="(org, contactByOrgRole) in mdContactsByOrgRole"
+    open="open"
+  >
+    <summary>
+      <span class="izrk-organisation-name">{{org || 'Contacts'}}</span>
+      <span class="izrk-contact-count">{{contactByOrgRole.length}}</span>
+    </summary>
+    <div class="izrk-eml-contacts">
+      <div class="izrk-eml-contact" data-ng-repeat="c in contactByOrgRole track by $index">
+        <span class="badge badge-rounded izrk-contact-icon" aria-hidden="true">
+          <i class="fa fa-fw fa-user"></i>
+        </span>
+        <div class="izrk-contact-details">
+          <h4 data-ng-if="c.individual || c.position">
+            {{c.individual}}<span data-ng-if="c.position"> ({{c.position}})</span>
+          </h4>
+          <p class="text-muted izrk-contact-roles">{{translateRoles(c.roles.join(','))}}</p>
+          <dl data-ng-if="c.email">
+            <dt data-translate="">email</dt>
+            <dd><a data-ng-href="mailto:{{c.email}}">{{c.email}}</a></dd>
+          </dl>
+          <dl data-ng-if="c.address">
+            <dt data-translate="">mdAddress</dt>
+            <dd>{{c.address}}</dd>
+          </dl>
+          <dl data-ng-if="c.phone">
+            <dt data-translate="">mdPhone</dt>
+            <dd><a data-ng-href="tel:{{c.phone}}">{{c.phone}}</a></dd>
+          </dl>
+          <dl data-ng-if="c.website">
+            <dt data-translate="">mdWebsite</dt>
+            <dd><a data-ng-href="{{c.website}}">{{c.website}}</a></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </details>
+</div>
+
+<div
+  class="izrk-contact-group-list"
+  data-ng-if="isDefaultContactViewEnabled() && layout != 'eml-cards'"
+>
   <div
     class="gn-contact"
     data-ng-if="mode == 'default'"
@@ -274,40 +322,63 @@
 
   <!-- Group by organisation/role -->
   <div
-    class="gn-contact flex-row"
+    class="gn-contact izrk-contact-organisation"
     data-ng-if="mode == 'org-role'"
     data-ng-repeat="(org, contactByOrgRole) in mdContactsByOrgRole"
   >
     <div class="panel panel-address">
       <div class="panel-body">
         <address>
-          <div data-ng-if="::orgWebsite[org]">
-            <label data-translate="">mdWebsite</label>
+          <div class="izrk-contact-organisation-name" data-ng-if="::orgWebsite[org]">
             <a data-ng-href="{{::orgWebsite[org]}}">
               <i class="fa fa-fw fa-link"></i>
               {{org}}
             </a>
           </div>
-          <div data-ng-if="::!orgWebsite[org]">
-            <label data-translate="">mdOrganization</label>
+          <div
+            class="izrk-contact-organisation-name"
+            data-ng-if="::org && !orgWebsite[org]"
+          >
             {{org}}
           </div>
 
           <div
             ng-repeat="(key, contactGroupByAddress) in contactByOrgRole | groupBy:'address'"
           >
-            <span data-ng-if="key != ''">
+            <span
+              class="izrk-contact-address"
+              data-ng-if="key && key !== 'undefined' && key !== 'null'"
+            >
               <i class="fa fa-fw fa-map-marker"></i>
               {{key}}<br />
             </span>
-            <ul>
+            <ul class="izrk-contact-roles">
               <li
                 ng-repeat="(roles, contactGroupByRole) in contactGroupByAddress | groupBy:'roles'"
               >
-                {{translateRoles(roles)}}:<br />
-                <div data-ng-repeat="c in contactGroupByRole track by $index">
-                  <div data-gn-metadata-individual="c"></div>
-                  <span data-ng-if="!$last"><hr /></span>
+                <div class="izrk-contact-role">{{translateRoles(roles)}}</div>
+                <div
+                  class="izrk-contact-person"
+                  data-ng-repeat="c in contactGroupByRole track by $index"
+                >
+                  <span class="badge badge-rounded izrk-contact-icon" aria-hidden="true">
+                    <i class="fa fa-fw fa-user"></i>
+                  </span>
+                  <div class="izrk-contact-details">
+                    <div data-gn-metadata-individual="c"></div>
+                    <div data-ng-if="c.phone">
+                      <a data-ng-href="tel:{{c.phone}}">
+                        <i class="fa fa-fw fa-phone"></i>
+                        {{c.phone}}
+                      </a>
+                    </div>
+                    <div data-ng-if="c.website && c.website !== orgWebsite[org]">
+                      <a data-ng-href="{{c.website}}">
+                        <i class="fa fa-fw fa-link"></i>
+                        {{c.website}}
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </li>
             </ul>

@@ -1,12 +1,14 @@
-<div class="gn-md-side-calendar gn-margin-bottom">
+<div class="gn-md-side-calendar gn-margin-bottom flex-row">
   <span class="badge badge-rounded" title="{{'updatedOn' | translate}}">
     <i class="fa fa-fw fa-calendar"></i>
   </span>
-  <h3 data-translate="">updatedOn</h3>
-  <span
-    data-gn-humanize-time="{{mdView.current.record.changeDate}}"
-    data-from-now=""
-  ></span>
+  <div>
+    <h3 data-translate="">updatedOn</h3>
+    <span
+      data-gn-humanize-time="{{mdView.current.record.changeDate}}"
+      data-from-now=""
+    ></span>
+  </div>
 </div>
 
 <div
@@ -55,13 +57,17 @@
   </div>
 </div>
 
-<div class="gn-margin-bottom">
+<div class="gn-margin-bottom flex-row">
   <span class="badge badge-rounded" title="{{'sourceCatalog' | translate}}">
     <i class="fa fa-fw fa-cloud"></i>
   </span>
-  <h3 data-translate="">sourceCatalog</h3>
-  :
-  <span data-gn-record-origin-logo="mdView.current.record"></span>
+  <div>
+    <h3 data-translate="">sourceCatalog</h3>
+    <span
+      data-ng-if="mdView.current.record.uuid"
+      data-gn-record-origin-logo="mdView.current.record"
+    ></span>
+  </div>
 </div>
 
 <div
@@ -73,11 +79,11 @@
   </span>
   <div>
     <h3 data-translate="">uuid</h3>
-    <div class="input-group">
-      <input type="text" class="form-control" value="{{::mdView.current.record.uuid}}" />
+    <div class="izrk-identifier">
+      <code>{{::mdView.current.record.uuid}}</code>
       <span
         gn-copy-to-clipboard-button=""
-        data-btn-class="input-group-addon"
+        data-btn-class="btn btn-default btn-sm"
         data-text="{{::mdView.current.record.uuid}}"
       >
       </span>

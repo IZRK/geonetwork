@@ -30,7 +30,6 @@
   goog.require("gn_search");
   goog.require("gn_search_default_config");
   goog.require("gn_search_default_directive");
-
   var module = angular.module("gn_search_default", [
     "gn_search",
     "gn_search_default_config",

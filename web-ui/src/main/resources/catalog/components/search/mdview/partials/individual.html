@@ -1,15 +1,12 @@
-<div data-ng-if="c.email != ''">
-  <label data-translate="">mdEmail</label>
-  <a href="mailto:{{c.email}}">
-    <i class="fa fa-fw fa-envelope"></i>
-    <span data-ng-hide="c.individual">{{c.email}}</span>
-    <span data-ng-show="c.individual">{{c.individual}}</span>
-    <span data-ng-show="c.position">({{c.position}})</span>
-  </a>
-</div>
-<div data-ng-if="c.email === ''">
+<div class="izrk-contact-name" data-ng-if="c.individual || c.position">
   {{c.individual}}
   <span data-ng-show="c.position">({{c.position}})</span>
+</div>
+<div data-ng-if="c.email">
+  <a class="izrk-contact-email" data-ng-href="mailto:{{c.email}}">
+    <i class="fa fa-fw fa-envelope-o" aria-hidden="true"></i>
+    {{c.email}}
+  </a>
 </div>
 <div data-ng-repeat="id in c.identifiers">
   <span data-ng-show="id.link == '' && id.code.indexOf('http') === -1">

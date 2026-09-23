@@ -32,6 +32,7 @@ es/es-dashboards/data/index/
 harvesters/harvester_*.log
 idea/
 jcs_caching/
+/logs/
 node_modules
 out/
 package-lock.json
@@ -97,6 +98,8 @@ AGENTS.md
 /docker/izrk/geonetwork.war
 /docker/izrk/runtime/
 /docker/izrk/deploy-manifest.sha256
+/docker/izrk-deploy-*.tar.gz
+/docker/izrk-deploy-*.tar.gz.sha256
 /docker/izrk/reports/
 /docker/izrk/screenshot.png
 /docker/izrk/data/*

@@ -1675,9 +1675,7 @@
       return;
     }
 
-    angular.forEach(root.querySelectorAll("[src], [href], [style]"), function (
-      element
-    ) {
+    angular.forEach(root.querySelectorAll("[src], [href], [style]"), function (element) {
       normalizeIzrkElement(element);
     });
   }

@@ -28,4 +28,17 @@
 	<otherInfo>Other Information</otherInfo>
 	<xml_eml-gbif>Save this metadata as an EML-GBIF XML file</xml_eml-gbif>
 	<xml_eml-gbifTorifcs>Save this metadata as an ANDS rifcs XML file</xml_eml-gbifTorifcs>
+  <emlOverview>Overview</emlOverview>
+  <emlContacts>Contacts</emlContacts>
+  <emlCoverage>Coverage</emlCoverage>
+  <emlResources>Resources and rights</emlResources>
+  <emlMethods>Methods and project</emlMethods>
+  <emlMetadata>Metadata</emlMetadata>
+  <emlRoleCreator>Creator</emlRoleCreator>
+  <emlRoleContact>Resource contact</emlRoleContact>
+  <emlRoleMetadataProvider>Metadata provider</emlRoleMetadataProvider>
+  <emlRoleAssociatedParty>Associated party</emlRoleAssociatedParty>
+  <emlRolePersonnel>Project contact</emlRolePersonnel>
+  <citationProposal>Cite dataset</citationProposal>
+  <citationAdditional>Additional citation</citationAdditional>
 </strings>

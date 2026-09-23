@@ -33,7 +33,7 @@
     </a>
   </div>
 
-  <div class="container">
+  <div class="container izrk-record-page">
     <div
       class="alert alert-warning"
       data-ng-hide="!mdView.loadDetailsFinished || mdView.current.record"
@@ -158,6 +158,39 @@
         id="gn-metadata-display"
         class="gn-metadata-display"
       ></div>
+
+      <!-- EML uses a schema formatter for its content and the same catalogue
+           actions as the native dataset view. -->
+      <div
+        class="gn-metadata-display izrk-record-extras"
+        data-ng-if="gnMdViewObj.usingFormatter && mdView.current.record.documentStandard == 'eml-gbif'"
+      >
+        <div class="row gn-section izrk-record-section" data-ng-if="showCitation">
+          <div
+            class="col-md-12 gn-record"
+            data-gn-metadata-citation="mdView.current.record"
+          ></div>
+        </div>
+        <div class="row" data-ng-if="mdView.current.record.related.uuids">
+          <div
+            class="col-md-12 gn-record"
+            data-gn-related="mdView.current.record"
+            data-user="user"
+            data-layout="card"
+            data-types="parent|children|services|datasets"
+          ></div>
+        </div>
+        <div class="row hidden-print izrk-record-section">
+          <div
+            class="col-md-12"
+            ng-include="'../../catalog/views/default/templates/recordView/share.html'"
+          ></div>
+        </div>
+        <div
+          class="hidden-print"
+          ng-include="'../../catalog/views/default/templates/recordView/footer.html'"
+        ></div>
+      </div>
 
       <div data-ng-show="!gnMdViewObj.usingFormatter" class="gn-metadata-display">
         <div data-ng-switch on="mdView.current.record.resourceType[0]">

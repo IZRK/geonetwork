@@ -14,10 +14,10 @@
             data-ng-class="{'fa-chevron-right': date.type === 'creation', 'fa-code-fork': date.type === 'superseded','fa-ban': date.type === 'deprecated', 'fa-retweet': date.type === 'revision', 'fa-check': date.type === 'publication', 'fa-calendar': date.type === 'nextUpdate'}"
           ></i>
         </div>
-        <span>
+        <div>
           <h3>{{date.type | translate}}</h3>
           <span data-gn-humanize-time="{{date.date}}"></span>
-        </span>
+        </div>
       </li>
     </ul>
   </section>

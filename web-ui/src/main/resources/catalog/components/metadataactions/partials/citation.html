@@ -1,31 +1,34 @@
-<div data-ng-show="citationAvailable">
-  <div>
+<section class="izrk-citation" data-ng-show="citationAvailable">
+  <div class="izrk-citation-header">
     <h2>
       <span data-translate="">cite.dataset</span>
-      <a
-        class="btn btn-xs"
+    </h2>
+    <div
+      class="izrk-citation-formats"
+      role="group"
+      aria-label="{{'cite.dataset' | translate}}"
+    >
+      <button
+        type="button"
+        class="btn btn-sm"
         data-ng-repeat="(k, f) in formats"
         data-ng-click="getCitation(f.id)"
-        title="{{::f.help}}"
-        data-ng-class="currentFormat === f.id ? 'btn-primary' : 'btn-link'"
+        title="{{::(f.help.indexOf('cite.format.') === 0 ? f.label : f.help)}}"
+        aria-pressed="{{currentFormat === f.id}}"
+        data-ng-class="currentFormat === f.id ? 'btn-primary' : 'btn-default'"
       >
         {{::f.label}}
-      </a>
-    </h2>
+      </button>
+    </div>
   </div>
-  <div>
-    <div
-      class="gn-copy-to-clipboard-button-floatright gn-margin-left-sm"
-      gn-save-text-button=""
-      data-file-name="{{ getCitationFilename() }}"
-    ></div>
-
-    <div
-      class="gn-copy-to-clipboard-button-floatright"
-      gn-copy-to-clipboard-button=""
-      timeout="1000"
-    ></div>
+  <div class="izrk-citation-body">
     <div data-ng-if="!isCode" ng-bind-html="citationText"></div>
     <pre data-ng-if="isCode">{{citationText}}</pre>
+    <div
+      gn-save-text-button=""
+      data-file-name="{{ getCitationFilename() }}"
+      data-text="{{citationText}}"
+    ></div>
+    <div gn-copy-to-clipboard-button="" timeout="1000"></div>
   </div>
-</div>
+</section>

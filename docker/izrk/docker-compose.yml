@@ -14,6 +14,7 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.19.13
+    restart: unless-stopped
     environment:
       discovery.type: single-node
       xpack.security.enabled: "false"
@@ -33,6 +34,7 @@ services:
 
   geonetwork:
     image: izrk-geonetwork:4.4.13-SNAPSHOT
+    restart: unless-stopped
     pull_policy: build
     build:
       context: .

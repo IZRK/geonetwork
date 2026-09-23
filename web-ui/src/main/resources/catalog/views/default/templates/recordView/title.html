@@ -1,7 +1,12 @@
-<div>
+<div class="izrk-record-title">
+  <div class="izrk-resource-type">
+    <i
+      class="fa gn-icon-{{mdView.current.record.resourceType[0]}}"
+      aria-hidden="true"
+    ></i>
+    <span>{{mdView.current.record.resourceType[0] | translate}}</span>
+  </div>
   <h1 class="gn-break">
-    <i class="fa gn-icon-{{mdView.current.record.resourceType[0]}}"></i>
-
     {{mdView.current.record.resourceTitle}}
 
     <span
@@ -42,5 +47,26 @@
     data-types="parent"
   ></div>
 
-  <p data-ng-bind-html="(mdView.current.record.resourceAbstract) | linky | newlines"></p>
+  <div class="izrk-abstract" data-ng-init="abstractState = {expanded: false}">
+    <p
+      id="izrk-record-abstract"
+      data-ng-class="{'izrk-abstract-collapsed': mdView.current.record.resourceAbstract.length > 1600 && !abstractState.expanded}"
+      data-ng-bind-html="mdView.current.record.resourceAbstract | linky | newlines"
+    ></p>
+    <button
+      type="button"
+      class="btn btn-default izrk-abstract-toggle"
+      data-ng-if="mdView.current.record.resourceAbstract.length > 1600"
+      data-ng-click="abstractState.expanded = !abstractState.expanded"
+      aria-expanded="{{abstractState.expanded}}"
+      aria-controls="izrk-record-abstract"
+    >
+      <span>{{(abstractState.expanded ? 'showLess' : 'readMore') | translate}}</span>
+      <i
+        class="fa"
+        data-ng-class="abstractState.expanded ? 'fa-angle-up' : 'fa-angle-down'"
+        aria-hidden="true"
+      ></i>
+    </button>
+  </div>
 </div>

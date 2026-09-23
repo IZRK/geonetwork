@@ -61,8 +61,23 @@
                                         }]"/>
         <directive data-gn-associated-resources-panel="gnCurrentEdit.metadata"/>
       </sidePanel>
-      <tab id="advanced" default="true">
-        <section xpath="/eml:eml"/>
+      <tab id="emlOverview" default="true">
+        <section xpath="/eml:eml/dataset/*[not(self::creator or self::contact or self::metadataProvider or self::associatedParty or self::coverage or self::distribution or self::intellectualRights or self::licensed or self::methods or self::project or self::dataTable or self::spatialRaster or self::spatialVector or self::otherEntity)]"/>
+      </tab>
+      <tab id="emlContacts">
+        <section name="emlContacts" xpath="/eml:eml//creator | /eml:eml//contact | /eml:eml//metadataProvider | /eml:eml//associatedParty | /eml:eml//personnel"/>
+      </tab>
+      <tab id="emlCoverage">
+        <section xpath="/eml:eml/dataset/coverage"/>
+      </tab>
+      <tab id="emlResources">
+        <section xpath="/eml:eml/dataset/*[self::distribution or self::intellectualRights or self::licensed or self::dataTable or self::spatialRaster or self::spatialVector or self::otherEntity]"/>
+      </tab>
+      <tab id="emlMethods">
+        <section xpath="/eml:eml/dataset/*[self::methods or self::project]"/>
+      </tab>
+      <tab id="emlMetadata">
+        <section name="emlMetadata" xpath="/eml:eml/*[not(self::dataset)]"/>
       </tab>
     </view>
     <view name="xml">

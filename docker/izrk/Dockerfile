@@ -16,6 +16,9 @@ RUN mkdir -p /usr/local/tomcat/webapps/ROOT \
     && rm /tmp/ROOT.war
 COPY deploy-manifest.sha256 /opt/izrk/deploy-manifest.sha256
 COPY runtime/webapp/ /usr/local/tomcat/webapps/ROOT/
+# Decode WebP attachments, including originals stored with a .jpg filename.
+# Shared libraries let Java ImageIO discover the provider before webapp startup.
+COPY runtime/tomcat/lib/ /usr/local/tomcat/lib/
 COPY runtime/schema_plugins/eml-gbif /opt/izrk/schema_plugins/eml-gbif
 COPY scripts/docker-entrypoint.sh /usr/local/bin/izrk-entrypoint.sh
 COPY scripts/sync-public-url.sh /usr/local/bin/izrk-sync-public-url.sh

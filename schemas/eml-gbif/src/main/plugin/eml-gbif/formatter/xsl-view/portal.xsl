@@ -15,9 +15,10 @@
 
   <xsl:template name="eml-portal-record">
     <article class="izrk-eml-portal" id="{$metadataUuid}">
-      <div class="row gn-card gn-card-dataset gn-margin-top gn-margin-bottom gn-padding-top gn-padding-bottom">
+      <div class="row izrk-record-header gn-card gn-card-dataset">
         <div class="col-md-8 gn-record">
-          <h1 class="gn-break"><i class="fa gn-icon-dataset" aria-hidden="true"></i><xsl:text> </xsl:text><xsl:value-of select="$metadata/dataset/title"/></h1>
+          <div class="izrk-resource-type"><i class="fa gn-icon-dataset" aria-hidden="true"></i> Dataset</div>
+          <h1 class="gn-break"><xsl:value-of select="$metadata/dataset/title"/></h1>
           <xsl:apply-templates mode="getMetadataHeader" select="$metadata"/>
         </div>
         <aside class="col-md-4 gn-md-side">
@@ -27,28 +28,32 @@
       </div>
 
       <xsl:if test="$metadata/dataset/coverage/geographicCoverage[normalize-space(.) != '']">
-        <section class="row gn-section gn-section-dataset gn-padding-top">
-          <div class="col-md-8 gn-record">
-            <h2>Spatial extent</h2>
+        <section class="row izrk-record-section gn-section gn-section-dataset">
+          <div class="col-md-12 gn-record">
+            <h2><i class="fa fa-map-marker" aria-hidden="true"></i> Spatial extent</h2>
             <xsl:call-template name="eml-geographic-coverage"/>
           </div>
-          <div class="col-md-4 gn-md-side"><xsl:call-template name="eml-temporal-coverage"/></div>
+          <xsl:if test="$metadata/dataset/coverage/temporalCoverage">
+            <div class="col-md-12 gn-md-side"><xsl:call-template name="eml-temporal-coverage"/></div>
+          </xsl:if>
         </section>
       </xsl:if>
 
-      <section class="row gn-section gn-section-dataset">
-        <div class="col-md-8 gn-record">
+      <xsl:if test="$metadata/dataset/distribution/online/url[normalize-space(.) != ''] or normalize-space($metadata/dataset/intellectualRights) != ''">
+      <section class="row izrk-record-section gn-section gn-section-dataset">
+        <div class="col-md-12 gn-record">
           <xsl:call-template name="eml-distribution"/>
           <xsl:if test="normalize-space($metadata/dataset/intellectualRights) != ''">
-            <h2>Use constraints</h2>
+            <h2><i class="fa fa-shield" aria-hidden="true"></i> Use constraints</h2>
             <xsl:call-template name="render-paragraph-html"><xsl:with-param name="node" select="$metadata/dataset/intellectualRights"/></xsl:call-template>
           </xsl:if>
         </div>
       </section>
+      </xsl:if>
 
-      <section class="row gn-section gn-section-dataset">
+      <section class="row izrk-record-section gn-section gn-section-dataset">
         <div class="col-md-12 gn-record">
-          <h2>Technical information</h2>
+          <h2><i class="fa fa-sliders" aria-hidden="true"></i> Technical information</h2>
           <div class="izrk-eml-facts">
             <xsl:call-template name="eml-portal-fact">
               <xsl:with-param name="label" select="'Publication date'"/>
@@ -72,18 +77,18 @@
         </div>
       </section>
 
-      <xsl:call-template name="eml-portal-parties">
-        <xsl:with-param name="label" select="'Dataset creators'"/>
-        <xsl:with-param name="nodes" select="$metadata/dataset/creator"/>
-      </xsl:call-template>
-      <xsl:call-template name="eml-portal-parties">
-        <xsl:with-param name="label" select="'Contact for the resource'"/>
-        <xsl:with-param name="nodes" select="$metadata/dataset/contact"/>
-      </xsl:call-template>
+      <section class="row izrk-record-section gn-section gn-section-dataset">
+        <div class="col-md-12 gn-record">
+          <xsl:call-template name="eml-party-table">
+            <xsl:with-param name="label" select="'Contacts'"/>
+            <xsl:with-param name="nodes" select="$metadata//*[self::creator or self::contact or self::associatedParty or self::metadataProvider or self::personnel]"/>
+          </xsl:call-template>
+        </div>
+      </section>
 
-      <section class="row gn-section gn-section-dataset">
+      <section class="row izrk-record-section gn-section gn-section-dataset">
+        <h2 class="col-md-12"><i class="fa fa-file-text-o" aria-hidden="true"></i> Metadata information</h2>
         <div class="col-md-8 gn-record">
-          <h2>Metadata information</h2>
           <xsl:call-template name="eml-field">
             <xsl:with-param name="label" select="'Metadata identifier'"/>
             <xsl:with-param name="value" select="$metadataUuid"/>
@@ -92,11 +97,6 @@
             <xsl:with-param name="label" select="'Package identifier'"/>
             <xsl:with-param name="value" select="$metadata/@packageId"/>
           </xsl:call-template>
-          <h3>Cite dataset</h3>
-          <p><xsl:value-of select="$metadata/dataset/title"/>.
-            <xsl:if test="normalize-space($metadata/dataset/pubDate) != ''"><xsl:value-of select="$metadata/dataset/pubDate"/>.</xsl:if>
-            <br/><a href="{$nodeUrl}api/records/{$metadataUuid}"><xsl:value-of select="concat($nodeUrl, 'api/records/', $metadataUuid)"/></a>
-          </p>
         </div>
         <aside class="col-md-4 gn-md-side">
           <h3>Provided by</h3>
@@ -118,39 +118,4 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="eml-portal-parties">
-    <xsl:param name="label"/>
-    <xsl:param name="nodes"/>
-    <xsl:if test="$nodes[normalize-space(.) != '']">
-      <section class="row gn-section gn-section-dataset">
-        <div class="col-md-12 gn-record">
-          <h2><xsl:value-of select="$label"/></h2>
-          <div class="izrk-eml-contacts">
-            <xsl:for-each select="$nodes[normalize-space(.) != '']">
-              <div class="flex-row">
-                <span class="badge badge-rounded"><i class="fa fa-fw fa-user" aria-hidden="true"></i></span>
-                <div>
-                  <h3><xsl:call-template name="eml-party-name"/></h3>
-                  <p><xsl:value-of select="organizationName"/></p>
-                  <xsl:if test="normalize-space(role) != ''"><p><xsl:value-of select="role"/></p></xsl:if>
-                  <xsl:if test="normalize-space(positionName) != ''"><p><xsl:value-of select="positionName"/></p></xsl:if>
-                  <xsl:for-each select="electronicMailAddress[normalize-space(.) != '']">
-                    <p><a href="mailto:{normalize-space(.)}"><xsl:value-of select="normalize-space(.)"/></a></p>
-                  </xsl:for-each>
-                  <xsl:for-each select="userId[normalize-space(.) != '']">
-                    <p><xsl:choose>
-                      <xsl:when test="matches(@directory, '^https?://')">
-                        <a href="{concat(@directory, if (ends-with(@directory, '/')) then '' else '/', normalize-space(.))}"><xsl:value-of select="normalize-space(.)"/></a>
-                      </xsl:when>
-                      <xsl:otherwise><xsl:value-of select="normalize-space(.)"/></xsl:otherwise>
-                    </xsl:choose></p>
-                  </xsl:for-each>
-                </div>
-              </div>
-            </xsl:for-each>
-          </div>
-        </div>
-      </section>
-    </xsl:if>
-  </xsl:template>
 </xsl:stylesheet>

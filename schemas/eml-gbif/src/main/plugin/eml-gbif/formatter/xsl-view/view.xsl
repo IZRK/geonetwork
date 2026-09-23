@@ -2,6 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:eml-fn="http://geonetwork-opensource.org/xsl/functions/eml"
                 xmlns:tr="java:org.fao.geonet.api.records.formatters.SchemaLocalizations"
                 xmlns:gn-fn-render="http://geonetwork-opensource.org/xsl/functions/render"
                 version="2.0"
@@ -14,6 +15,8 @@
   <xsl:include href="../../layout/utility-tpl.xsl"/>
   <xsl:include href="sharedFormatterDir/xslt/render-layout.xsl"/>
   <xsl:include href="../taxonomy.xsl"/>
+  <xsl:include href="../citation/base.xsl"/>
+  <xsl:include href="../../../iso19115-3.2018/formatter/citation/common.xsl"/>
   <xsl:include href="portal.xsl"/>
 
   <xsl:variable name="metadata"
@@ -23,8 +26,26 @@
     <lang id="eng" code="eng" default=""/>
   </xsl:template>
 
-  <xsl:template mode="render-view" match="@xpath[. = '/eml:eml']">
-    <xsl:apply-templates mode="render-field" select="$metadata"/>
+  <xsl:template mode="render-view" match="@xpath" priority="2">
+    <xsl:variable name="nodes">
+      <xsl:call-template name="evaluate-eml-gbif">
+        <xsl:with-param name="base" select="$metadata"/>
+        <xsl:with-param name="in" select="concat('/../', .)"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:apply-templates mode="render-field" select="$nodes/*"/>
+  </xsl:template>
+
+  <xsl:template mode="render-view" match="view[@name = 'advanced']/tab" priority="2">
+    <xsl:variable name="content"><xsl:apply-templates mode="render-view" select="section"/></xsl:variable>
+    <xsl:if test="normalize-space($content) != ''">
+      <div id="gn-tab-{@id}" class="tab-pane">
+        <h2 class="{if ($tabs = 'true') then 'hidden' else 'view-header'}">
+          <xsl:value-of select="gn-fn-render:get-schema-strings($schemaStrings, @id)"/>
+        </h2>
+        <xsl:copy-of select="$content"/>
+      </div>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template mode="render-view" match="tab[@id = 'default']">
@@ -139,39 +160,13 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template mode="getExtent" match="eml:eml">
-    <xsl:if test="dataset/coverage/geographicCoverage/boundingCoordinates">
-      <section class="gn-md-side-extent">
-        <h2>
-          <i class="fa fa-fw fa-map-marker"></i>
-          <span>
-            <xsl:value-of select="$schemaStrings/spatialExtent"/>
-          </span>
-        </h2>
-        <xsl:for-each select="dataset/coverage/geographicCoverage/boundingCoordinates[
-                              westBoundingCoordinate castable as xs:double
-                              and southBoundingCoordinate castable as xs:double
-                              and eastBoundingCoordinate castable as xs:double
-                              and northBoundingCoordinate castable as xs:double]">
-          <xsl:copy-of select="gn-fn-render:bbox(
-            xs:double(westBoundingCoordinate),
-            xs:double(southBoundingCoordinate),
-            xs:double(eastBoundingCoordinate),
-            xs:double(northBoundingCoordinate))"/>
-        </xsl:for-each>
-      </section>
-    </xsl:if>
-  </xsl:template>
+  <xsl:template mode="getExtent" match="eml:eml"/>
 
   <xsl:template name="eml-default-summary">
     <xsl:call-template name="eml-default-metadata"/>
     <xsl:call-template name="eml-party-table">
-      <xsl:with-param name="label" select="'Dataset Creators'"/>
-      <xsl:with-param name="nodes" select="$metadata/dataset/creator"/>
-    </xsl:call-template>
-    <xsl:call-template name="eml-party-table">
-      <xsl:with-param name="label" select="'Contacts'"/>
-      <xsl:with-param name="nodes" select="$metadata/dataset/contact"/>
+      <xsl:with-param name="label" select="$schemaStrings/emlContacts"/>
+      <xsl:with-param name="nodes" select="$metadata//*[self::creator or self::contact or self::metadataProvider or self::associatedParty or self::personnel]"/>
     </xsl:call-template>
     <xsl:call-template name="eml-keywords"/>
     <xsl:call-template name="eml-geographic-coverage"/>
@@ -204,54 +199,109 @@
     </div>
   </xsl:template>
 
+  <!-- Render each person once and retain every distinct role and contact detail. -->
   <xsl:template name="eml-party-table">
     <xsl:param name="label"/>
     <xsl:param name="nodes" as="node()*"/>
     <xsl:if test="$nodes">
-      <dl class="gn-table">
-        <dt>
-          <xsl:value-of select="$label"/>
-        </dt>
+      <section class="gn-md-section izrk-eml-contact-section">
+        <h2><xsl:value-of select="$label"/></h2>
+        <div class="izrk-contact-organisations">
+        <xsl:for-each-group select="$nodes" group-by="lower-case(normalize-space(organizationName))">
+          <details class="izrk-eml-contact-organisation" open="open">
+            <summary>
+              <span class="izrk-organisation-name"><xsl:value-of select="if (current-grouping-key() != '') then normalize-space(organizationName) else $label"/></span>
+              <span class="izrk-contact-count"><xsl:value-of select="count(distinct-values(for $party in current-group() return eml-fn:party-key($party)))"/></span>
+            </summary>
+            <div class="izrk-eml-contacts">
+          <xsl:for-each-group select="current-group()" group-by="eml-fn:party-key(.)">
+            <xsl:variable name="parties" select="current-group()"/>
+            <div class="izrk-eml-contact">
+              <span class="badge badge-rounded izrk-contact-icon" aria-hidden="true">
+                <i class="fa fa-fw fa-user"/>
+              </span>
+              <div class="izrk-contact-details">
+                <xsl:if test="individualName">
+                  <h4><xsl:value-of select="eml-fn:party-name(.)"/></h4>
+                </xsl:if>
+                <p class="text-muted izrk-contact-roles">
+                  <xsl:value-of select="string-join(distinct-values(for $party in $parties return eml-fn:party-roles($party, $schemaStrings)), ' · ')"/>
+                </p>
+                <xsl:for-each-group select="$parties/(@* | *[not(self::individualName or self::organizationName or self::role)])"
+                                    group-by="eml-fn:field-key(.)">
+                  <xsl:apply-templates mode="render-field" select="."/>
+                </xsl:for-each-group>
+              </div>
+            </div>
+          </xsl:for-each-group>
+            </div>
+          </details>
+        </xsl:for-each-group>
+        </div>
+      </section>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template mode="render-view" match="section[@name = 'emlContacts']" priority="2">
+    <xsl:call-template name="eml-party-table">
+      <xsl:with-param name="label" select="$schemaStrings/emlContacts"/>
+      <xsl:with-param name="nodes" select="$metadata//*[self::creator or self::contact or self::metadataProvider or self::associatedParty or self::personnel]"/>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template mode="render-view" match="section[@name = 'emlMetadata']" priority="2">
+    <xsl:apply-templates mode="render-field" select="$metadata/@* | $metadata/dataset/@* | $metadata/*[not(self::dataset)]"/>
+  </xsl:template>
+
+  <!-- Empty sections should not leave dead tabs in sparse EML records. -->
+  <xsl:template mode="render-toc" match="view[@name = 'advanced']" priority="2">
+    <xsl:if test="$tabs = 'true'">
+      <ul class="view-outline nav nav-tabs nav-tabs-advanced">
+        <xsl:for-each select="tab">
+          <xsl:variable name="content"><xsl:apply-templates mode="render-view" select="."/></xsl:variable>
+          <xsl:if test="normalize-space($content) != ''">
+            <li><a href="#gn-tab-{@id}"><xsl:value-of select="gn-fn-render:get-schema-strings($schemaStrings, @id)"/></a></li>
+          </xsl:if>
+        </xsl:for-each>
+      </ul>
+    </xsl:if>
+  </xsl:template>
+
+  <!-- People are presented together in the Contacts tab, including project roles. -->
+  <xsl:template mode="render-field" match="creator|contact|metadataProvider|associatedParty|personnel" priority="2"/>
+
+  <xsl:template mode="render-field" match="electronicMailAddress|userId" priority="2">
+    <xsl:if test="normalize-space(.) != ''">
+      <dl>
+        <dt><xsl:call-template name="node-label"/></dt>
         <dd>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Organisation name</th>
-                <th>Individual name</th>
-                <th>Electronic mail address</th>
-                <th>Role</th>
-              </tr>
-            </thead>
-            <tbody>
-              <xsl:for-each select="$nodes">
-                <tr>
-                  <td>
-                    <xsl:value-of select="normalize-space(organizationName)"/>
-                  </td>
-                  <td>
-                    <xsl:call-template name="eml-party-name"/>
-                  </td>
-                  <td>
-                    <xsl:choose>
-                      <xsl:when test="normalize-space(electronicMailAddress) != ''">
-                        <a href="mailto:{normalize-space(electronicMailAddress)}">
-                          <xsl:value-of select="normalize-space(electronicMailAddress)"/>
-                        </a>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <xsl:text> </xsl:text>
-                      </xsl:otherwise>
-                    </xsl:choose>
-                  </td>
-                  <td>
-                    <xsl:value-of select="normalize-space(role)"/>
-                  </td>
-                </tr>
-              </xsl:for-each>
-            </tbody>
-          </table>
+          <xsl:variable name="url" select="if (self::electronicMailAddress) then concat('mailto:', normalize-space(.))
+            else if (matches(normalize-space(.), '^https?://')) then normalize-space(.)
+            else if (matches(@directory, '^https?://')) then concat(replace(@directory, '/$', ''), '/', normalize-space(.))
+            else ''"/>
+          <xsl:choose>
+            <xsl:when test="$url != ''"><a href="{$url}"><xsl:value-of select="normalize-space(.)"/></a></xsl:when>
+            <xsl:otherwise><xsl:value-of select="normalize-space(.)"/></xsl:otherwise>
+          </xsl:choose>
+          <xsl:apply-templates mode="render-field" select="@*[not(local-name() = 'directory') or not(matches(., '^https?://'))]"/>
         </dd>
       </dl>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template mode="getMetadataCitation" match="eml:eml">
+    <xsl:if test="$root != 'div'">
+    <section class="gn-md-section izrk-citation">
+      <h2><xsl:value-of select="$schemaStrings/citationProposal"/></h2>
+      <xsl:variable name="citationInfo">
+        <xsl:call-template name="get-eml-citation">
+          <xsl:with-param name="metadata" select="."/>
+          <xsl:with-param name="uuid" select="$metadataUuid"/>
+          <xsl:with-param name="nodeUrl" select="$nodeUrl"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:apply-templates mode="citation" select="$citationInfo"/>
+    </section>
     </xsl:if>
   </xsl:template>
 
@@ -290,25 +340,59 @@
   </xsl:template>
 
   <xsl:template name="eml-geographic-coverage">
-    <xsl:for-each select="$metadata/dataset/coverage/geographicCoverage">
-      <xsl:call-template name="eml-field">
-        <xsl:with-param name="label" select="'Description'"/>
-        <xsl:with-param name="value" select="geographicDescription"/>
-      </xsl:call-template>
-      <xsl:for-each select="boundingCoordinates[
-                            westBoundingCoordinate castable as xs:double
-                            and southBoundingCoordinate castable as xs:double
-                            and eastBoundingCoordinate castable as xs:double
-                            and northBoundingCoordinate castable as xs:double]">
-        <xsl:copy-of select="gn-fn-render:bbox(
-          xs:double(westBoundingCoordinate),
-          xs:double(southBoundingCoordinate),
-          xs:double(eastBoundingCoordinate),
-          xs:double(northBoundingCoordinate))"/>
-        <br/>
-        <br/>
+    <xsl:variable name="boundingCoordinates"
+      select="$metadata/dataset/coverage/geographicCoverage/boundingCoordinates[
+        westBoundingCoordinate castable as xs:double
+        and southBoundingCoordinate castable as xs:double
+        and eastBoundingCoordinate castable as xs:double
+        and northBoundingCoordinate castable as xs:double]"/>
+    <div class="izrk-geographic-coverage">
+      <xsl:for-each select="$metadata/dataset/coverage/geographicCoverage">
+        <xsl:call-template name="eml-field">
+          <xsl:with-param name="label" select="'Description'"/>
+          <xsl:with-param name="value" select="geographicDescription"/>
+        </xsl:call-template>
       </xsl:for-each>
-    </xsl:for-each>
+      <xsl:if test="$boundingCoordinates">
+        <xsl:variable name="geometries">
+          <xsl:for-each select="$boundingCoordinates">
+            <xsl:variable name="west" select="format-number(xs:double(westBoundingCoordinate), '0.############')"/>
+            <xsl:variable name="south" select="format-number(xs:double(southBoundingCoordinate), '0.############')"/>
+            <xsl:variable name="east" select="format-number(xs:double(eastBoundingCoordinate), '0.############')"/>
+            <xsl:variable name="north" select="format-number(xs:double(northBoundingCoordinate), '0.############')"/>
+            <xsl:if test="position() gt 1"><xsl:text>,</xsl:text></xsl:if>
+            <xsl:text>'</xsl:text>
+            <xsl:choose>
+              <xsl:when test="$west = $east and $south = $north">
+                <xsl:text>{"type":"Point","coordinates":[</xsl:text>
+                <xsl:value-of select="$west"/><xsl:text>,</xsl:text><xsl:value-of select="$south"/>
+                <xsl:text>]}</xsl:text>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>{"type":"Polygon","coordinates":[[[</xsl:text>
+                <xsl:value-of select="$west"/><xsl:text>,</xsl:text><xsl:value-of select="$south"/><xsl:text>],[</xsl:text>
+                <xsl:value-of select="$east"/><xsl:text>,</xsl:text><xsl:value-of select="$south"/><xsl:text>],[</xsl:text>
+                <xsl:value-of select="$east"/><xsl:text>,</xsl:text><xsl:value-of select="$north"/><xsl:text>],[</xsl:text>
+                <xsl:value-of select="$west"/><xsl:text>,</xsl:text><xsl:value-of select="$north"/><xsl:text>],[</xsl:text>
+                <xsl:value-of select="$west"/><xsl:text>,</xsl:text><xsl:value-of select="$south"/>
+                <xsl:text>]]]}</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+            <xsl:text>'</xsl:text>
+          </xsl:for-each>
+        </xsl:variable>
+        <div class="izrk-eml-spatial-preview">
+          <div>
+            <xsl:attribute name="data-ng-init">
+              <xsl:text>mdView.current.record.geom = [</xsl:text>
+              <xsl:value-of select="normalize-space(string($geometries))"/>
+              <xsl:text>]</xsl:text>
+            </xsl:attribute>
+            <div data-gn-data-preview="mdView.current.record"></div>
+          </div>
+        </div>
+      </xsl:if>
+    </div>
   </xsl:template>
 
   <xsl:template name="eml-temporal-coverage">
@@ -344,6 +428,7 @@
         <dd>
           <xsl:call-template name="eml-taxonomy">
             <xsl:with-param name="coverage" select="$coverage"/>
+            <xsl:with-param name="uuid" select="$metadataUuid"/>
           </xsl:call-template>
         </dd>
       </dl>
@@ -356,6 +441,7 @@
         <h2>Taxonomic coverage</h2>
         <xsl:call-template name="eml-taxonomy">
           <xsl:with-param name="coverage" select="."/>
+          <xsl:with-param name="uuid" select="$metadataUuid"/>
         </xsl:call-template>
       </section>
     </xsl:if>
@@ -437,8 +523,6 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template mode="render-field" match="alternateIdentifier[position() > 1]"/>
-
   <xsl:template mode="render-field"
                 match="abstract|additionalInfo|intellectualRights|purpose|description|samplingDescription|funding">
     <xsl:if test="normalize-space(.) != ''">
@@ -491,6 +575,7 @@
         </dt>
         <dd>
           <xsl:apply-templates mode="render-value" select="."/>
+          <xsl:if test="not(*)"><xsl:apply-templates mode="render-field" select="@*"/></xsl:if>
         </dd>
       </dl>
     </xsl:if>
