@@ -1124,7 +1124,10 @@
           <ul>
             <xsl:for-each select="parent::node()/*[name() = $nodeName]">
               <li>
-                <a href="{$nodeUrl}api/records/{@uuidref}">
+                <a href="{if (matches(@uuidref, '^https?://', 'i')) then @uuidref else concat($nodeUrl, 'api/records/', @uuidref)}">
+                  <xsl:if test="not(matches(@uuidref, '^https?://', 'i'))">
+                    <xsl:attribute name="data-gn-api-link"/>
+                  </xsl:if>
                   <i class="fa fa-fw fa-link"></i>
                   <xsl:value-of select="gn-fn-render:getMetadataTitle(@uuidref, $language)"/>
                 </a>
