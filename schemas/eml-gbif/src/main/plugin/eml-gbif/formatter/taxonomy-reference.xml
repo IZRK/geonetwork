@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taxonomy-reference>
+  <!-- Curated from the source workbook's taxonomic_order column. These links
+       organize this record's names in the display; they are not GBIF matches. -->
+  <record uuid="c7710542-10ea-43e8-b4d7-9bdd3d559905">
+    <taxon name="Diacyclops languidoides" rank="species" status="curated">
+      <parent name="CYCLOPOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Speocyclops infernus" rank="species" status="curated">
+      <parent name="CYCLOPOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Bryocamptus balcanicus" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Bryocamptus pyrenaicus" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Bryocamptus typhlops" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Bryocamptus n.sp. 1" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Bryocamptus n.sp. 2" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella cvetkae" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella kieferi" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella stammeri" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella millennii" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella tarmani" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella n.sp. 1" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella n.sp. 2" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Elaphoidella n.sp. 3" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Lessinocamptus n.sp." rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Marenobiotus cf. brucei" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Moraria alpina" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Moraria stankovitchi" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Moraria n.sp. 1" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Moraria n.sp. 2" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Morariopsis dumonti" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Morariopsis scotenophila" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Nitocrella n.sp." rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Parastenocaris cf. andreji" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Parastenocaris nolli alpina" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Parastenocaris n.sp. 1" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Parastenocaris n.sp. 2" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Parastenocaris n.sp. 3" rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+    <taxon name="Stygepactophanesn.sp." rank="species" status="curated">
+      <parent name="HARPACTICOIDA" rank="Order"/>
+    </taxon>
+  </record>
+  <record uuid="9f64b6e3-22be-4f17-9cc0-8658c7817867">
+    <taxon name="Valeriana" rank="genus" status="curated">
+      <parent name="Caprifoliaceae" rank="Family"/>
+    </taxon>
+    <taxon name="Valerianella eriocarpa" rank="species" status="curated">
+      <parent name="Caprifoliaceae" rank="Family"/>
+      <parent name="Valerianella" rank="Genus"/>
+    </taxon>
+  </record>
+</taxonomy-reference>

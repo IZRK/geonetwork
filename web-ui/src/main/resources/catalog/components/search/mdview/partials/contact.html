@@ -184,7 +184,10 @@
       <span class="izrk-contact-count">{{contactByOrgRole.length}}</span>
     </summary>
     <div class="izrk-eml-contacts">
-      <div class="izrk-eml-contact" data-ng-repeat="c in contactByOrgRole track by $index">
+      <div
+        class="izrk-eml-contact"
+        data-ng-repeat="c in contactByOrgRole track by $index"
+      >
         <span class="badge badge-rounded izrk-contact-icon" aria-hidden="true">
           <i class="fa fa-fw fa-user"></i>
         </span>
@@ -192,7 +195,9 @@
           <h4 data-ng-if="c.individual || c.position">
             {{c.individual}}<span data-ng-if="c.position"> ({{c.position}})</span>
           </h4>
-          <p class="text-muted izrk-contact-roles">{{translateRoles(c.roles.join(','))}}</p>
+          <p class="text-muted izrk-contact-roles">
+            {{translateRoles(c.roles.join(','))}}
+          </p>
           <dl data-ng-if="c.email">
             <dt data-translate="">email</dt>
             <dd><a data-ng-href="mailto:{{c.email}}">{{c.email}}</a></dd>

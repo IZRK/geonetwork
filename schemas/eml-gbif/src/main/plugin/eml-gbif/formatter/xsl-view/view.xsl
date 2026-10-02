@@ -22,6 +22,16 @@
   <xsl:variable name="metadata"
                 select="/root/eml:eml"/>
 
+  <xsl:function name="eml-fn:resolve-resource-logo-url" as="xs:string">
+    <xsl:param name="url" as="xs:string?"/>
+    <xsl:param name="uuid" as="xs:string"/>
+    <xsl:param name="nodeUrl" as="xs:string"/>
+    <xsl:variable name="value" select="normalize-space(string($url))"/>
+    <xsl:sequence select="if ($value = '' or matches($value, '^https?://', 'i'))
+                          then $value
+                          else concat($nodeUrl, 'api/records/', $uuid, '/attachments/', $value)"/>
+  </xsl:function>
+
   <xsl:template name="get-eml-gbif-other-languages">
     <lang id="eng" code="eng" default=""/>
   </xsl:template>
@@ -84,12 +94,14 @@
   </xsl:template>
 
   <xsl:template mode="getMetadataThumbnail" match="eml:eml">
-    <xsl:value-of select="additionalMetadata/metadata/gbif/resourceLogoUrl[1]"/>
+    <xsl:value-of select="eml-fn:resolve-resource-logo-url(
+      additionalMetadata/metadata/gbif/resourceLogoUrl[1], $metadataUuid, $nodeUrl)"/>
   </xsl:template>
 
   <xsl:template mode="getOverviews" match="eml:eml">
     <xsl:variable name="logo"
-                  select="normalize-space(additionalMetadata/metadata/gbif/resourceLogoUrl[1])"/>
+                  select="eml-fn:resolve-resource-logo-url(
+                    additionalMetadata/metadata/gbif/resourceLogoUrl[1], $metadataUuid, $nodeUrl)"/>
     <xsl:if test="$logo != ''">
       <section class="gn-md-side-overview">
         <h2>
@@ -326,9 +338,10 @@
               <ul>
                 <xsl:for-each select="keyword[normalize-space(.) != '']">
                   <li>
-                    <span>
+                    <a class="izrk-keyword-filter"
+                       href='#/search?query_string=%7B"tag.\\*":%7B"{normalize-space(.)}":true%7D%7D'>
                       <xsl:value-of select="normalize-space(.)"/>
-                    </span>
+                    </a>
                   </li>
                 </xsl:for-each>
               </ul>

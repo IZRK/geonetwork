@@ -19,7 +19,14 @@
         <div class="col-md-8 gn-record">
           <div class="izrk-resource-type"><i class="fa gn-icon-dataset" aria-hidden="true"></i> Dataset</div>
           <h1 class="gn-break"><xsl:value-of select="$metadata/dataset/title"/></h1>
-          <xsl:apply-templates mode="getMetadataHeader" select="$metadata"/>
+          <xsl:if test="normalize-space($metadata/dataset/abstract) != ''">
+            <section class="izrk-eml-abstract">
+              <h2>Abstract</h2>
+              <xsl:call-template name="render-paragraph-html">
+                <xsl:with-param name="node" select="$metadata/dataset/abstract"/>
+              </xsl:call-template>
+            </section>
+          </xsl:if>
         </div>
         <aside class="col-md-4 gn-md-side">
           <xsl:apply-templates mode="getOverviews" select="$metadata"/>
@@ -71,6 +78,14 @@
               <xsl:with-param name="value" select="'EML / GBIF'"/>
             </xsl:call-template>
           </div>
+          <xsl:if test="normalize-space($metadata/dataset/additionalInfo) != ''">
+            <div class="izrk-eml-additional-info">
+              <h3>Additional information</h3>
+              <xsl:call-template name="render-paragraph-html">
+                <xsl:with-param name="node" select="$metadata/dataset/additionalInfo"/>
+              </xsl:call-template>
+            </div>
+          </xsl:if>
           <xsl:if test="not($metadata/dataset/coverage/geographicCoverage[normalize-space(.) != ''])"><xsl:call-template name="eml-temporal-coverage"/></xsl:if>
           <xsl:call-template name="eml-taxonomic-coverage"/>
           <xsl:call-template name="eml-methods"/>

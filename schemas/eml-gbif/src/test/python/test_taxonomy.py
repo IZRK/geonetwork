@@ -10,9 +10,16 @@ import xml.etree.ElementTree as ET
 
 STYLESHEET = (Path(__file__).resolve().parents[2]
               / "main/plugin/eml-gbif/formatter/taxonomy.xsl")
+REFERENCE = STYLESHEET.with_name("taxonomy-reference.xml")
 
 
 class TaxonomyTest(unittest.TestCase):
+    @staticmethod
+    def rendered_taxon_names(result):
+        labels = result.findall(".//span[@class='izrk-taxon-name']")
+        searches = result.findall(".//a[@class='izrk-taxon-search']")
+        return [node.text for node in labels + searches]
+
     def render(self, coverage, uuid=""):
         with tempfile.TemporaryDirectory() as directory:
             directory = Path(directory)
@@ -41,7 +48,7 @@ class TaxonomyTest(unittest.TestCase):
             f"<taxonomicClassification><taxonRankName>{'Genus' if i % 2 else 'Species'}</taxonRankName>"
             f"<taxonRankValue>{name}</taxonRankValue></taxonomicClassification>"
             for i, name in enumerate(names)) + "</taxonomicCoverage>")
-        rendered = [n.text for n in result.findall(".//span[@class='izrk-taxon-name']")]
+        rendered = self.rendered_taxon_names(result)
         self.assertCountEqual(names, rendered)
         self.assertEqual(["Genus", "Species"], [n.text for n in result.findall(".//h5")])
         self.assertIn("166 recorded entries", "".join(result.itertext()))
@@ -65,8 +72,8 @@ class TaxonomyTest(unittest.TestCase):
         for value in ["Plants observed at the site.", "Rosaceae", "Rosa",
                       "Rosa canina", "Dog rose", "GBIF", "family-1"]:
             self.assertIn(value, text)
-        self.assertEqual(3, len(result.findall(".//span[@class='izrk-taxon-name']")))
-        self.assertEqual("https://www.gbif.org/species/3002469", result.find(".//a").get("href"))
+        self.assertEqual(3, len(self.rendered_taxon_names(result)))
+        self.assertIsNotNone(result.find(".//a[@href='https://www.gbif.org/species/3002469']"))
         family = result.find(".//details[@data-name='Rosaceae']")
         genus = family.find(".//details[@data-name='Rosa']")
         self.assertIn("Rosa canina", "".join(genus.itertext()))
@@ -83,7 +90,7 @@ class TaxonomyTest(unittest.TestCase):
         genus = family.find(".//details[@data-name='Valerianella']")
         self.assertIn("Valerianella eriocarpa", "".join(genus.itertext()))
         self.assertIn("Valeriana", "".join(family.itertext()))
-        self.assertEqual(2, len(result.findall(".//span[@class='izrk-taxon-name']")))
+        self.assertEqual(2, len(self.rendered_taxon_names(result)))
 
     def test_reference_is_record_scoped_and_does_not_guess_for_other_records(self):
         result = self.render('''<taxonomicCoverage><taxonomicClassification>
@@ -91,6 +98,38 @@ class TaxonomyTest(unittest.TestCase):
         </taxonomicClassification></taxonomicCoverage>''', "another-record")
         self.assertNotIn("Caprifoliaceae", "".join(result.itertext()))
         self.assertIn("Unlinked names", "".join(result.itertext()))
+
+    def test_curated_source_relationships_make_copepod_orders_expandable(self):
+        reference = ET.parse(REFERENCE).getroot()
+        taxa = reference.findall("./record[@uuid='c7710542-10ea-43e8-b4d7-9bdd3d559905']/taxon")
+        names = [taxon.get("name") for taxon in taxa]
+        orders = sorted({parent.get("name") for taxon in taxa
+                         for parent in taxon.findall("parent")})
+        coverage = "<taxonomicCoverage>" + "".join(
+            f"<taxonomicClassification><taxonRankName>Order</taxonRankName>"
+            f"<taxonRankValue>{order.title()}</taxonRankValue></taxonomicClassification>"
+            for order in orders
+        ) + "".join(
+            f"<taxonomicClassification><taxonRankName>Species</taxonRankName>"
+            f"<taxonRankValue>{name}</taxonRankValue></taxonomicClassification>"
+            for name in names
+        ) + "</taxonomicCoverage>"
+
+        result = self.render(coverage, "c7710542-10ea-43e8-b4d7-9bdd3d559905")
+        branches = result.findall(".//details[@class='izrk-taxon-branch']")
+        self.assertCountEqual([order.title() for order in orders],
+                              [branch.get("data-name") for branch in branches])
+        rendered_names = [name for name in self.rendered_taxon_names(result)
+                          if name.upper() not in orders]
+        search_links = result.findall(".//details[@class='izrk-taxon-branch']//a[@class='izrk-taxon-search']")
+        self.assertEqual(30, len(rendered_names))
+        self.assertCountEqual(names, rendered_names)
+        self.assertEqual(30, len(search_links))
+        bryocamptus = next(link for link in search_links if link.text == "Bryocamptus n.sp. 1")
+        self.assertEqual("https://www.gbif.org/taxon/search?q=Bryocamptus+n.sp.+1",
+                         bryocamptus.get("href"))
+        self.assertNotIn("Unlinked names", "".join(result.itertext()))
+        self.assertNotIn("GBIF reference", "".join(result.itertext()))
 
     def test_recorded_parents_take_priority_over_reference(self):
         result = self.render('''<taxonomicCoverage><taxonomicClassification>

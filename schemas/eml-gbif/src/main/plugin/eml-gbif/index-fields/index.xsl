@@ -77,16 +77,17 @@
 	
 			<xsl:for-each select="abstract">
 				<Field name="abstract" string="{normalize-space(string(.))}" store="true" index="true"/>
+				<xsl:variable name="abstractText" select="if (para) then string-join(for $paragraph in para return normalize-space(string($paragraph)), '&#10;&#10;') else normalize-space(string(.))"/>
         <xsl:variable name="resourceAbstractObject"
                       select="concat('{',
-                                '&quot;default&quot;:&quot;', util:escapeForJson(normalize-space(string(.))), '&quot;,',
-                                '&quot;langeng&quot;:&quot;', util:escapeForJson(normalize-space(string(.))), '&quot;',
+                                '&quot;default&quot;:&quot;', util:escapeForJson($abstractText), '&quot;,',
+                                '&quot;langeng&quot;:&quot;', util:escapeForJson($abstractText), '&quot;',
                               '}')"/>
         <resourceAbstractObject type="object">
           <xsl:value-of select="$resourceAbstractObject"/>
         </resourceAbstractObject>
         <resourceAbstract>
-          <xsl:value-of select="normalize-space(string(.))"/>
+          <xsl:value-of select="$abstractText"/>
         </resourceAbstract>
 			</xsl:for-each>
 
@@ -124,15 +125,21 @@
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 
-      <xsl:variable name="lower">abcdefghijklmnopqrstuvwxyz</xsl:variable>
-      <xsl:variable name="upper">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
 			<xsl:for-each select="keywordSet">
-				<xsl:for-each select="keyword">
-          <xsl:variable name="keywordLower" select="translate(string(.),$upper,$lower)"/>
+				<xsl:for-each select="keyword[normalize-space(.) != '']">
           <Field name="keyword" string="{string(.)}" store="true" index="true"/>
 					<Field name="subject" string="{string(.)}" store="true" index="true"/>
 				</xsl:for-each>
 			</xsl:for-each>
+
+      <!-- Match the tag.* field queried by keyword links in the record view. -->
+      <tag type="object">[<xsl:for-each select="keywordSet/keyword[normalize-space(.) != '']">
+        {"default":"<xsl:value-of select="util:escapeForJson(normalize-space(.))"/>"}<xsl:if test="position() != last()">,</xsl:if>
+      </xsl:for-each>]</tag>
+      <tagNumber><xsl:value-of select="count(keywordSet/keyword[normalize-space(.) != ''])"/></tagNumber>
+      <allKeywords type="object">{"otherKeywords-theme":{"title":"Keywords","theme":"theme","keywords":[<xsl:for-each select="keywordSet/keyword[normalize-space(.) != '']">
+        {"default":"<xsl:value-of select="util:escapeForJson(normalize-space(.))"/>"}<xsl:if test="position() != last()">,</xsl:if>
+      </xsl:for-each>]}}</allKeywords>
 	
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<!-- Organization could be in associatedParty or in contact -->	

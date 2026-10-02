@@ -36,7 +36,10 @@
   >
     <div class="gn-record" data-ng-class="showDataBrowser ? 'col-md-12' : 'col-md-8'">
       <div data-ng-if="mdView.current.record.geom">
-        <h2><i class="fa fa-map-marker" aria-hidden="true"></i> {{'spatialExtent' | translate}}</h2>
+        <h2>
+          <i class="fa fa-map-marker" aria-hidden="true"></i> {{'spatialExtent' |
+          translate}}
+        </h2>
         <div data-gn-data-preview="mdView.current.record"></div>
         <br />
       </div>

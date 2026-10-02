@@ -5,7 +5,9 @@
                 version="2.0" exclude-result-prefixes="#all">
 
   <!-- Frozen display references only. Rendering never calls an external API or
-       modifies the record. Recorded nested classifications always take priority. -->
+       modifies the record. Recorded nested classifications always take priority.
+       Curated relationships may organize names from a record's source data without
+       asserting that those names have been matched to an external taxonomy. -->
   <xsl:variable name="tax-reference" select="document('taxonomy-reference.xml')/taxonomy-reference"/>
 
   <xsl:function name="tax:rank-order" as="xs:integer">
@@ -32,7 +34,7 @@
             and not(current()/taxonId) and not(current()/@id)][1]"/>
           <xsl:call-template name="eml-taxon-parents">
             <xsl:with-param name="node" select="."/>
-            <xsl:with-param name="parents" select="$reference[@status = 'matched']/parent"/>
+            <xsl:with-param name="parents" select="$reference[@status = ('matched', 'curated')]/parent"/>
             <xsl:with-param name="reference" select="$reference"/>
           </xsl:call-template>
         </xsl:for-each>
@@ -106,7 +108,7 @@
     <xsl:param name="nodes"/>
     <xsl:for-each-group select="$nodes[normalize-space(.) != '' or @id]"
       group-by="concat(lower-case(normalize-space(taxonRankName)), '|',
-        normalize-space(taxonRankValue), '|', @id, '|', string-join(taxonId, '|'))">
+        lower-case(normalize-space(taxonRankValue)), '|', @id, '|', string-join(taxonId, '|'))">
       <xsl:sort select="tax:rank-order(taxonRankName)" data-type="number"/>
       <xsl:sort select="lower-case(normalize-space(taxonRankValue))"/>
       <taxon rank="{normalize-space(taxonRankName)}" name="{normalize-space(taxonRankValue)}">
@@ -166,7 +168,18 @@
 
   <xsl:template name="eml-taxon-entry">
     <span class="izrk-taxon-entry">
-      <span class="izrk-taxon-name"><xsl:value-of select="normalize-space(taxonRankValue)"/></span>
+      <xsl:variable name="name" select="normalize-space(taxonRankValue)"/>
+      <xsl:choose>
+        <xsl:when test="lower-case(normalize-space(taxonRankName)) = 'species'">
+          <a class="izrk-taxon-search" href="https://www.gbif.org/taxon/search?q={replace(encode-for-uri($name), '%20', '+')}"
+             aria-label="Search GBIF for {$name}" title="Search GBIF for {$name}">
+            <xsl:value-of select="$name"/>
+          </a>
+        </xsl:when>
+        <xsl:otherwise>
+          <span class="izrk-taxon-name"><xsl:value-of select="$name"/></span>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:for-each select="commonName[normalize-space(.) != '']">
         <span class="izrk-taxon-detail"> (<xsl:value-of select="normalize-space(.)"/>)</span>
       </xsl:for-each>

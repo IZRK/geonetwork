@@ -51,7 +51,7 @@
     <p
       id="izrk-record-abstract"
       data-ng-class="{'izrk-abstract-collapsed': mdView.current.record.resourceAbstract.length > 1600 && !abstractState.expanded}"
-      data-ng-bind-html="mdView.current.record.resourceAbstract | linky | newlines"
+      data-ng-bind-html="mdView.current.record.resourceAbstract | linkifyUrls | newlines"
     ></p>
     <button
       type="button"

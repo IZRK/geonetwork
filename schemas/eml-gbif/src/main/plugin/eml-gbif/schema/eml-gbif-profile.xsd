@@ -199,7 +199,7 @@
             <xs:documentation>This field names a keyword or key phrase that concisely describes the resource or is related to the resource. Each keyword field should contain one and only one keyword</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="keywordThesaurus" type="NonEmptyStringType">
+        <xs:element name="keywordThesaurus" type="NonEmptyStringType" minOccurs="0">
           <xs:annotation>
             <xs:documentation>The name of the official keyword thesaurus from which keyword was derived</xs:documentation>
           </xs:annotation>
