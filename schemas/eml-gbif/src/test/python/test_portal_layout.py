@@ -22,7 +22,16 @@ class PortalLayoutTest(unittest.TestCase):
             source.write_text('''<root xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0">
               <eml:eml><dataset><title>Example</title><abstract>
                 <para>First paragraph.</para><para>Second paragraph.</para>
-              </abstract></dataset></eml:eml></root>''', encoding="utf-8")
+              </abstract><additionalInfo><para>ISO citation date (creation): 2009-12-04
+ISO parent identifier: example-parent</para><para>Other context: retained as prose.</para></additionalInfo></dataset></eml:eml>
+              <info><record>
+                <datainfo><createdate>2022-08-30T07:01:05.858Z</createdate></datainfo>
+                <metadatacategories>
+                  <metadatacategori><name>lifewatch</name></metadatacategori>
+                  <metadatacategori><name>Karst DB</name></metadatacategori>
+                </metadatacategories>
+              </record></info>
+            </root>''', encoding="utf-8")
             stylesheet = directory / "portal-test.xsl"
             stylesheet.write_text(f'''<xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -36,7 +45,15 @@ class PortalLayoutTest(unittest.TestCase):
               <xsl:variable name="source" select="'source'"/>
               <xsl:template name="render-paragraph-html">
                 <xsl:param name="node"/>
-                <xsl:for-each select="$node/para"><p><xsl:value-of select="."/></p></xsl:for-each>
+                <xsl:choose>
+                  <xsl:when test="$node/para">
+                    <xsl:for-each select="$node/para"><p><xsl:value-of select="."/></p></xsl:for-each>
+                  </xsl:when>
+                  <xsl:otherwise><p><xsl:value-of select="$node"/></p></xsl:otherwise>
+                </xsl:choose>
+              </xsl:template>
+              <xsl:template name="addLineBreaksAndHyperlinks">
+                <xsl:param name="txt"/><xsl:value-of select="$txt"/>
               </xsl:template>
               <xsl:template name="eml-keywords"><div id="keywords"/></xsl:template>
               <xsl:template name="eml-geographic-coverage"/>
@@ -69,6 +86,24 @@ class PortalLayoutTest(unittest.TestCase):
             self.assertIsNotNone(main.find("section[@class='izrk-eml-abstract']"))
             self.assertEqual(["overview", "keywords"],
                              [child.get("id") for child in aside])
+            facts = record.find(".//div[@class='izrk-eml-facts']")
+            rendered_facts = {fact.findtext("div/h3"): fact.findtext("div/p")
+                              for fact in facts.findall("div[@class='flex-row']")}
+            self.assertEqual("2009-12-04", rendered_facts["Source citation creation date"])
+            self.assertNotIn("Catalogue record created", rendered_facts)
+            self.assertEqual("lifewatch, Karst DB", rendered_facts["Categories"])
+            self.assertNotIn("Publication date", rendered_facts)
+            additional = record.find(".//div[@class='izrk-eml-additional-info']")
+            self.assertEqual("Additional information", additional.findtext("h3"))
+            entries = additional.find("div[@class='izrk-eml-additional-entries']")
+            self.assertEqual(
+                [("ISO citation date (creation)", "2009-12-04"),
+                 ("ISO parent identifier", "example-parent")],
+                [(entry.findtext("span[@class='izrk-eml-additional-label']"),
+                  entry.findtext("span[@class='izrk-eml-additional-value']"))
+                 for entry in entries.findall("div[@class='izrk-eml-additional-entry']")],
+            )
+            self.assertEqual("Other context: retained as prose.", additional.findtext("p"))
 
     def test_abstract_follows_title_and_keywords_follow_image(self):
         root = ET.parse(PORTAL).getroot()

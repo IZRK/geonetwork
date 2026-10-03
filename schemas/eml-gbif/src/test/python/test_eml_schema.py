@@ -13,6 +13,26 @@ SCHEMA = (Path(__file__).resolve().parents[2]
 
 @unittest.skipUnless(shutil.which("xmllint"), "xmllint is required for XSD validation")
 class EmlSchemaTest(unittest.TestCase):
+    def test_unknown_publication_date_can_be_omitted(self):
+        document = '''<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+  packageId="example" scope="system" system="https://example.org">
+  <dataset>
+    <title>Dataset without a known publication date</title>
+    <creator><organizationName>Example organization</organizationName></creator>
+    <abstract><para>Source publication date was not supplied.</para></abstract>
+    <contact><organizationName>Example organization</organizationName></contact>
+  </dataset>
+</eml:eml>'''
+        with tempfile.TemporaryDirectory() as temporary:
+            metadata = Path(temporary) / "metadata.xml"
+            metadata.write_text(document, encoding="utf-8")
+            result = subprocess.run(
+                ["xmllint", "--nonet", "--noout", "--schema", str(SCHEMA), str(metadata)],
+                capture_output=True, text=True, check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+
     def test_keywords_without_invented_thesaurus_validate(self):
         document = '''<?xml version="1.0" encoding="UTF-8"?>
 <eml:eml xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
@@ -38,7 +58,6 @@ class EmlSchemaTest(unittest.TestCase):
                 capture_output=True, text=True, check=False,
             )
             self.assertEqual(0, result.returncode, result.stderr)
-
 
 if __name__ == "__main__":
     unittest.main()

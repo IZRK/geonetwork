@@ -35,7 +35,7 @@
           </xs:annotation>
         </xs:element>
         <xs:element ref="associatedParty" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element ref="pubDate"/>
+        <xs:element ref="pubDate" minOccurs="0"/>
         <xs:element ref="language" minOccurs="0"/>
         <xs:element ref="abstract"/>
         <xs:element ref="keywordSet" minOccurs="0" maxOccurs="unbounded"/>

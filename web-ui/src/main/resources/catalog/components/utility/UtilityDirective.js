@@ -2657,50 +2657,53 @@
       }
     };
   });
-  module.filter("linkifyUrls", ["$filter", function ($filter) {
-    var linky = $filter("linky");
-    var urlPattern = /https?:\/\/[^\s<>"']+/gi;
+  module.filter("linkifyUrls", [
+    "$filter",
+    function ($filter) {
+      var linky = $filter("linky");
+      var urlPattern = /https?:\/\/[^\s<>"']+/gi;
 
-    function escapeHtml(value) {
-      return value.replace(/[&<>"']/g, function (character) {
-        return {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        }[character];
-      });
-    }
-
-    return function (value) {
-      if (!angular.isString(value)) {
-        return value;
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, function (character) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+          }[character];
+        });
       }
 
-      var output = [];
-      var lastIndex = 0;
-      var match;
-      urlPattern.lastIndex = 0;
-
-      while ((match = urlPattern.exec(value))) {
-        var url = match[0];
-        var trailing = "";
-        while (/[.,;:!?]$/.test(url)) {
-          trailing = url.charAt(url.length - 1) + trailing;
-          url = url.slice(0, -1);
+      return function (value) {
+        if (!angular.isString(value)) {
+          return value;
         }
 
-        output.push(escapeHtml(value.slice(lastIndex, match.index)));
-        output.push(linky(url));
-        output.push(escapeHtml(trailing));
-        lastIndex = match.index + match[0].length;
-      }
+        var output = [];
+        var lastIndex = 0;
+        var match;
+        urlPattern.lastIndex = 0;
 
-      output.push(escapeHtml(value.slice(lastIndex)));
-      return output.join("");
-    };
-  }]);
+        while ((match = urlPattern.exec(value))) {
+          var url = match[0];
+          var trailing = "";
+          while (/[.,;:!?]$/.test(url)) {
+            trailing = url.charAt(url.length - 1) + trailing;
+            url = url.slice(0, -1);
+          }
+
+          output.push(escapeHtml(value.slice(lastIndex, match.index)));
+          output.push(linky(url));
+          output.push(escapeHtml(trailing));
+          lastIndex = match.index + match[0].length;
+        }
+
+        output.push(escapeHtml(value.slice(lastIndex)));
+        return output.join("");
+      };
+    }
+  ]);
   module.filter("newlines", function () {
     return function (value) {
       if (angular.isArray(value)) {
