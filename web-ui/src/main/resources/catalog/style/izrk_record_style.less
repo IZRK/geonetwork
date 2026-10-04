@@ -561,9 +561,71 @@
   .izrk-eml-portal #gn-section-eml-methods {
     margin-top: 24px;
   }
-  .izrk-eml-portal #gn-section-eml-distribution ul {
-    padding-left: 20px;
-    margin-bottom: 0;
+  .izrk-eml-portal #gn-section-eml-distribution {
+    > h2:not(:first-child) {
+      margin-top: 24px;
+    }
+  }
+  .izrk-eml-resource-list {
+    display: grid;
+    gap: 12px;
+  }
+  .izrk-eml-resource-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #dce5e9;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .izrk-eml-resource-icon {
+    flex: 0 0 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #263f52;
+    font-size: 32px;
+    text-align: center;
+  }
+  .izrk-eml-resource-type {
+    min-width: 56px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #337ab7;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .izrk-eml-resource-label {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .izrk-eml-resource-action {
+    flex-shrink: 0;
+  }
+  @media (max-width: 767px) {
+    .izrk-eml-resource-card {
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px;
+    }
+    .izrk-eml-resource-icon {
+      flex-basis: 32px;
+      font-size: 24px;
+    }
+    .izrk-eml-resource-label {
+      flex-basis: calc(100% - 44px);
+    }
+    .izrk-eml-resource-action {
+      margin-left: 44px;
+    }
   }
   .izrk-geographic-coverage {
     display: block;

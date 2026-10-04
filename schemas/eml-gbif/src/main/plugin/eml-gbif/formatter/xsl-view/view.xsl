@@ -99,10 +99,13 @@
   </xsl:template>
 
   <xsl:template mode="getOverviews" match="eml:eml">
-    <xsl:variable name="logo"
-                  select="eml-fn:resolve-resource-logo-url(
-                    additionalMetadata/metadata/gbif/resourceLogoUrl[1], $metadataUuid, $nodeUrl)"/>
-    <xsl:if test="$logo != ''">
+    <xsl:variable name="imagePaths" as="xs:string*"
+                  select="(normalize-space(string(additionalMetadata/metadata/gbif/resourceLogoUrl[1])),
+                           for $line in tokenize(string-join(dataset/additionalInfo/para, '&#10;'), '&#10;')
+                           return if (starts-with(normalize-space($line), 'ISO additional browse image: '))
+                                  then normalize-space(substring-after($line, 'ISO additional browse image: '))
+                                  else ())[. != '']"/>
+    <xsl:if test="exists($imagePaths)">
       <section class="gn-md-side-overview">
         <h2>
           <i class="fa fa-fw fa-image"></i>
@@ -110,11 +113,15 @@
             <xsl:value-of select="$schemaStrings/overviews"/>
           </span>
         </h2>
-        <img data-gn-img-modal="md"
-             class="gn-img-thumbnail"
-             alt="{$schemaStrings/overview}"
-             src="{$logo}"
-             onerror="this.onerror=null; this.parentNode.style.display='none';"/>
+        <xsl:for-each select="distinct-values($imagePaths)">
+          <div>
+            <img data-gn-img-modal="md"
+                 class="gn-img-thumbnail"
+                 alt="{$schemaStrings/overview}"
+                 src="{eml-fn:resolve-resource-logo-url(., $metadataUuid, $nodeUrl)}"
+                 onerror="this.onerror=null; this.parentNode.style.display='none';"/>
+          </div>
+        </xsl:for-each>
       </section>
     </xsl:if>
   </xsl:template>
@@ -463,19 +470,42 @@
 
   <xsl:template name="eml-distribution">
     <xsl:variable name="links"
-                  select="$metadata/dataset/distribution/online/url[normalize-space(.) != '']"/>
+                  select="$metadata/dataset/distribution/online/url[normalize-space(.) != '' and matches(normalize-space(.), '^https?://', 'i')]"/>
     <xsl:if test="$links">
       <div id="gn-section-eml-distribution" class="gn-tab-content">
-        <h2>Distribution</h2>
-        <ul>
-          <xsl:for-each select="$links">
-            <li>
-              <a href="{normalize-space(.)}">
-                <xsl:value-of select="normalize-space(.)"/>
-              </a>
-            </li>
-          </xsl:for-each>
-        </ul>
+        <xsl:for-each select="('download', 'link')">
+          <xsl:variable name="group" select="."/>
+          <xsl:variable name="groupLinks" select="$links[
+            matches(lower-case(normalize-space(.)), '\.(xlsx|xls|csv|tsv|zip|pdf|json|xml)(\?.*)?$') = ($group = 'download')]"/>
+          <xsl:if test="$groupLinks">
+            <h2><xsl:value-of select="if ($group = 'download') then 'Download' else 'Links'"/></h2>
+            <div class="izrk-eml-resource-list">
+              <xsl:for-each select="$groupLinks">
+                <xsl:variable name="url" select="normalize-space(.)"/>
+                <xsl:variable name="description" select="normalize-space(../onlineDescription)"/>
+                <div class="izrk-eml-resource-card">
+                  <div class="izrk-eml-resource-icon" aria-hidden="true">
+                    <i class="fa {if ($group = 'download') then 'fa-download' else 'fa-link'}"/>
+                    <xsl:if test="$group = 'download'">
+                      <span class="izrk-eml-resource-type">
+                        <xsl:value-of select="upper-case(replace(lower-case($url), '^.*\.([a-z0-9]+)(\?.*)?$', '$1'))"/>
+                      </span>
+                    </xsl:if>
+                  </div>
+                  <div class="izrk-eml-resource-label">
+                    <a href="{$url}">
+                      <xsl:value-of select="if ($description != '') then replace($description, '%20', ' ')
+                                            else replace($url, '^https?://([^/]+).*$', '$1')"/>
+                    </a>
+                  </div>
+                  <a class="btn btn-default izrk-eml-resource-action" href="{$url}">
+                    <xsl:value-of select="if ($group = 'download') then 'Download' else 'Open link'"/>
+                  </a>
+                </div>
+              </xsl:for-each>
+            </div>
+          </xsl:if>
+        </xsl:for-each>
       </div>
     </xsl:if>
   </xsl:template>

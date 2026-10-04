@@ -1,5 +1,27 @@
 # Problems and follow-up
 
+## Amphipoda EML view hid the second image and showed raw distribution URLs (resolved in source, 2026-10-04)
+
+The first converted package carried both ISO browse images but the EML view
+rendered only its single GBIF logo field. Its distribution template also showed
+plain, encoded URLs instead of the source record's download and link cards.
+The rebuilt package identifies the second packaged image in `additionalInfo`
+and supplies readable distribution descriptions. The EML formatter now shows
+both overviews and grouped resource cards. Deploy the updated formatter and
+web UI styling, then reimport the rebuilt MEF for those changes to appear in a
+hosted catalogue.
+
+## Amphipoda trait dataset source ISO lacks required metadata (2026-10-04)
+
+The supplied ISO 19139 export for UUID `f39e56c2-65d4-43d2-b5f2-e707229777bf`
+fails strict `gmd.xsd` validation: `gmd:identificationInfo` appears before a
+required top-level `gmd:contact`, and the record also has no top-level
+`gmd:dateStamp`. Its only citation date, `2024-02-10`, is explicitly a creation
+date, not a confirmed dataset publication date. The source remains unchanged;
+the converted EML-GBIF record validates and omits `pubDate`. Correct the ISO
+record if it continues to be maintained, and confirm a dataset publication date
+with the owner before adding one to EML.
+
 ## EML organisation-only creators showed as blank contact cards (resolved in source, 2026-10-03)
 
 The EML formatter created a Contacts card for an organisation-only `creator`
