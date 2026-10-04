@@ -25,8 +25,14 @@
   <xsl:function name="eml-fn:party-roles" as="xs:string">
     <xsl:param name="party" as="element()"/>
     <xsl:param name="schemaStrings" as="node()*"/>
-    <xsl:sequence select="string-join(distinct-values(for $role in $party/role
-      return normalize-space($role[normalize-space(.) != ''])), ' · ')"/>
+    <xsl:variable name="implicitRole" select="
+      if ($party/role[normalize-space(.) != '']) then ()
+      else if (local-name($party) = 'creator') then 'Creator'
+      else if (local-name($party) = 'contact') then 'Contact'
+      else if (local-name($party) = 'metadataProvider') then 'Metadata provider'
+      else ()"/>
+    <xsl:sequence select="string-join(distinct-values(($implicitRole,
+      for $role in $party/role return normalize-space($role[normalize-space(.) != '']))), ' · ')"/>
   </xsl:function>
 
   <xsl:function name="eml-fn:field-key" as="xs:string">

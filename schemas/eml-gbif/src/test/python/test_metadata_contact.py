@@ -17,7 +17,11 @@ CITATION = VIEW.parents[1] / "citation/base.xsl"
 class MetadataContactTest(unittest.TestCase):
     def test_named_metadata_provider_has_own_contact_card(self):
         source = '''<root xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0">
-          <eml:eml><dataset><metadataProvider>
+          <eml:eml><dataset><creator><organizationName>IZRK ZRC SAZU</organizationName>
+          </creator><associatedParty>
+            <individualName><givenName>Tanja</givenName><surName>Pipan</surName></individualName>
+            <organizationName>IZRK ZRC SAZU</organizationName><role>custodian</role>
+          </associatedParty><metadataProvider>
             <individualName><givenName>Magdalena</givenName><surName>Aljančič</surName></individualName>
             <electronicMailAddress>magdalena.aljancic@zrc-sazu.si</electronicMailAddress>
           </metadataProvider><contact>
@@ -49,7 +53,7 @@ class MetadataContactTest(unittest.TestCase):
               {email_template}
               <xsl:template match="/"><result><xsl:call-template name="eml-party-table">
                 <xsl:with-param name="label" select="'Contacts'"/>
-                <xsl:with-param name="nodes" select="$metadata/dataset/*[self::metadataProvider or self::contact]"/>
+                <xsl:with-param name="nodes" select="$metadata/dataset/*[self::creator or self::associatedParty or self::metadataProvider or self::contact]"/>
               </xsl:call-template></result></xsl:template>
               <xsl:template name="node-label"><xsl:text>Email</xsl:text></xsl:template>
               <xsl:template match="node()|@*" mode="render-field"/>
@@ -71,6 +75,13 @@ class MetadataContactTest(unittest.TestCase):
             self.assertEqual("Magdalena Aljančič", email_card.findtext(".//h4"))
             self.assertEqual("mailto:magdalena.aljancic@zrc-sazu.si", link.get("href"))
             self.assertEqual("magdalena.aljancic@zrc-sazu.si", link.text)
+            organisation = next(card for card in cards
+                                if card.findtext("summary/span") == "IZRK ZRC SAZU")
+            self.assertEqual("2", organisation.findtext("summary/span[2]"))
+            names = {card.findtext("div/h4"): card.findtext("div/p")
+                     for card in organisation.findall("div/div")}
+            self.assertEqual("Creator", names["IZRK ZRC SAZU"])
+            self.assertEqual("custodian · Contact", names["Tanja Pipan"])
 
 
 if __name__ == "__main__":

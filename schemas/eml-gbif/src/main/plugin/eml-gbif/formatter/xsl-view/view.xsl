@@ -233,8 +233,9 @@
                 <i class="fa fa-fw fa-user"/>
               </span>
               <div class="izrk-contact-details">
-                <xsl:if test="individualName">
-                  <h4><xsl:value-of select="eml-fn:party-name(.)"/></h4>
+                <xsl:if test="individualName or organizationName">
+                  <h4><xsl:value-of select="if (individualName) then eml-fn:party-name(.)
+                    else normalize-space(organizationName)"/></h4>
                 </xsl:if>
                 <p class="text-muted izrk-contact-roles">
                   <xsl:value-of select="string-join(distinct-values(for $party in $parties return eml-fn:party-roles($party, $schemaStrings)), ' · ')"/>
