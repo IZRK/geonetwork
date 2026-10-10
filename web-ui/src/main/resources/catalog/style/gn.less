@@ -277,11 +277,11 @@ a {
 }
 .gn-img-modal {
   width: fit-content;
-  max-width: 95vw;
-  background-color: #fff;
-  img {
-    max-width: 100%;
-  }
+  max-width: 96vw;
+  max-height: 96vh;
+  margin: 0 auto;
+  position: relative;
+  background-color: transparent;
   .gn-img-background {
     background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.74));
     bottom: 0;
@@ -298,11 +298,47 @@ a {
     font-size: 150%;
   }
 }
+.gn-img-modal-lightbox {
+  align-items: center;
+  justify-content: center;
+  padding: 2vh 2vw;
+}
+.gn-img-modal-lightbox.in {
+  display: flex !important;
+}
+.gn-img-modal-viewport {
+  align-items: safe center;
+  background: transparent;
+  display: flex;
+  height: 85vh;
+  justify-content: safe center;
+  overflow: auto;
+  width: 90vw;
+  img {
+    display: block;
+    flex: none;
+    max-width: 100%;
+    max-height: 100%;
+    cursor: zoom-in;
+  }
+}
+.gn-img-modal-controls {
+  display: flex;
+  gap: 0.4rem;
+  left: 1rem;
+  position: absolute;
+  top: 1rem;
+  z-index: 2;
+  .btn {
+    min-width: 2.5rem;
+  }
+}
 .gn-btn-modal-img {
   border-radius: 50% !important;
   position: absolute;
-  top: -1.2em;
-  right: -1.2em;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
   padding: 7px 12px !important;
 }
 

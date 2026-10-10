@@ -2779,19 +2779,31 @@
           element.bind("click", function () {
             var imgOrMd = scope.$eval(attr["gnImgModal"]);
             var img = undefined;
-            if (imgOrMd.overview) {
+            var clickedImageUrl = element.attr("src");
+            if (imgOrMd && imgOrMd.overview) {
               var imgs = imgOrMd.overview;
-              var url = $(element).attr("src");
-              for (var i = 0; i < imgs.list.length; i++) {
+              var overviewList = imgs.list || [];
+              for (var i = 0; i < overviewList.length; i++) {
                 // the thumbnails url might end with `?approved=false/true`, which is not
                 // present on img
-                if (imgs.list[i].url.indexOf(url) === 0) {
-                  img = imgs.list[i];
+                if (
+                  clickedImageUrl &&
+                  overviewList[i].url &&
+                  (overviewList[i].url.indexOf(clickedImageUrl) === 0 ||
+                    clickedImageUrl.indexOf(overviewList[i].url) === 0)
+                ) {
+                  img = overviewList[i];
                   break;
                 }
               }
-            } else {
+            } else if (imgOrMd && (imgOrMd.url || imgOrMd.lUrl)) {
               img = imgOrMd;
+            }
+            // EML detail formatters can render attachment images even when the
+            // corresponding overview has not yet been indexed on the record.
+            // Use the actual clicked image in that case instead of the record UUID.
+            if (!img && clickedImageUrl) {
+              img = { url: clickedImageUrl, lUrl: clickedImageUrl };
             }
 
             // Toggle the modal if already displayed
@@ -2811,16 +2823,25 @@
                 "</div>";
               modalElt = angular.element(
                 "" +
-                  '<div class="modal fade in"' +
+                  '<div class="modal fade in gn-img-modal-lightbox"' +
                   '     id="gn-img-modal-' +
                   (img.id || img.lUrl || img.url) +
-                  '">' +
-                  '<div class="modal-dialog gn-img-modal in">' +
-                  '  <button type=button class="btn btn-danger gn-btn-modal-img">' +
-                  '<i class="fa fa-times"></i></button>' +
-                  '  <img src="' +
+                  '" tabindex="-1" role="dialog" aria-modal="true">' +
+                  '<div class="modal-dialog gn-img-modal in" role="document">' +
+                  '  <div class="gn-img-modal-viewport">' +
+                  '    <img src="' +
                   (attr.ngSrc || img.lUrl || img.url || img.id) +
+                  '" alt="' +
+                  label.replace(/&/g, "&amp;").replace(/"/g, "&quot;") +
                   '"/>' +
+                  "  </div>" +
+                  '  <div class="gn-img-modal-controls" role="group" aria-label="Image zoom controls">' +
+                  '    <button type="button" class="btn btn-default gn-img-zoom-out" aria-label="Zoom out" title="Zoom out">−</button>' +
+                  '    <button type="button" class="btn btn-default gn-img-zoom-reset" aria-label="Reset zoom" title="Reset zoom">100%</button>' +
+                  '    <button type="button" class="btn btn-default gn-img-zoom-in" aria-label="Zoom in" title="Zoom in">+</button>' +
+                  "  </div>" +
+                  '  <button type="button" class="btn btn-danger gn-btn-modal-img" aria-label="Close image">' +
+                  "×</button>" +
                   (label != "" ? labelDiv : "") +
                   "</div>" +
                   "</div>"
@@ -2828,9 +2849,83 @@
 
               $(document.body).append(modalElt);
               modalElt.modal();
+              modalElt.on("click", function (event) {
+                if (event.target === modalElt[0]) {
+                  modalElt.modal("hide");
+                }
+              });
+              var viewport = modalElt.find(".gn-img-modal-viewport");
+              var modalImage = modalElt.find("img").first();
+              var zoom = 1;
+
+              viewport.on("click", function (event) {
+                if (event.target === viewport[0]) {
+                  modalElt.modal("hide");
+                }
+              });
+
+              function renderImageZoom() {
+                var image = modalImage[0];
+                if (!image.naturalWidth || !image.naturalHeight) {
+                  return;
+                }
+                var fit = Math.min(
+                  viewport.width() / image.naturalWidth,
+                  viewport.height() / image.naturalHeight,
+                  1
+                );
+                image.style.maxWidth = "none";
+                image.style.maxHeight = "none";
+                image.style.width = image.naturalWidth * fit * zoom + "px";
+                image.style.height = image.naturalHeight * fit * zoom + "px";
+                modalElt.find(".gn-img-zoom-reset").text(Math.round(zoom * 100) + "%");
+              }
+
+              function setZoom(value) {
+                zoom = Math.max(0.25, Math.min(5, value));
+                renderImageZoom();
+              }
+
+              modalImage.on("load", renderImageZoom);
+              if (modalImage[0].complete) {
+                renderImageZoom();
+              }
+              modalElt.find(".gn-img-zoom-in").on("click", function () {
+                setZoom(zoom * 1.25);
+              });
+              modalElt.find(".gn-img-zoom-out").on("click", function () {
+                setZoom(zoom / 1.25);
+              });
+              modalElt.find(".gn-img-zoom-reset").on("click", function () {
+                setZoom(1);
+                viewport.scrollTop(0).scrollLeft(0);
+              });
+              modalImage.on("dblclick", function () {
+                setZoom(zoom === 1 ? 2 : 1);
+              });
+              viewport.on("wheel", function (event) {
+                event.preventDefault();
+                setZoom(zoom * (event.originalEvent.deltaY < 0 ? 1.1 : 1 / 1.1));
+              });
+              modalElt.on("keydown", function (event) {
+                if (event.key === "+" || event.key === "=") {
+                  event.preventDefault();
+                  setZoom(zoom * 1.25);
+                } else if (event.key === "-") {
+                  event.preventDefault();
+                  setZoom(zoom / 1.25);
+                } else if (event.key === "0") {
+                  setZoom(1);
+                  viewport.scrollTop(0).scrollLeft(0);
+                }
+              });
               modalElt.on("hidden.bs.modal", function () {
-                if (modalElt) {
-                  modalElt.remove();
+                var closedModal = modalElt;
+                if (closedModal) {
+                  closedModal.remove();
+                  if (modalElt === closedModal) {
+                    modalElt = null;
+                  }
                 }
               });
               modalElt.find(".gn-btn-modal-img").on("click", function () {

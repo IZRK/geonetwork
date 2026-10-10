@@ -3,6 +3,8 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 								xmlns:dc="http://purl.org/dc/terms/" 
 								xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+								xmlns:xs="http://www.w3.org/2001/XMLSchema"
+								xmlns:eml-index="http://geonetwork-opensource.org/xsl/functions/eml-index"
 								xmlns:util="java:org.fao.geonet.util.XslUtil"
 								exclude-result-prefixes="#all">	
 
@@ -20,6 +22,21 @@
 	
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
 
+	<xsl:function name="eml-index:overview-url" as="xs:string">
+		<xsl:param name="value" as="xs:string?"/>
+		<xsl:param name="uuid" as="xs:string"/>
+		<xsl:param name="nodeUrl" as="xs:string"/>
+		<xsl:variable name="path" select="normalize-space($value)"/>
+		<xsl:sequence select="if (matches($path, '^https?://', 'i')) then $path
+			else if ($path != '' and $path != '.' and $path != '..' and $uuid != '' and $nodeUrl != ''
+				and not(contains($path, '/')) and not(contains($path, '\'))
+				and not(contains($path, '?')) and not(contains($path, '#'))
+				and not(contains($path, ':')))
+			then concat($nodeUrl, if (ends-with($nodeUrl, '/')) then '' else '/',
+				'api/records/', $uuid, '/attachments/', $path)
+			else ''"/>
+	</xsl:function>
+
 
 	<!-- ========================================================================================= -->
 
@@ -34,6 +51,24 @@
 	<!-- ========================================================================================= -->
 
 	<xsl:template match="*" mode="metadata">
+		<xsl:variable name="uuid" select="normalize-space(dataset/alternateIdentifier[1])"/>
+		<xsl:variable name="overviewPaths" as="xs:string*"
+			select="(normalize-space(string(additionalMetadata/metadata/gbif/resourceLogoUrl[1])),
+				for $line in tokenize(string-join(dataset/additionalInfo/para, '&#10;'), '&#10;')
+				return if (starts-with(normalize-space($line), 'ISO additional browse image: '))
+					then normalize-space(substring-after($line, 'ISO additional browse image: '))
+					else ())[. != '']"/>
+		<xsl:variable name="nodeUrl"
+			select="if (exists($overviewPaths[not(matches(., '^https?://', 'i'))]))
+				then util:getSettingValue('nodeUrl') else ''"/>
+		<xsl:variable name="overviews" as="xs:string*"
+			select="for $path in distinct-values($overviewPaths)
+				return eml-index:overview-url($path, $uuid, $nodeUrl)"/>
+		<Field name="hasOverview" string="{if (exists($overviews[. != ''])) then 'true' else 'false'}"
+			store="true" index="true"/>
+		<xsl:for-each select="$overviews[. != '']">
+			<overview type="object">{"url":"<xsl:value-of select="util:escapeForJson(.)"/>"}</overview>
+		</xsl:for-each>
 
 		<xsl:for-each select="dataset">
 		
