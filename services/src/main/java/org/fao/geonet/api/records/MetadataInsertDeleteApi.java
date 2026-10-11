@@ -1087,7 +1087,11 @@ public class MetadataInsertDeleteApi {
      * @throws ResourceNotFoundException if the group is not found
      * @throws IllegalArgumentException if the group is not a workspace
      */
-    private void checkGroupIsWorkspace(String groupId, Locale locale) throws ResourceNotFoundException {
+    void checkGroupIsWorkspace(String groupId, Locale locale) throws ResourceNotFoundException {
+        if (StringUtils.isBlank(groupId)) {
+            return;
+        }
+
         // Find the group by its ID
         Group group = groupRepository.findById(Integer.parseInt(groupId)).orElse(null);
 
