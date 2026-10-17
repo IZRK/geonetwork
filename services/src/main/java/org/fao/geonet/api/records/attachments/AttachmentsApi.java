@@ -55,6 +55,8 @@ import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.kernel.setting.Settings;
 import org.fao.geonet.util.FileMimetypeChecker;
 import org.fao.geonet.util.ImageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -74,6 +76,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -96,6 +99,7 @@ import java.util.List;
 @Tag(name = API_CLASS_RECORD_TAG,
     description = API_CLASS_RECORD_OPS)
 public class AttachmentsApi {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AttachmentsApi.class);
     public static final Integer MIN_IMAGE_SIZE = 1;
     public static final Integer MAX_IMAGE_SIZE = 2048;
     public static final Integer BUFFER_SIZE = 8192;
@@ -275,7 +279,8 @@ public class AttachmentsApi {
         @ApiResponse(responseCode = "206", description = "Partial content for resumable downloads.",
             content = @Content(schema = @Schema(type = "string", format = "binary"))),
         @ApiResponse(responseCode = "403", description = "Operation not allowed. "
-            + "User needs to be able to download the resource.")})
+            + "User needs to be able to download the resource."),
+        @ApiResponse(responseCode = "415", description = "Requested image cannot be decoded for resizing.")})
     public void getResource(
         @Parameter(description = "The metadata UUID", required = true, example = "43d7c186-2187-4bcd-8843-41e575a5ef56") @PathVariable String metadataUuid,
         @Parameter(description = "The resource identifier (ie. filename)", required = true) @PathVariable String resourceId,
@@ -356,7 +361,7 @@ public class AttachmentsApi {
         // If the resource is an image and a size is requested, resize the image and return it
         if (fileMediaType.getType().equals("image") && size != null) {
             try (Store.ResourceHolder resourceHolder = store.getResource(context, metadataUuid, resourceId, approved)) {
-                serveResizedImage(resourceHolder.getResource(), fileName, fileETag, size, response);
+                serveResizedImage(resourceHolder.getResource(), metadataUuid, fileName, fileETag, size, response);
             }
             return;
         }
@@ -457,6 +462,7 @@ public class AttachmentsApi {
      * Serves a resized image in PNG format.
      *
      * @param resource Resource representing the original image
+     * @param metadataUuid UUID of the record containing the image
      * @param originalImageName Original filename of the image
      * @param originalETag Original resource ETag used to generate resized image ETag
      * @param size Desired size for the resized image (in pixels)
@@ -464,6 +470,7 @@ public class AttachmentsApi {
      * @throws IOException If an I/O error occurs while reading or writing the image
      */
     private void serveResizedImage(Resource resource,
+                                   String metadataUuid,
                                    String originalImageName,
                                    String originalETag,
                                    int size,
@@ -475,8 +482,25 @@ public class AttachmentsApi {
         }
 
         try (InputStream inputStream = resource.getInputStream()) {
-            // Resize the image
-            BufferedImage resizedImage = ImageUtil.resize(ImageIO.read(inputStream), size);
+            BufferedImage originalImage;
+            try {
+                originalImage = ImageIO.read(inputStream);
+            } catch (IIOException e) {
+                LOGGER.warn("Cannot decode attachment '{}' in record '{}' for resizing",
+                    originalImageName, metadataUuid, e);
+                response.sendError(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+                    "Attachment cannot be decoded as an image");
+                return;
+            }
+            if (originalImage == null) {
+                LOGGER.warn("Cannot decode attachment '{}' in record '{}' for resizing",
+                    originalImageName, metadataUuid);
+                response.sendError(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+                    "Attachment cannot be decoded as an image");
+                return;
+            }
+
+            BufferedImage resizedImage = ImageUtil.resize(originalImage, size);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ImageIO.write(resizedImage, "png", outputStream);
 

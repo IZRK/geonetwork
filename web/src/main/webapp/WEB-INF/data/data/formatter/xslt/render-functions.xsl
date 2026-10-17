@@ -94,27 +94,27 @@
 
     <div class="thumbnail extent">
         <div class="input-group coord coord-north">
-          <div class="form-control" role="textbox" aria-readonly="true" aria-label="{$schemaStrings/north}">
-            <xsl:value-of select="format-number($north, $numberFormat)"/>
-          </div>
+          <input type="text" class="form-control"
+                 aria-label="{$schemaStrings/north}"
+                 value="{format-number($north, $numberFormat)}" readonly=""/>
           <span class="input-group-addon">N</span>
         </div>
         <div class="input-group coord coord-south">
-          <div class="form-control" role="textbox" aria-readonly="true" aria-label="{$schemaStrings/south}">
-            <xsl:value-of select="format-number($south, $numberFormat)"/>
-          </div>
+          <input type="text" class="form-control"
+                 aria-label="{$schemaStrings/south}"
+                 value="{format-number($south, $numberFormat)}" readonly=""/>
           <span class="input-group-addon">S</span>
         </div>
         <div class="input-group coord coord-east">
-          <div class="form-control" role="textbox" aria-readonly="true" aria-label="{$schemaStrings/east}">
-            <xsl:value-of select="format-number($east, $numberFormat)"/>
-          </div>
+          <input type="text" class="form-control"
+                aria-label="{$schemaStrings/east}"
+                 value="{format-number($east, $numberFormat)}" readonly=""/>
           <span class="input-group-addon">E</span>
         </div>
         <div class="input-group coord coord-west">
-          <div class="form-control" role="textbox" aria-readonly="true" aria-label="{$schemaStrings/west}">
-            <xsl:value-of select="format-number($west, $numberFormat)"/>
-          </div>
+          <input type="text" class="form-control"
+                 aria-label="{$schemaStrings/west}"
+                 value="{format-number($west, $numberFormat)}" readonly=""/>
           <span class="input-group-addon">W</span>
         </div>
       <xsl:copy-of select="gn-fn-render:geometry($boxGeometry)"/>

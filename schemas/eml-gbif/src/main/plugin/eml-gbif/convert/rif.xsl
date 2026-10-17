@@ -241,7 +241,10 @@
 </xsl:template>
 
 <xsl:template match="taxonomicCoverage">
-	<xsl:for-each select="generalTaxonomicCoverage|taxonomicClassification/*">
+    <xsl:for-each select="generalTaxonomicCoverage |
+      taxonomicClassification//taxonRankName |
+      taxonomicClassification//taxonRankValue |
+      taxonomicClassification//commonName">
   	<xsl:element name="subject">
 			<!-- unfortunately the content in the taxonomic coverage elements 
 			     used in eml-gbif is unlikely to be registered with the library of 
