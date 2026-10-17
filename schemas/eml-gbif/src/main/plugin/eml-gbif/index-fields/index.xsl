@@ -21,6 +21,7 @@
 	<!-- ========================================================================================= -->
 	
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
+	<xsl:param name="recordUuid" as="xs:string" select="''"/>
 
 	<xsl:function name="eml-index:overview-url" as="xs:string">
 		<xsl:param name="value" as="xs:string?"/>
@@ -51,7 +52,11 @@
 	<!-- ========================================================================================= -->
 
 	<xsl:template match="*" mode="metadata">
-		<xsl:variable name="uuid" select="normalize-space(dataset/alternateIdentifier[1])"/>
+		<xsl:variable name="packageId" select="normalize-space(@packageId)"/>
+		<xsl:variable name="uuid" as="xs:string"
+			select="if (normalize-space($recordUuid) != '') then normalize-space($recordUuid)
+				else if (matches($packageId, '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'))
+				then $packageId else ''"/>
 		<xsl:variable name="overviewPaths" as="xs:string*"
 			select="(normalize-space(string(additionalMetadata/metadata/gbif/resourceLogoUrl[1])),
 				for $line in tokenize(string-join(dataset/additionalInfo/para, '&#10;'), '&#10;')

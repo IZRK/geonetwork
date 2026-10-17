@@ -343,11 +343,11 @@ public class MetadataInsertDeleteApi {
         @Parameter(description = "(experimental) Add extra information to the record.", required = false) @RequestParam(required = false) final String extra,
          HttpServletRequest request) throws Exception {
 
-        ResourceBundle messages = ApiUtils.getMessagesResourceBundle(request.getLocales());
-
         Locale locale = languageUtils.parseAcceptLanguage(request.getLocales());
 
-        checkGroupIsWorkspace(group, locale);
+        final String normalizedGroup = validateAndNormalizeGroup(group, locale, false);
+
+        ResourceBundle messages = ApiUtils.getMessagesResourceBundle(request.getLocales());
 
         if (url == null && xml == null && serverFolder == null) {
             throw new IllegalArgumentException(
@@ -373,7 +373,7 @@ public class MetadataInsertDeleteApi {
                     String.format(messages.getString("api.metadata.import.errorInvalidXMLFragment"), ex.getMessage()));
             }
 
-            Pair<Integer, String> pair = loadRecord(metadataType, element, uuidProcessing, group, category,
+            Pair<Integer, String> pair = loadRecord(metadataType, element, uuidProcessing, normalizedGroup, category,
                     rejectIfInvalid, publishToAll, allowEditGroupMembers, transformWith, schema, extra, request);
             report.addMetadataInfos(pair.one(), pair.two(), !publishToAll, false, String.format(messages.getString("api.metadata.import.importedFromXMLWithUuid"), pair.two()));
 
@@ -398,7 +398,7 @@ public class MetadataInsertDeleteApi {
                     }
                 }
                 if (xmlContent != null) {
-                    Pair<Integer, String> pair = loadRecord(metadataType, xmlContent, uuidProcessing, group, category,
+                    Pair<Integer, String> pair = loadRecord(metadataType, xmlContent, uuidProcessing, normalizedGroup, category,
                             rejectIfInvalid, publishToAll, allowEditGroupMembers, transformWith, schema, extra, request);
                     report.addMetadataInfos(pair.one(), pair.two(), !publishToAll, false,
                             String.format(messages.getString("api.metadata.import.importedFromUrl"), pair.two()));
@@ -443,7 +443,7 @@ public class MetadataInsertDeleteApi {
                         MEFLib.Version version = MEFLib.getMEFVersion(f);
                         List<String> ids = MEFLib.doImport(version == MEFLib.Version.V1 ? "mef" : "mef2",
                             uuidProcessing, transformWith, settingManager.getSiteId(), metadataType, category,
-                            group, rejectIfInvalid, assignToCatalog, context, f);
+                            normalizedGroup, rejectIfInvalid, assignToCatalog, context, f);
                         for (String id : ids) {
                             report.addMetadataInfos(Integer.parseInt(id), id, !publishToAll, false,
                                     String.format(messages.getString("api.metadata.import.importedFromMEF"), id));
@@ -458,7 +458,7 @@ public class MetadataInsertDeleteApi {
                     }
                 } else {
                     try {
-                        Pair<Integer, String> pair = loadRecord(metadataType, Xml.loadFile(f), uuidProcessing, group,
+                        Pair<Integer, String> pair = loadRecord(metadataType, Xml.loadFile(f), uuidProcessing, normalizedGroup,
                                 category, rejectIfInvalid, publishToAll, allowEditGroupMembers, transformWith, schema, extra, request);
                         report.addMetadataInfos(pair.one(), pair.two(), !publishToAll, false,
                                 String.format(messages.getString("api.metadata.import.importedFromServerFolder"), pair.two()));
@@ -503,11 +503,11 @@ public class MetadataInsertDeleteApi {
         @Parameter(description = "Copy attachments from source?", required = false) @RequestParam(required = false, defaultValue = "true") final boolean hasAttachmentsOfSource,
         @Parameter(hidden = true) HttpSession httpSession, HttpServletRequest request) throws Exception {
 
-        ResourceBundle messages = ApiUtils.getMessagesResourceBundle(request.getLocales());
-
         Locale locale = languageUtils.parseAcceptLanguage(request.getLocales());
 
-        checkGroupIsWorkspace(group, locale);
+        final String normalizedGroup = validateAndNormalizeGroup(group, locale, true);
+
+        ResourceBundle messages = ApiUtils.getMessagesResourceBundle(request.getLocales());
 
         AbstractMetadata sourceMetadata = ApiUtils.getRecord(sourceUuid);
 
@@ -536,7 +536,7 @@ public class MetadataInsertDeleteApi {
         if (user.getProfile() != Profile.Administrator) {
             final Specification<UserGroup> spec = where(UserGroupSpecs.hasProfile(Profile.Editor))
                 .and(UserGroupSpecs.hasUserId(user.getUserIdAsInt()))
-                .and(UserGroupSpecs.hasGroupId(Integer.valueOf(group)));
+                .and(UserGroupSpecs.hasGroupId(Integer.valueOf(normalizedGroup)));
 
             final List<UserGroup> userGroups = userGroupRepository.findAll(spec);
 
@@ -547,14 +547,14 @@ public class MetadataInsertDeleteApi {
         }
 
         ServiceContext context = ApiUtils.createServiceContext(request);
-        String newId = dataManager.createMetadata(context, String.valueOf(sourceMetadata.getId()), group,
+        String newId = dataManager.createMetadata(context, String.valueOf(sourceMetadata.getId()), normalizedGroup,
             settingManager.getSiteId(), context.getUserSession().getUserIdAsInt(),
             isChildOfSource ? sourceMetadata.getUuid() : null, metadataType.toString(), allowEditGroupMembers,
             metadataUuid);
 
         triggerCreationEvent(request, newId);
 
-        dataManager.activateWorkflowIfConfigured(context, newId, group);
+        dataManager.activateWorkflowIfConfigured(context, newId, normalizedGroup);
 
         if (hasAttachmentsOfSource) {
             try {
@@ -622,11 +622,11 @@ public class MetadataInsertDeleteApi {
             + "If not, only the author and administrator can edit the record.", required = false) @RequestParam(required = false, defaultValue = "false") final boolean allowEditGroupMembers,
         HttpServletRequest request) throws Exception {
 
-        ResourceBundle messages = ApiUtils.getMessagesResourceBundle(request.getLocales());
-
         Locale locale = languageUtils.parseAcceptLanguage(request.getLocales());
 
-        checkGroupIsWorkspace(group, locale);
+        final String normalizedGroup = validateAndNormalizeGroup(group, locale, false);
+
+        ResourceBundle messages = ApiUtils.getMessagesResourceBundle(request.getLocales());
 
         if (file == null) {
             throw new IllegalArgumentException(messages.getString("api.metadata.import.errorFileRequired"));
@@ -653,7 +653,7 @@ public class MetadataInsertDeleteApi {
 
                         List<String> ids = MEFLib.doImport(version == MEFLib.Version.V1 ? "mef" : "mef2",
                                 uuidProcessing, transformWith, settingManager.getSiteId(), metadataType, category,
-                                group, rejectIfInvalid, assignToCatalog, context, tempFile);
+                                normalizedGroup, rejectIfInvalid, assignToCatalog, context, tempFile);
                         if (ids.isEmpty()) {
                             //we could have used a finer-grained error handling inside the MEFLib import call (MEF MD file processing)
                             //This is a catch-for-call for the case when there is no record is imported, to notify the user the import is not successful.
@@ -684,7 +684,7 @@ public class MetadataInsertDeleteApi {
                     }
                 } else {
                     Pair<Integer, String> pair = loadRecord(metadataType, Xml.loadStream(f.getInputStream()),
-                            uuidProcessing, group, category, rejectIfInvalid, publishToAll, allowEditGroupMembers, transformWith, schema,
+                            uuidProcessing, normalizedGroup, category, rejectIfInvalid, publishToAll, allowEditGroupMembers, transformWith, schema,
                             extra, request);
                     report.addMetadataInfos(pair.one(), pair.two(), !publishToAll, false, String.format(messages.getString("api.metadata.import.importedWithUuid"), pair.two()));
 
@@ -726,7 +726,7 @@ public class MetadataInsertDeleteApi {
 
         Locale locale = languageUtils.parseAcceptLanguage(request.getLocales());
 
-        checkGroupIsWorkspace(group, locale);
+        final String normalizedGroup = validateAndNormalizeGroup(group, locale, false);
 
         if (StringUtils.isEmpty(xml) && StringUtils.isEmpty(url)) {
             throw new IllegalArgumentException("A context as XML or a remote URL MUST be provided.");
@@ -784,7 +784,7 @@ public class MetadataInsertDeleteApi {
 
         // Import record
         Importer.importRecord(uuid, uuidProcessing, md, schema, 0, settingManager.getSiteId(),
-            settingManager.getSiteName(), null, context, id, date, date, group, MetadataType.METADATA);
+            settingManager.getSiteName(), null, context, id, date, date, normalizedGroup, MetadataType.METADATA);
 
         final Store store = context.getBean("resourceStore", Store.class);
         final String metadataUuid = metadataUtils.getMetadataUuid(id.get(0));
@@ -829,8 +829,8 @@ public class MetadataInsertDeleteApi {
             metadataOperations.setOperation(context, iId, ReservedGroup.all.getId(), ReservedOperation.download.getId());
             metadataOperations.setOperation(context, iId, ReservedGroup.all.getId(), ReservedOperation.dynamic.getId());
         }
-        if (StringUtils.isNotEmpty(group)) {
-            int gId = Integer.parseInt(group);
+        if (normalizedGroup != null) {
+            int gId = Integer.parseInt(normalizedGroup);
             metadataOperations.setOperation(context, iId, gId, ReservedOperation.view.getId());
             metadataOperations.setOperation(context, iId, gId, ReservedOperation.download.getId());
             metadataOperations.setOperation(context, iId, gId, ReservedOperation.dynamic.getId());
@@ -1080,32 +1080,39 @@ public class MetadataInsertDeleteApi {
     }
 
     /**
-     * Checks if the given group ID corresponds to a workspace group.
+     * Validates a group ID at the request boundary and returns its canonical form.
      *
      * @param groupId the ID of the group to check
      * @param locale the locale to use for error messages
+     * @param required whether a group must be supplied
+     * @return the canonical group ID, or null when an optional group is blank
      * @throws ResourceNotFoundException if the group is not found
-     * @throws IllegalArgumentException if the group is not a workspace
+     * @throws IllegalArgumentException if the ID is invalid, a required group is blank,
+     *                                  or the group is not a workspace
      */
-    void checkGroupIsWorkspace(String groupId, Locale locale) throws ResourceNotFoundException {
+    String validateAndNormalizeGroup(String groupId, Locale locale, boolean required) throws ResourceNotFoundException {
         if (StringUtils.isBlank(groupId)) {
-            return;
+            if (required) {
+                throw new IllegalArgumentException("Group ID is required.");
+            }
+            return null;
         }
 
-        // Find the group by its ID
-        Group group = groupRepository.findById(Integer.parseInt(groupId)).orElse(null);
+        int id = Integer.parseInt(StringUtils.strip(groupId));
+        Group group = groupRepository.findById(id).orElse(null);
 
         // If the group is not found, throw a ResourceNotFoundException
         if (group == null) {
             throw new ResourceNotFoundException(messages.getMessage("api.groups.group_not_found", new
-                Object[]{groupId}, locale));
+                Object[]{id}, locale));
         }
 
         // If the group is not a workspace, throw an IllegalArgumentException
         if (!group.isWorkspace()) {
             throw new IllegalArgumentException(messages.getMessage("api.groups.group_not_workspace", new
-                Object[]{groupId}, locale));
+                Object[]{id}, locale));
         }
+        return String.valueOf(id);
     }
 
 }

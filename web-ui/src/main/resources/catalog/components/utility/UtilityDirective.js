@@ -2642,6 +2642,10 @@
    */
   module.filter("thumbnailUrlSize", function () {
     return function (href, size) {
+      // Browsers can display WebP, but the attachment resize endpoint cannot decode it.
+      if (href && /\.webp(?:[?#]|$)/i.test(href)) {
+        return href;
+      }
       if (href && href.indexOf("api/records/") !== -1) {
         var suffix = "size=" + (size || 140);
         return href.indexOf("?") !== -1 ? href + "&" + suffix : href + "?" + suffix;
@@ -2808,25 +2812,11 @@
             if (img) {
               var label =
                 img.label || $filter("gnLocalized")(img.title, scope.lang) || "";
-              var labelDiv =
-                '<div class="gn-img-background">' +
-                '  <div class="gn-img-thumbnail-caption">' +
-                label +
-                "</div>" +
-                "</div>";
               modalElt = angular.element(
-                "" +
-                  '<div class="modal fade in gn-img-modal-lightbox"' +
-                  '     id="gn-img-modal-' +
-                  (img.id || img.lUrl || img.url) +
-                  '" tabindex="-1" role="dialog" aria-modal="true">' +
+                '<div class="modal fade in gn-img-modal-lightbox" tabindex="-1" role="dialog" aria-modal="true">' +
                   '<div class="modal-dialog gn-img-modal in" role="document">' +
                   '  <div class="gn-img-modal-viewport">' +
-                  '    <img src="' +
-                  (attr.ngSrc || img.lUrl || img.url || img.id) +
-                  '" alt="' +
-                  label.replace(/&/g, "&amp;").replace(/"/g, "&quot;") +
-                  '"/>' +
+                  "    <img/>" +
                   "  </div>" +
                   '  <div class="gn-img-modal-controls" role="group" aria-label="Image zoom controls">' +
                   '    <button type="button" class="btn btn-default gn-img-zoom-out" aria-label="Zoom out" title="Zoom out">−</button>' +
@@ -2835,10 +2825,21 @@
                   "  </div>" +
                   '  <button type="button" class="btn btn-danger gn-btn-modal-img" aria-label="Close image">' +
                   "×</button>" +
-                  (label != "" ? labelDiv : "") +
+                  (label != ""
+                    ? '<div class="gn-img-background"><div class="gn-img-thumbnail-caption"></div></div>'
+                    : "") +
                   "</div>" +
                   "</div>"
               );
+
+              modalElt.attr("id", "gn-img-modal-" + (img.id || img.lUrl || img.url));
+              var modalImage = modalElt.find("img").first();
+              modalImage
+                .attr("src", attr.ngSrc || img.lUrl || img.url || img.id)
+                .attr("alt", label);
+              if (label != "") {
+                modalElt.find(".gn-img-thumbnail-caption").text(label);
+              }
 
               $(document.body).append(modalElt);
               modalElt.modal();
@@ -2848,7 +2849,6 @@
                 }
               });
               var viewport = modalElt.find(".gn-img-modal-viewport");
-              var modalImage = modalElt.find("img").first();
               var zoom = 1;
 
               viewport.on("click", function (event) {

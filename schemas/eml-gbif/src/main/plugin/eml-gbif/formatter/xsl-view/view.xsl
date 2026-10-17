@@ -32,6 +32,21 @@
                           else concat($nodeUrl, 'api/records/', $uuid, '/attachments/', $value)"/>
   </xsl:function>
 
+  <xsl:function name="eml-fn:keyword-search-href" as="xs:string">
+    <xsl:param name="keyword" as="xs:string"/>
+    <xsl:variable name="escaped" select="string-join(
+      for $code in string-to-codepoints($keyword)
+      return if ($code = 34) then '\&quot;'
+             else if ($code = 92) then '\\'
+             else if ($code = 9) then '\t'
+             else if ($code = 10) then '\n'
+             else if ($code = 13) then '\r'
+             else codepoints-to-string($code), '')"/>
+    <xsl:variable name="query"
+                  select="concat('{&quot;tag.\\*&quot;:{&quot;', $escaped, '&quot;:true}}')"/>
+    <xsl:sequence select="concat('#/search?query_string=', encode-for-uri($query))"/>
+  </xsl:function>
+
   <xsl:template name="get-eml-gbif-other-languages">
     <lang id="eng" code="eng" default=""/>
   </xsl:template>
@@ -156,7 +171,7 @@
               <xsl:for-each select="current-group()">
                 <xsl:sort select="."/>
                 <a class="btn btn-default btn-xs"
-                   href='#/search?query_string=%7B"tag.\\*":%7B"{.}":true%7D%7D'>
+                   href="{eml-fn:keyword-search-href(string(.))}">
                   <xsl:value-of select="."/>
                 </a>
               </xsl:for-each>
@@ -169,7 +184,7 @@
             <xsl:for-each select="$tags/tag">
               <xsl:sort select="."/>
               <a class="btn btn-default btn-xs"
-                 href='#/search?query_string=%7B"tag.\\*":%7B"{.}":true%7D%7D'>
+                 href="{eml-fn:keyword-search-href(string(.))}">
                 <xsl:value-of select="."/>
               </a>
             </xsl:for-each>
@@ -347,7 +362,7 @@
                 <xsl:for-each select="keyword[normalize-space(.) != '']">
                   <li>
                     <a class="izrk-keyword-filter"
-                       href='#/search?query_string=%7B"tag.\\*":%7B"{normalize-space(.)}":true%7D%7D'>
+                       href="{eml-fn:keyword-search-href(normalize-space(.))}">
                       <xsl:value-of select="normalize-space(.)"/>
                     </a>
                   </li>
@@ -449,7 +464,6 @@
         <dd>
           <xsl:call-template name="eml-taxonomy">
             <xsl:with-param name="coverage" select="$coverage"/>
-            <xsl:with-param name="uuid" select="$metadataUuid"/>
           </xsl:call-template>
         </dd>
       </dl>
@@ -462,7 +476,6 @@
         <h2>Taxonomic coverage</h2>
         <xsl:call-template name="eml-taxonomy">
           <xsl:with-param name="coverage" select="."/>
-          <xsl:with-param name="uuid" select="$metadataUuid"/>
         </xsl:call-template>
       </section>
     </xsl:if>
