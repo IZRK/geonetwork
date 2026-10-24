@@ -1,7 +1,6 @@
 # Postojna-Planina LTER site: ISO 19139 to EML-GBIF
 
-Source: extracted GeoNetwork MEF at
-`/Users/vids/Downloads/d3011b1e-3aa5-4b61-a3bc-94da67f582c8/`.
+Source: supplied extracted GeoNetwork MEF export (source directory not committed).
 Import package: `postojna-planina-lter-eml-gbif.mef` in this directory.
 The source was read only. This is a research-site description, not a data
 download; it follows the existing Postojna minisites EML-GBIF migration.

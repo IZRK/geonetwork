@@ -9,6 +9,8 @@
 git*.properties
 
 # Directories and paths
+__pycache__/
+*.py[cod]
 */*/.*
 */*/target/
 */target/

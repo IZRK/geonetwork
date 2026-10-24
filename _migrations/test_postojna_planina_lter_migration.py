@@ -2,17 +2,19 @@
 
 import hashlib
 import json
+import os
 from pathlib import Path
-import subprocess
-import tempfile
 import unittest
 from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 
+from _migrations.index_test_support import index_dependencies_available, render_index
 
-ROOT = Path(__file__).resolve().parents[1]
+
 UUID = "d3011b1e-3aa5-4b61-a3bc-94da67f582c8"
-SOURCE = Path("/Users/vids/Downloads") / UUID / UUID
+SOURCE = (Path(os.environ["POSTOJNA_PLANINA_LTER_ISO_SOURCE"])
+          if os.environ.get("POSTOJNA_PLANINA_LTER_ISO_SOURCE") else None)
+SOURCE_AVAILABLE = SOURCE is not None
 ARCHIVE = Path(__file__).with_name("postojna-planina-lter-eml-gbif.mef")
 NS = {"gmd": "http://www.isotc211.org/2005/gmd",
       "gco": "http://www.isotc211.org/2005/gco"}
@@ -55,7 +57,7 @@ class PostojnaPlaninaLterMigrationTest(unittest.TestCase):
         self.assertEqual("https://deims.org/b5bcf1f8-b905-4190-bb82-12d0d73904d0",
                          self.eml.findtext("dataset/distribution/online/url"))
 
-    @unittest.skipUnless(SOURCE.exists(), "original extracted MEF is unavailable")
+    @unittest.skipUnless(SOURCE_AVAILABLE, "Set POSTOJNA_PLANINA_LTER_ISO_SOURCE to the extracted ISO record")
     def test_content_access_and_attachment_hashes_match_source(self):
         iso = ET.parse(SOURCE / "metadata/metadata.xml").getroot()
         info = ET.parse(SOURCE / "info.xml").getroot()
@@ -107,26 +109,15 @@ class PostojnaPlaninaLterMigrationTest(unittest.TestCase):
         self.assertEqual({"Zguba jama_tp.JPG", "Planinska jama.JPG", "PPCS.JPG"},
                          set(self.public))
 
+    @unittest.skipUnless(index_dependencies_available(),
+                         "GeoNetwork webapp dependencies are required")
     def test_all_keywords_are_indexed(self):
-        stylesheet = ROOT / "schemas/eml-gbif/src/main/plugin/eml-gbif/index-fields/index.xsl"
-        webapp = ROOT / "web/target/geonetwork/WEB-INF"
-        with tempfile.TemporaryDirectory() as temporary:
-            source = Path(temporary) / "metadata.xml"
-            result = Path(temporary) / "index.xml"
-            with ZipFile(ARCHIVE) as package:
-                source.write_bytes(package.read(f"{UUID}/metadata/metadata.xml"))
-            process = subprocess.run(
-                ["java", "-cp", f"{webapp / 'classes'}:{webapp / 'lib'}/*",
-                 "net.sf.saxon.Transform", f"-s:{source}", f"-xsl:{stylesheet}", f"-o:{result}"],
-                capture_output=True, text=True, check=False,
-            )
-            self.assertEqual(0, process.returncode, process.stderr)
-            index = ET.parse(result).getroot()
-            expected = [item.text for item in self.eml.findall("dataset/keywordSet/keyword")]
-            self.assertEqual(expected, [item["default"] for item in json.loads(index.findtext("tag"))])
-            self.assertEqual(len(expected), int(index.findtext("tagNumber")))
-            self.assertEqual(expected, [item["default"] for item in
-                                        json.loads(index.findtext("allKeywords"))["otherKeywords-theme"]["keywords"]])
+        index = render_index(ET.tostring(self.eml), UUID)
+        expected = [item.text for item in self.eml.findall("dataset/keywordSet/keyword")]
+        self.assertEqual(expected, [item["default"] for item in json.loads(index.findtext("tag"))])
+        self.assertEqual(len(expected), int(index.findtext("tagNumber")))
+        self.assertEqual(expected, [item["default"] for item in
+                                    json.loads(index.findtext("allKeywords"))["otherKeywords-theme"]["keywords"]])
 
 
 if __name__ == "__main__":

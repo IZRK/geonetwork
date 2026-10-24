@@ -134,8 +134,8 @@ ISO parent identifier: example-parent</para><para>Other context: retained as pro
                         if node.get("name") == "eml-keywords")
         link = keywords.find(".//a[@class='izrk-keyword-filter']")
         self.assertIsNotNone(link)
-        self.assertIn('"tag.\\\\*"', link.get("href"))
-        self.assertIn("{normalize-space(.)}", link.get("href"))
+        self.assertEqual("{eml-fn:keyword-search-href(normalize-space(.))}",
+                         link.get("href"))
 
 
 if __name__ == "__main__":

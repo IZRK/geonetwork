@@ -1,0 +1,4 @@
+child_rank,child_name,parent_rank,parent_name,source_reference
+Genus,Valeriana,Family,Caprifoliaceae,https://www.gbif.org/species/2888741
+Genus,Valerianella,Family,Caprifoliaceae,https://www.gbif.org/species/2888773
+Species,Valerianella eriocarpa,Genus,Valerianella,https://www.gbif.org/species/2888773
