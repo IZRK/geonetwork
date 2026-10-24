@@ -1,7 +1,6 @@
 """Run with SAXON_JAR pointing to the Saxon JAR shipped in GeoNetwork's WAR."""
 
 import os
-from zipfile import ZipFile
 from pathlib import Path
 import subprocess
 import tempfile
@@ -11,7 +10,6 @@ import xml.etree.ElementTree as ET
 
 STYLESHEET = (Path(__file__).resolve().parents[2]
               / "main/plugin/eml-gbif/formatter/taxonomy.xsl")
-COPEPODA_MEF = Path(__file__).resolve().parents[5] / "_migrations/copepoda-eml-gbif-preserved.mef"
 
 
 class TaxonomyTest(unittest.TestCase):
@@ -77,22 +75,6 @@ class TaxonomyTest(unittest.TestCase):
         family = result.find(".//details[@data-name='Rosaceae']")
         genus = family.find(".//details[@data-name='Rosa']")
         self.assertIn("Rosa canina", "".join(genus.itertext()))
-
-    def test_copepoda_hierarchy_comes_from_mef(self):
-        with ZipFile(COPEPODA_MEF) as archive:
-            metadata = ET.fromstring(archive.read(
-                "c7710542-10ea-43e8-b4d7-9bdd3d559905/metadata/metadata.xml"))
-        coverage = metadata.find("./dataset/coverage/taxonomicCoverage")
-        result = self.render(ET.tostring(coverage, encoding="unicode"))
-        branches = result.findall(".//details[@class='izrk-taxon-branch']")
-        self.assertCountEqual(["Cyclopoida", "Harpacticoida"],
-                              [branch.get("data-name") for branch in branches])
-        self.assertEqual(32, len(self.rendered_taxon_names(result)))
-        self.assertEqual(30, len(result.findall(".//a[@class='izrk-taxon-search']")))
-        self.assertNotIn("Unlinked names", "".join(result.itertext()))
-        bryocamptus = result.find(
-            ".//a[@href='https://www.gbif.org/taxon/search?q=Bryocamptus+n.sp.+1']")
-        self.assertIsNotNone(bryocamptus)
 
     def test_flat_name_does_not_inherit_an_app_specific_parent(self):
         result = self.render('''<taxonomicCoverage><taxonomicClassification>

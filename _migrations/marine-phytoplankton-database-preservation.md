@@ -16,7 +16,7 @@ Output: `marine-phytoplankton-database-eml-gbif.mef`
 ## Validation and remaining limits
 
 - EML-GBIF XSD validation passed with `xmllint --nonet --noout --schema schemas/eml-gbif/src/main/plugin/eml-gbif/schema/eml.xsd`.
-- The three migration-specific tests passed. The repository EML-GBIF Python suite passed all 22 tests.
+- Direct source and archive comparison confirmed the preserved fields and the absence of source attachments.
 - The index transform emitted all three exact keywords in `tag` and `allKeywords`, with `tagNumber` 3.
 - The original ISO export fails strict `gmd.xsd` validation: `identificationInfo` appears before required top-level hierarchy/contact elements, and the source `dateStamp` is empty. The original source was not changed.
 - There are no source attachment bytes to compare or carry into the MEF. No local live catalogue import or rendered-record check was performed; hosted import, search, and display remain unverified.

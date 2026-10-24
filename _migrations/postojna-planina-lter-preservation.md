@@ -45,10 +45,9 @@ The private directory and private manifest are empty in both source and target.
 
 - Target XML validates against the repository's local `eml.xsd`; ZIP integrity
   check passes.
-- Four record-specific tests pass, covering content, access, attachment hashes,
-  coverage, identity, and all six keywords in `tag.default`, `allKeywords`, and
-  `tagNumber` after the actual index transform.
-- The EML plugin suite passes 19 tests, including multi-image view rendering.
+- Direct source comparison confirmed content, access, attachment hashes,
+  coverage, and identity. The index transform emitted all six keywords in
+  `tag.default` and `allKeywords`, with `tagNumber=6`.
 - The original ISO export fails strict local `gmd.xsd` because top-level
   `gmd:contact` and `gmd:dateStamp` are absent. This is recorded in `PROBLEMS.md`.
 - No local GeoNetwork service responds at `localhost:8080`, so live image

@@ -20,9 +20,9 @@ link. The acknowledgment DOI in the abstract is a citation, not a data-download
 URL. The source ISO XML fails strict `gmd.xsd` validation because it lacks the
 required top-level contact and date stamp; it was not modified.
 
-Verification: the converted XML passes the repository EML XSD; four migration
-tests pass, including archive contents, access, byte hashes, and search index
-fields (`tag`, `tagNumber=9`, `allKeywords`). The 18 EML plugin tests pass.
+Verification: the converted XML passes the repository EML XSD. Direct archive
+and source comparison confirmed access, attachment bytes, and search index
+fields (`tag`, `tagNumber=9`, `allKeywords`).
 Live catalogue rendering and keyword-link behavior remain unverified because
 the local GeoNetwork endpoint could not be reached from this environment.
 Import the MEF into the intended catalogue, then check the image and keyword
