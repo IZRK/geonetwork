@@ -1,5 +1,6 @@
 """Verify the Marine phytoplankton database EML-GBIF MEF."""
 
+import os
 from pathlib import Path
 import unittest
 from xml.etree import ElementTree as ET
@@ -7,7 +8,9 @@ from zipfile import ZipFile
 
 
 UUID = "1f7b7000-1cc3-428f-974d-a688398f51e0"
-SOURCE = Path("/Users/vids/Downloads") / UUID / UUID
+SOURCE = (Path(os.environ["MARINE_PHYTOPLANKTON_ISO_SOURCE"])
+          if os.environ.get("MARINE_PHYTOPLANKTON_ISO_SOURCE") else None)
+SOURCE_AVAILABLE = SOURCE is not None
 ARCHIVE = Path(__file__).with_name("marine-phytoplankton-database-eml-gbif.mef")
 NS = {"gmd": "http://www.isotc211.org/2005/gmd", "gco": "http://www.isotc211.org/2005/gco"}
 
@@ -21,13 +24,16 @@ class MarinePhytoplanktonMigrationTest(unittest.TestCase):
             cls.eml = ET.fromstring(package.read(f"{UUID}/metadata/metadata.xml"))
 
     def test_record_identity_and_catalogue_settings(self):
-        source_info = ET.parse(SOURCE / "info.xml").getroot()
         self.assertEqual("eml-gbif", self.info.findtext("general/schema"))
         self.assertEqual(UUID, self.info.findtext("general/uuid"))
         self.assertEqual(UUID, self.eml.attrib["packageId"])
         self.assertEqual(UUID, self.eml.findtext("dataset/alternateIdentifier"))
         self.assertIsNone(self.info.find("general/localId"))
         self.assertIsNone(self.info.find("general/siteId"))
+
+    @unittest.skipUnless(SOURCE_AVAILABLE, "Set MARINE_PHYTOPLANKTON_ISO_SOURCE to compare source metadata")
+    def test_catalogue_settings_match_source(self):
+        source_info = ET.parse(SOURCE / "info.xml").getroot()
         self.assertEqual(source_info.findtext("general/createDate"), self.info.findtext("general/createDate"))
         self.assertEqual(
             [(item.get("name"), [(op.get("name"), op.get("groupOwner")) for op in item])
@@ -40,7 +46,8 @@ class MarinePhytoplanktonMigrationTest(unittest.TestCase):
             [item.get("name") for item in self.info.findall("categories/category")],
         )
 
-    def test_source_content_and_required_role_caveats(self):
+    @unittest.skipUnless(SOURCE_AVAILABLE, "Set MARINE_PHYTOPLANKTON_ISO_SOURCE to compare source metadata")
+    def test_source_content(self):
         source = ET.parse(SOURCE / "metadata/metadata.xml").getroot()
         title = source.findtext(
             ".//gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString", namespaces=NS)
@@ -48,6 +55,8 @@ class MarinePhytoplanktonMigrationTest(unittest.TestCase):
             ".//gmd:descriptiveKeywords//gmd:keyword/gco:CharacterString", NS)]
         self.assertEqual(title, self.eml.findtext("dataset/title"))
         self.assertEqual(keywords, [item.text for item in self.eml.findall("dataset/keywordSet/keyword")])
+
+    def test_required_role_caveats(self):
         self.assertEqual("Marine Biology Station Piran - National Institute of Biology",
                          self.eml.findtext("dataset/creator/organizationName"))
         self.assertEqual("custodian", self.eml.findtext("dataset/associatedParty/role"))

@@ -1,7 +1,7 @@
 # Marine phytoplankton database migration
 
-Source UUID: `1f7b7000-1cc3-428f-974d-a688398f51e0`  
-Source: `/Users/vids/Downloads/1f7b7000-1cc3-428f-974d-a688398f51e0`  
+Source UUID: `1f7b7000-1cc3-428f-974d-a688398f51e0`
+Source: supplied extracted ISO MEF record directory (source not committed)
 Output: `marine-phytoplankton-database-eml-gbif.mef`
 
 ## Preserved and mapped

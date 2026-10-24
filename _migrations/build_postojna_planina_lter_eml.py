@@ -14,7 +14,6 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 UUID = "d3011b1e-3aa5-4b61-a3bc-94da67f582c8"
-DEFAULT_SOURCE = Path("/Users/vids/Downloads") / UUID
 DEFAULT_OUTPUT = Path(__file__).with_name("postojna-planina-lter-eml-gbif.mef")
 GMD = "http://www.isotc211.org/2005/gmd"
 GCO = "http://www.isotc211.org/2005/gco"
@@ -175,7 +174,8 @@ def build(source: Path, output: Path) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--source", required=True, type=Path,
+                        help="extracted ISO MEF record directory")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
     build(args.source, args.output)

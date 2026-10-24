@@ -12,14 +12,16 @@ import unittest
 import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 
+from _migrations.index_test_support import index_dependencies_available, render_index
+
 
 ROOT = Path(__file__).resolve().parents[1]
 UUID = "8306e789-a3e5-40b2-aad4-aa69436a063c"
-SOURCE = Path(os.environ.get("POSTOJNA_ISO_SOURCE", "/Users/vids/Downloads")) / UUID
+SOURCE = (Path(os.environ["POSTOJNA_ISO_SOURCE"])
+          if os.environ.get("POSTOJNA_ISO_SOURCE") else None)
+SOURCE_AVAILABLE = SOURCE is not None
 ARCHIVE = ROOT / "_migrations/postojna-minisites-eml-gbif-preserved.mef"
 SCHEMA = ROOT / "schemas/eml-gbif/src/main/plugin/eml-gbif/schema/eml.xsd"
-INDEX_XSL = ROOT / "schemas/eml-gbif/src/main/plugin/eml-gbif/index-fields/index.xsl"
-WEBAPP = ROOT / "web/target/geonetwork/WEB-INF"
 NS = {"gmd": "http://www.isotc211.org/2005/gmd",
       "gco": "http://www.isotc211.org/2005/gco"}
 
@@ -40,9 +42,9 @@ class PostojnaMigrationTest(unittest.TestCase):
             cls.index = archive.read("index.csv").decode("utf-8")
         cls.eml = ET.fromstring(cls.metadata)
 
-    @unittest.skipUnless(SOURCE.exists(), "Original ISO export is required")
+    @unittest.skipUnless(SOURCE_AVAILABLE, "Set POSTOJNA_ISO_SOURCE to the extracted ISO record")
     def test_source_content_and_geography_are_preserved(self):
-        iso = ET.parse(SOURCE / UUID / "metadata/metadata.xml").getroot()
+        iso = ET.parse(SOURCE / "metadata/metadata.xml").getroot()
         source_title = iso.findtext(".//gmd:CI_Citation/gmd:title/gco:CharacterString", namespaces=NS)
         source_abstract = iso.findtext(".//gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString", namespaces=NS)
         keywords = [node.text for node in iso.findall(
@@ -77,9 +79,9 @@ class PostojnaMigrationTest(unittest.TestCase):
                              self.eml.findtext(f"dataset/coverage/geographicCoverage/"
                                                f"boundingCoordinates/{target_name}"))
 
-    @unittest.skipUnless(SOURCE.exists(), "Original ISO export is required")
+    @unittest.skipUnless(SOURCE_AVAILABLE, "Set POSTOJNA_ISO_SOURCE to the extracted ISO record")
     def test_access_and_attachment_are_preserved(self):
-        original = ET.parse(SOURCE / UUID / "info.xml").getroot()
+        original = ET.parse(SOURCE / "info.xml").getroot()
         converted = ET.fromstring(self.info)
         self.assertEqual("eml-gbif", converted.findtext("general/schema"))
         self.assertEqual(UUID, converted.findtext("general/uuid"))
@@ -91,7 +93,7 @@ class PostojnaMigrationTest(unittest.TestCase):
                              signature(converted.find(section)))
         for name in ("localId", "siteId", "siteName"):
             self.assertIsNone(converted.find(f"general/{name}"))
-        self.assertEqual(hashlib.sha256((SOURCE / UUID / "public/IMG_20180404_103534948.jpg").read_bytes()).digest(),
+        self.assertEqual(hashlib.sha256((SOURCE / "public/IMG_20180404_103534948.jpg").read_bytes()).digest(),
                          hashlib.sha256(self.image).digest())
         self.assertEqual("IMG_20180404_103534948.jpg",
                          self.eml.findtext("additionalMetadata/metadata/gbif/resourceLogoUrl"))
@@ -111,25 +113,16 @@ class PostojnaMigrationTest(unittest.TestCase):
                 capture_output=True, text=True, check=False)
             self.assertEqual(0, result.returncode, result.stderr)
 
-    @unittest.skipUnless((WEBAPP / "lib/saxon-9.1.0.8b-patch.jar").exists(),
+    @unittest.skipUnless(index_dependencies_available(),
                          "GeoNetwork webapp dependencies are required")
     def test_actual_keywords_reach_search_fields(self):
-        with tempfile.TemporaryDirectory() as directory:
-            source = Path(directory) / "metadata.xml"
-            output = Path(directory) / "index.xml"
-            source.write_bytes(self.metadata)
-            result = subprocess.run(
-                ["java", "-cp", f"{WEBAPP / 'classes'}:{WEBAPP / 'lib'}/*",
-                 "net.sf.saxon.Transform", f"-s:{source}", f"-xsl:{INDEX_XSL}",
-                 f"-o:{output}"], capture_output=True, text=True, check=False)
-            self.assertEqual(0, result.returncode, result.stderr)
-            index = ET.parse(output).getroot()
-            keywords = [node.text for node in self.eml.findall("dataset/keywordSet/keyword")]
-            self.assertEqual(keywords, [item["default"] for item in json.loads(index.findtext("tag"))])
-            self.assertEqual(str(len(keywords)), index.findtext("tagNumber"))
-            badges = json.loads(index.findtext("allKeywords"))
-            self.assertEqual(keywords, [item["default"] for item in
-                                        badges["otherKeywords-theme"]["keywords"]])
+        index = render_index(self.metadata, UUID)
+        keywords = [node.text for node in self.eml.findall("dataset/keywordSet/keyword")]
+        self.assertEqual(keywords, [item["default"] for item in json.loads(index.findtext("tag"))])
+        self.assertEqual(str(len(keywords)), index.findtext("tagNumber"))
+        badges = json.loads(index.findtext("allKeywords"))
+        self.assertEqual(keywords, [item["default"] for item in
+                                    badges["otherKeywords-theme"]["keywords"]])
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # Vegetation of Slovenia database migration
 
-Source UUID: `89ce7bbf-cf1b-4fe8-9ef9-70c817bc3789`  
-Source: `/Users/vids/Downloads/89ce7bbf-cf1b-4fe8-9ef9-70c817bc3789`  
+Source UUID: `89ce7bbf-cf1b-4fe8-9ef9-70c817bc3789`
+Source: supplied extracted ISO MEF record directory (source not committed)
 Output: `vegetation-slovenia-eml-gbif.mef`
 
 ## Preserved and mapped

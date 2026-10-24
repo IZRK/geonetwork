@@ -3,6 +3,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 								xmlns:dc="http://purl.org/dc/terms/" 
 								xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+								xmlns:eml21="eml://ecoinformatics.org/eml-2.1.1"
 								xmlns:xs="http://www.w3.org/2001/XMLSchema"
 								xmlns:eml-index="http://geonetwork-opensource.org/xsl/functions/eml-index"
 								xmlns:util="java:org.fao.geonet.util.XslUtil"
@@ -45,7 +46,7 @@
 		<Document locale="eng">
 			<Field name="_locale" string="eng" store="true" index="true" token="false"/>
 			<Field name="_docLocale" string="eng" store="true" index="true" token="false"/>
-			<xsl:apply-templates select="eml:eml" mode="metadata"/>
+			<xsl:apply-templates select="eml:eml | eml21:eml" mode="metadata"/>
 		</Document>
 	</xsl:template>
 	
@@ -316,8 +317,8 @@
 	
 	<xsl:template match="*" mode="latLon">
 
-		<xsl:if test="number(westBoundingCoordinate) and number(southBoundingCoordinate) and number(eastBoundingCoordinate) and number(northBoundingCoordinate)">
-			<xsl:variable name="format" select="'##.00'"></xsl:variable>
+		<xsl:if test="westBoundingCoordinate castable as xs:double and southBoundingCoordinate castable as xs:double and eastBoundingCoordinate castable as xs:double and northBoundingCoordinate castable as xs:double">
+			<xsl:variable name="format" select="'0.00'"></xsl:variable>
 
 			<Field name="westBL" string="{format-number(westBoundingCoordinate, $format)}" store="true" index="true"/>
 			<Field name="southBL" string="{format-number(southBoundingCoordinate, $format)}" store="true" index="true"/>

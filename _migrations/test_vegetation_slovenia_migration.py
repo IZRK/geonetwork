@@ -1,6 +1,7 @@
 """Verify the Vegetation of Slovenia EML-GBIF MEF and source preservation."""
 
 import hashlib
+import os
 from pathlib import Path
 import unicodedata
 import unittest
@@ -8,9 +9,10 @@ from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 
 
-ROOT = Path(__file__).resolve().parents[1]
 UUID = "89ce7bbf-cf1b-4fe8-9ef9-70c817bc3789"
-SOURCE = Path("/Users/vids/Downloads") / UUID / UUID
+SOURCE = (Path(os.environ["VEGETATION_SLOVENIA_ISO_SOURCE"])
+          if os.environ.get("VEGETATION_SLOVENIA_ISO_SOURCE") else None)
+SOURCE_AVAILABLE = SOURCE is not None
 ARCHIVE = Path(__file__).with_name("vegetation-slovenia-eml-gbif.mef")
 NS = {"gmd": "http://www.isotc211.org/2005/gmd",
       "gco": "http://www.isotc211.org/2005/gco"}
@@ -45,6 +47,7 @@ class VegetationSloveniaMigrationTest(unittest.TestCase):
         self.assertIn("ISO citation creation date: 2003-01-01", self.eml.findtext(
             "dataset/additionalInfo/para"))
 
+    @unittest.skipUnless(SOURCE_AVAILABLE, "Set VEGETATION_SLOVENIA_ISO_SOURCE to compare source metadata")
     def test_metadata_content_and_access_match_source(self):
         iso = ET.parse(SOURCE / "metadata/metadata.xml").getroot()
         info = ET.parse(SOURCE / "info.xml").getroot()
@@ -93,15 +96,26 @@ class VegetationSloveniaMigrationTest(unittest.TestCase):
                          [bounds.findtext(name) for name in (
                              "westBoundingCoordinate", "eastBoundingCoordinate",
                              "northBoundingCoordinate", "southBoundingCoordinate")])
+        self.assertEqual("VegSlo_U%C5%A02.JPG", self.eml.findtext(
+            "additionalMetadata/metadata/gbif/resourceLogoUrl"))
+        self.assertIn("ISO additional browse image: VegSlo_U%C5%A0.JPG",
+                      self.eml.findtext("dataset/additionalInfo/para"))
+
+    def test_packaged_files_match_manifest(self):
+        manifest_files = {unicodedata.normalize("NFC", item.attrib["name"])
+                          for item in self.info.findall("public/file")}
+        packaged_files = {unicodedata.normalize("NFC", Path(name).name)
+                          for name in self.names if name.startswith(f"{UUID}/public/")}
+        self.assertEqual(manifest_files, packaged_files)
+        self.assertTrue(manifest_files)
+
+    @unittest.skipUnless(SOURCE_AVAILABLE, "Set VEGETATION_SLOVENIA_ISO_SOURCE to compare source metadata")
+    def test_online_resources_match_source(self):
         iso = ET.parse(SOURCE / "metadata/metadata.xml").getroot()
         urls = [item.findtext("gmd:linkage/gmd:URL", namespaces=NS) for item in
                 iso.findall(".//gmd:CI_OnlineResource", NS)]
         self.assertEqual(urls, [item.findtext("url") for item in
                                 self.eml.findall("dataset/distribution/online")])
-        self.assertEqual("VegSlo_U%C5%A02.JPG", self.eml.findtext(
-            "additionalMetadata/metadata/gbif/resourceLogoUrl"))
-        self.assertIn("ISO additional browse image: VegSlo_U%C5%A0.JPG",
-                      self.eml.findtext("dataset/additionalInfo/para"))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 """Run with SAXON_JAR pointing to the Saxon JAR shipped in GeoNetwork's WAR."""
 
 import os
+from zipfile import ZipFile
 from pathlib import Path
 import subprocess
 import tempfile
@@ -10,7 +11,7 @@ import xml.etree.ElementTree as ET
 
 STYLESHEET = (Path(__file__).resolve().parents[2]
               / "main/plugin/eml-gbif/formatter/taxonomy.xsl")
-REFERENCE = STYLESHEET.with_name("taxonomy-reference.xml")
+COPEPODA_MEF = Path(__file__).resolve().parents[5] / "_migrations/copepoda-eml-gbif-preserved.mef"
 
 
 class TaxonomyTest(unittest.TestCase):
@@ -20,7 +21,7 @@ class TaxonomyTest(unittest.TestCase):
         searches = result.findall(".//a[@class='izrk-taxon-search']")
         return [node.text for node in labels + searches]
 
-    def render(self, coverage, uuid=""):
+    def render(self, coverage):
         with tempfile.TemporaryDirectory() as directory:
             directory = Path(directory)
             (directory / "input.xml").write_text(coverage)
@@ -31,7 +32,6 @@ class TaxonomyTest(unittest.TestCase):
               <xsl:template match="/">
                 <result><xsl:call-template name="eml-taxonomy">
                   <xsl:with-param name="coverage" select="//taxonomicCoverage"/>
-                  <xsl:with-param name="uuid" select="'{uuid}'"/>
                 </xsl:call-template></result>
               </xsl:template>
             </xsl:stylesheet>''')
@@ -78,75 +78,28 @@ class TaxonomyTest(unittest.TestCase):
         genus = family.find(".//details[@data-name='Rosa']")
         self.assertIn("Rosa canina", "".join(genus.itertext()))
 
-    def test_reference_distinguishes_valeriana_and_valerianella(self):
-        result = self.render('''<taxonomicCoverage>
-          <taxonomicClassification><taxonRankName>Genus</taxonRankName>
-            <taxonRankValue>Valeriana</taxonRankValue></taxonomicClassification>
-          <taxonomicClassification><taxonRankName>Species</taxonRankName>
-            <taxonRankValue>Valerianella eriocarpa</taxonRankValue></taxonomicClassification>
-        </taxonomicCoverage>''', "9f64b6e3-22be-4f17-9cc0-8658c7817867")
-        family = result.find(".//details[@data-name='Caprifoliaceae']")
-        self.assertIsNotNone(family)
-        genus = family.find(".//details[@data-name='Valerianella']")
-        self.assertIn("Valerianella eriocarpa", "".join(genus.itertext()))
-        self.assertIn("Valeriana", "".join(family.itertext()))
-        self.assertEqual(2, len(self.rendered_taxon_names(result)))
+    def test_copepoda_hierarchy_comes_from_mef(self):
+        with ZipFile(COPEPODA_MEF) as archive:
+            metadata = ET.fromstring(archive.read(
+                "c7710542-10ea-43e8-b4d7-9bdd3d559905/metadata/metadata.xml"))
+        coverage = metadata.find("./dataset/coverage/taxonomicCoverage")
+        result = self.render(ET.tostring(coverage, encoding="unicode"))
+        branches = result.findall(".//details[@class='izrk-taxon-branch']")
+        self.assertCountEqual(["Cyclopoida", "Harpacticoida"],
+                              [branch.get("data-name") for branch in branches])
+        self.assertEqual(32, len(self.rendered_taxon_names(result)))
+        self.assertEqual(30, len(result.findall(".//a[@class='izrk-taxon-search']")))
+        self.assertNotIn("Unlinked names", "".join(result.itertext()))
+        bryocamptus = result.find(
+            ".//a[@href='https://www.gbif.org/taxon/search?q=Bryocamptus+n.sp.+1']")
+        self.assertIsNotNone(bryocamptus)
 
-    def test_reference_is_record_scoped_and_does_not_guess_for_other_records(self):
+    def test_flat_name_does_not_inherit_an_app_specific_parent(self):
         result = self.render('''<taxonomicCoverage><taxonomicClassification>
           <taxonRankName>Species</taxonRankName><taxonRankValue>Valerianella eriocarpa</taxonRankValue>
-        </taxonomicClassification></taxonomicCoverage>''', "another-record")
+        </taxonomicClassification></taxonomicCoverage>''')
         self.assertNotIn("Caprifoliaceae", "".join(result.itertext()))
         self.assertIn("Unlinked names", "".join(result.itertext()))
-
-    def test_curated_source_relationships_make_copepod_orders_expandable(self):
-        reference = ET.parse(REFERENCE).getroot()
-        taxa = reference.findall("./record[@uuid='c7710542-10ea-43e8-b4d7-9bdd3d559905']/taxon")
-        names = [taxon.get("name") for taxon in taxa]
-        orders = sorted({parent.get("name") for taxon in taxa
-                         for parent in taxon.findall("parent")})
-        coverage = "<taxonomicCoverage>" + "".join(
-            f"<taxonomicClassification><taxonRankName>Order</taxonRankName>"
-            f"<taxonRankValue>{order.title()}</taxonRankValue></taxonomicClassification>"
-            for order in orders
-        ) + "".join(
-            f"<taxonomicClassification><taxonRankName>Species</taxonRankName>"
-            f"<taxonRankValue>{name}</taxonRankValue></taxonomicClassification>"
-            for name in names
-        ) + "</taxonomicCoverage>"
-
-        result = self.render(coverage, "c7710542-10ea-43e8-b4d7-9bdd3d559905")
-        branches = result.findall(".//details[@class='izrk-taxon-branch']")
-        self.assertCountEqual([order.title() for order in orders],
-                              [branch.get("data-name") for branch in branches])
-        rendered_names = [name for name in self.rendered_taxon_names(result)
-                          if name.upper() not in orders]
-        search_links = result.findall(".//details[@class='izrk-taxon-branch']//a[@class='izrk-taxon-search']")
-        self.assertEqual(30, len(rendered_names))
-        self.assertCountEqual(names, rendered_names)
-        self.assertEqual(30, len(search_links))
-        bryocamptus = next(link for link in search_links if link.text == "Bryocamptus n.sp. 1")
-        self.assertEqual("https://www.gbif.org/taxon/search?q=Bryocamptus+n.sp.+1",
-                         bryocamptus.get("href"))
-        self.assertNotIn("Unlinked names", "".join(result.itertext()))
-        self.assertNotIn("GBIF reference", "".join(result.itertext()))
-
-    def test_recorded_parents_take_priority_over_reference(self):
-        result = self.render('''<taxonomicCoverage><taxonomicClassification>
-          <taxonRankName>Family</taxonRankName><taxonRankValue>Recorded family</taxonRankValue>
-          <taxonomicClassification><taxonRankName>Genus</taxonRankName>
-            <taxonRankValue>Valeriana</taxonRankValue></taxonomicClassification>
-        </taxonomicClassification></taxonomicCoverage>''', "9f64b6e3-22be-4f17-9cc0-8658c7817867")
-        self.assertNotIn("Caprifoliaceae", "".join(result.itertext()))
-        self.assertIn("Valeriana", "".join(result.find(".//details[@data-name='Recorded family']").itertext()))
-
-    def test_explicit_source_identifiers_bypass_name_only_enrichment(self):
-        result = self.render('''<taxonomicCoverage><taxonomicClassification>
-          <taxonRankName>Genus</taxonRankName><taxonRankValue>Valeriana</taxonRankValue>
-          <taxonId provider="Source">source-specific-id</taxonId>
-        </taxonomicClassification></taxonomicCoverage>''', "9f64b6e3-22be-4f17-9cc0-8658c7817867")
-        self.assertNotIn("Caprifoliaceae", "".join(result.itertext()))
-        self.assertIn("source-specific-id", "".join(result.itertext()))
 
     def test_homonyms_in_different_families_stay_separate(self):
         result = self.render("<taxonomicCoverage>" + "".join(f'''

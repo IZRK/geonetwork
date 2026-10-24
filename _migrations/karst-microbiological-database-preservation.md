@@ -1,7 +1,6 @@
 # Karst microbiological database: ISO 19139 to EML-GBIF
 
-Source: extracted GeoNetwork MEF at
-`/Users/vids/Downloads/28b6a390-8254-479b-ba55-c70f59e121d6/`.
+Source: supplied extracted GeoNetwork MEF export (source directory not committed).
 Output: `karst-microbiological-database-eml-gbif-preserved.mef`.
 UUID and EML package ID: `28b6a390-8254-479b-ba55-c70f59e121d6`.
 

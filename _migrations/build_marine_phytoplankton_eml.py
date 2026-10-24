@@ -13,7 +13,6 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 UUID = "1f7b7000-1cc3-428f-974d-a688398f51e0"
-DEFAULT_SOURCE = Path("/Users/vids/Downloads") / UUID
 DEFAULT_OUTPUT = Path(__file__).with_name("marine-phytoplankton-database-eml-gbif.mef")
 GMD = "http://www.isotc211.org/2005/gmd"
 GCO = "http://www.isotc211.org/2005/gco"
@@ -173,7 +172,8 @@ def build(source: Path, output: Path) -> dict[str, str]:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--source", required=True, type=Path,
+                        help="extracted ISO MEF record directory")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
     result = build(args.source, args.output)
