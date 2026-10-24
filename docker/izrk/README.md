@@ -141,17 +141,10 @@ in `_migrations/pollen-eml-gbif.mef`; import this package when deploying the
 taxonomy formatter changes. The source links are listed in
 `_migrations/pollen-taxonomy.csv`.
 
-To verify or rebuild the Copepoda package from its checked-in MEF and workbook
-extract, run from the repository root:
-
-```bash
-python3 _migrations/build_copepoda_taxonomy.py
-```
-
-The script also accepts an input flat MEF and output path when migrating a
-fresh export. It verifies that all species and orders match the source package.
-It preserves every other MEF entry, including attachments, categories and
-privileges. Importing the updated MEF is a separate catalogue operation.
+The Copepoda MEF already contains the nested classifications and its source
+attachments, categories, and privileges. The taxonomy CSV is retained as
+provenance; it is not needed to import the MEF. Importing the updated package
+is a separate catalogue operation.
 
 The portal requests `view=portal`; the standalone and legacy fragment views use
 `view=default`. The IZRK home facet template adds category/resource icons while

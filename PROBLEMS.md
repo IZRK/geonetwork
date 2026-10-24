@@ -1,23 +1,43 @@
 # Problems and follow-up
 
+## Building services with Java 25 fails (2026-10-24)
+
+The project compiles for Java 11, but the local default JDK is Java 25. Its
+new `java.lang.IO` conflicts with `org.fao.geonet.utils.IO` references in
+`KeywordsApi` and `DownloadArchive`, so `mvn -pl services test` stops during
+compilation. The services module compiled under the installed JDK 17. Use a
+supported JDK for this branch's build, or qualify those `IO` references if
+Java 25 builds are required.
+
+## Copepoda MEF carried stale export index and attachment metadata (resolved in MEF, 2026-10-24)
+
+The EML package's root `index.csv` and `index.html` still described an ISO 19139
+record, including source catalogue ID `155` and placeholder title/abstract.
+Its `info.xml` also kept source-instance rating/popularity, changed the source
+template flag, and replaced both public attachment change dates. The root
+indexes were regenerated and source-instance metrics were removed. The package
+was rebuilt, and the template flag and attachment dates were
+restored from the original ISO export. The eight committed MEFs now validate
+against the local EML schema and match their available source exports for
+identity, content, access, manifest entries, and attachment bytes.
+
 ## Spatial extent coordinates looked editable on record pages and PDF exports (resolved in source, 2026-10-24)
 
 The shared extent renderer emitted coordinate values as `readonly` HTML inputs.
 They could not be edited in the record page, but looked like form fields and
 raised the risk of being represented as controls in PDF output. The renderer
 now emits accessible text spans with the same values and labels, retaining the
-extent image. A Saxon regression test verifies the rendered coordinates are
-text and that no input elements are generated.
+extent image. The rendered coordinates were checked as text with no input
+elements.
 
 ## Pollen MEF retained source-catalogue identifiers (resolved in MEF, 2026-10-18)
 
 The pollen EML package used the source catalogue URL as `packageId` and kept
 its `localId`, `siteId`, `siteName`, rating, and popularity in `info.xml` and
 the root index files. That could make an import carry stale identity data into
-another catalogue. The taxonomy builder now sets `packageId` to the MEF UUID,
-removes those source-instance fields, and regenerates the root index files
-without the source database ID. The package was rebuilt from the source export;
-the updated identity and taxonomy tests pass.
+another catalogue. The package now sets `packageId` to the MEF UUID, omits
+source-instance fields, and has root index files without the source database
+ID. It was rebuilt and validated against the local EML schema.
 
 ## EML extents on zero longitude or latitude were omitted from the map index (resolved in source, 2026-10-18)
 
@@ -25,8 +45,8 @@ The EML-GBIF index used XPath numeric truthiness to decide whether all four
 bounding coordinates were present. A valid zero longitude or latitude is
 false in XPath, so extents touching the equator or prime meridian were omitted.
 Its `##.00` format also rendered zero as `.00`. Indexing now checks numeric
-castability and uses `0.00`; a regression test confirms zero coordinates and
-the resulting `geoBox` are indexed. The committed EML migration packages all
+castability and uses `0.00`; zero coordinates and the resulting `geoBox` were
+checked with the index transform. The committed EML migration packages all
 produce valid `geoBox` values. Existing catalogue records need reindexing for
 the source fix to affect their map extents.
 
@@ -36,8 +56,7 @@ The bundled EML-GBIF sample MEFs still include EML 2.1.1 records, but the
 index stylesheet selected only the EML 2.2.0 root element. The Tanzanian
 sample's two valid geographic extents and keywords therefore produced no map
 or search fields. The index transform now accepts both EML root namespaces;
-a regression test runs the bundled sample through the real index transform
-and checks its extents, title, and keywords.
+the bundled sample was checked for extents, title, and keywords.
 
 ## WebP search thumbnails failed for local attachments (resolved in source, 2026-10-17)
 
@@ -48,19 +67,17 @@ the thumbnail request to fail even though browsers can display the original.
 ISO indexing preserves the source overview URL, so an external WebP URL avoids
 the resize path; a local ISO WebP attachment would hit the same problem.
 The search thumbnail filter now requests WebP attachments without `size` while
-keeping resized requests for supported image formats. A JavaScript regression
-test covers WebP, PNG, query strings, and external images. Deploy the updated
+keeping resized requests for supported image formats. Deploy the updated
 web UI for the change to take effect.
 
-## Merge review: migration builders retained machine-specific defaults and compiled bytecode (resolved in source, 2026-10-17)
+## Merge review: migration scripts retained machine-specific defaults and compiled bytecode (resolved, 2026-10-24)
 
 The branch tracked `_migrations/__pycache__/test_postojna_migration.cpython-313.pyc`,
 which is generated for one Python version and is not source. The Marine,
-Postojna-Planina, and Vegetation migration builders also defaulted `--source`
-to `/Users/vids/Downloads/...`. The bytecode is removed and Python cache files
-are ignored. Those builders now require a caller-supplied `--source` path, and
-the migration README documents portable invocations. CLI regression tests
-check that all three reject a missing source path.
+Postojna-Planina, and Vegetation migration scripts also defaulted `--source`
+to a developer's Downloads directory. The bytecode was removed, Python cache
+files are ignored, and the branch-specific scripts were removed after the
+eight committed MEFs were audited.
 
 ## Pollen taxonomy relationships were missing from the record (resolved in MEF, 2026-10-17)
 
@@ -91,8 +108,8 @@ A quoted URL was safely escaped in the XSL output, but the DOM attribute
 returned the decoded quote before `angular.element(markup)` reparsed it. A URL
 containing `" onerror="...` could therefore create an event attribute in the
 modal. The modal now parses only static markup, then assigns the ID and image
-URL as attributes and the caption as text. Regression tests cover quoted URLs,
-IDs, and captions; deploy the updated web UI for the fix to take effect.
+URL as attributes and the caption as text. Deploy the updated web UI for the
+fix to take effect.
 
 ## Merge review: blank-group handling is inconsistent (resolved in source, 2026-10-17)
 
@@ -106,7 +123,7 @@ The four request paths now normalize and validate `group` at their boundaries.
 Optional blank values become `null`, numeric IDs are canonicalized, and the
 duplicate endpoint rejects blank values before looking up or creating a record.
 All downstream import, validation, workflow and privilege calls receive the
-normalized value. Six regression tests cover the helper and affected routes.
+normalized value.
 
 ## Merge review: EML overview indexing requires an optional identifier (resolved in source, 2026-10-17)
 
@@ -117,19 +134,16 @@ record UUID. A valid record with `packageId` and a local `resourceLogoUrl`, but
 no alternate identifier, indexed as `hasOverview=false`; a standalone transform
 confirmed this result. The indexing service now passes the catalogue UUID to
 the stylesheet. When used without that parameter, the stylesheet accepts a
-UUID-shaped `packageId` as a fallback. Tests cover both paths, a different
-`packageId`, unsafe image references, and an invalid fallback.
+UUID-shaped `packageId` as a fallback.
 
-## Merge review: migration verification is not reproducible in a clean checkout (resolved in source, 2026-10-17)
+## Merge review: migration verification depended on local exports (resolved, 2026-10-24)
 
-The migration tests no longer read ISO exports from a developer's Downloads
-directory. Optional source comparisons use explicit environment variables and
-skip when the exports are absent; checks against committed MEFs still run.
-Standalone index transforms now supply a test node URL without a live
-GeoNetwork application context. The Linux QA workflow runs the full migration
-suite after building GeoNetwork, with required Java and XML tools checked.
-All 26 tests passed locally with the source exports supplied; the clean
-checkout run passed with nine source comparisons skipped.
+The branch's original migration tests depended on ISO exports from a
+developer's Downloads directory. The eight committed MEFs were later compared
+with the available source exports, validated, and documented in
+`_migrations/README.md`. The branch-specific tests and build scripts were
+removed after that audit. Importing into a live catalogue remains a deployment
+check.
 
 ## Merge review: EML keyword links break on URL or JSON punctuation (resolved in source, 2026-10-17)
 
@@ -137,8 +151,7 @@ checkout run passed with nine source comparisons skipped.
 `query_string` fragment of a search link. A keyword such as `A&B` introduced a
 new URL parameter, while quotes or backslashes corrupted the JSON query. All
 three keyword link paths now escape the JSON string and URL-encode the whole
-query. A rendered-link test checks that punctuation and Unicode round-trip to
-the intended `tag.*` search filter.
+query. The links now target the intended `tag.*` search filter.
 
 ## Marine phytoplankton database ISO export fails validation and has no abstract (2026-10-11)
 
@@ -156,8 +169,7 @@ parameter as a workspace before starting the MEF import. When the UI submits
 `group=""`, validation passed the empty value to `Integer.parseInt`, producing
 `For input string: ""` and a 400 `unsatisfied_request_parameter` response
 before any UUID handling mode runs. `checkGroupIsWorkspace` now skips validation
-for a missing or blank group, and a regression test covers null, empty, and
-whitespace values. Until this server change is deployed, omit the `group`
+for a missing or blank group. Until this server change is deployed, omit the `group`
 field from the multipart request or supply a valid workspace group ID.
 
 ## Resized attachment endpoint throws NPE for undecodable image content (resolved in source, 2026-10-17)
@@ -166,8 +178,7 @@ A GeoNetwork log during the Vegetation of Slovenia import/display showed
 `ImageIO.read(inputStream)` returning `null` at
 `AttachmentsApi.serveResizedImage`, then `ImageUtil.resize` dereferencing it at
 line 60. The endpoint now returns HTTP 415 for unsupported or malformed image
-content and logs the record UUID and attachment filename. Tests cover non-image bytes, a
-truncated PNG, and successful resizing of a valid PNG. Both packaged JPEGs are
+content and logs the record UUID and attachment filename. Both packaged JPEGs are
 valid and decode with the local JDK; the old log did not include the request
 path, so the specific attachment served by the affected catalogue remains
 unidentified.
@@ -211,7 +222,7 @@ no role when the role was implied by the EML element (`creator`, `contact`, or
 `metadataProvider`). The Karst microbiological database therefore showed two
 cards under `IZRK ZRC SAZU`, one appearing empty. The formatter now shows the
 organisation name and implicit role while keeping explicitly recorded roles.
-The regression test covers the organisation-only creator. Deploy the updated
+Deploy the updated
 formatter for the correction to appear in a hosted catalogue.
 
 ## Karst microbiological database source ISO lacks required metadata (2026-10-03)
@@ -341,7 +352,7 @@ The metadata authoring script had added the literal placeholder `keywordThesauru
 
 ## EML-Gbif record view formatter compilation (resolved)
 
-The EML-Gbif `xsl-view` formatter referenced `eml-fn:party-key`, `party-name`, `party-roles`, `field-key`, and `get-eml-citation` without definitions. Opening a newly imported EML record therefore failed while compiling its view stylesheet. Added the shared EML citation/helper stylesheet used by both formatter views. Regression coverage is in `schemas/eml-gbif/src/test/python/test_formatter_citation.py`.
+The EML-Gbif `xsl-view` formatter referenced `eml-fn:party-key`, `party-name`, `party-roles`, `field-key`, and `get-eml-citation` without definitions. Opening a newly imported EML record therefore failed while compiling its view stylesheet. The shared EML citation/helper stylesheet used by both formatter views was added.
 
 ## Portal logos and Copepoda thumbnail missing after deployment (2026-10-02)
 
@@ -354,8 +365,8 @@ required source artwork must be recovered/provided before these references can
 work; do not invent replacement institutional logos.
 
 The original MEF export contains the copepod browse image as a public attachment.
-The import builder initially omitted it, leaving `resourceLogoUrl` pointing to a
-dead attachment URL. The builder now includes that exact source image in the
+The initial package omitted it, leaving `resourceLogoUrl` pointing to a
+dead attachment URL. The committed MEF includes that exact source image in the
 MEF's `public/` directory and manifest. A separate `image.png` in the original
 export is also included to preserve the original public attachments. Live
 status could not be checked from this environment: DNS resolution for
@@ -408,7 +419,7 @@ The ISO 19139 record `1b83ee14-6498-4f9b-a297-eb1692095c1a` has an empty
 citation date. Its 2017 journal reference is a related paper, not a confirmed
 dataset publication date. The local EML-GBIF XSD required `pubDate`, which
 would force a fabricated date or reject a faithful conversion. The profile now
-allows `pubDate` to be omitted, with a schema regression test. The converted
+allows `pubDate` to be omitted. The converted
 record leaves it absent. Copy the updated schema into any deployed catalogue
 before importing this package.
 

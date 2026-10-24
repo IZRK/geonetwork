@@ -29,7 +29,7 @@ The extracted source image filenames use decomposed Unicode while the source man
 ## Validation and remaining limits
 
 - EML-GBIF schema validation passed with `xmllint --nonet --noout --schema schemas/eml-gbif/src/main/plugin/eml-gbif/schema/eml.xsd`.
-- The migration-specific checks passed (3 tests). The repository EML-GBIF Python suite passed (22 tests), including keyword indexing and resource display tests.
+- Direct source comparison confirmed content, access settings, and attachment bytes.
 - The record's index transform emitted all seven exact keywords in both `tag` and `allKeywords`, with `tagNumber` 7.
 - The source ISO XML fails strict `gmd.xsd` validation: it is missing required top-level metadata contact and `dateStamp` fields before `identificationInfo`. The source was not modified; this migration records their absence. The source also has no taxonomy or temporal extent, so none were added.
 - No local catalogue is running at `http://localhost:8080/geonetwork`; live import, search, and rendered display remain unverified. Importing this MEF does not deploy formatter code or reindex records in a hosted catalogue.
