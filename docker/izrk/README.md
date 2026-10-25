@@ -128,23 +128,15 @@ is retained. The classification has a bounded scrolling area to keep long lists
 from lengthening the page. Unlinked names are ordered from broader to narrower
 ranks without implying parent relationships.
 
-The taxonomy tree is built from each record's EML `taxonomicCoverage`. The
-Copepoda MEF in `_migrations/` records the two orders and 30 species from
-`Epikarst.Copepoda_13caves_taxonomy.xlsx` as nested classifications. The
-checked-in `_migrations/copepoda-taxonomy.csv` is a portable extract of those
-relationships. These relationships are supplied by the
-record; they are not verified GBIF matches. Species names link to a GBIF name
-search. Flat classifications remain unlinked until their source-backed
-relationships are added to their own MEF. The pollen record
-`9f64b6e3-22be-4f17-9cc0-8658c7817867` now has its GBIF family and genus links
-in `_migrations/pollen-eml-gbif.mef`; import this package when deploying the
-taxonomy formatter changes. The source links are listed in
-`_migrations/pollen-taxonomy.csv`.
-
-The Copepoda MEF already contains the nested classifications and its source
-attachments, categories, and privileges. The taxonomy CSV is retained as
-provenance; it is not needed to import the MEF. Importing the updated package
-is a separate catalogue operation.
+The taxonomy tree is built from each record's EML `taxonomicCoverage`.
+The separately stored Copepoda migration package records two orders and 30
+species from `Epikarst.Copepoda_13caves_taxonomy.xlsx` as nested
+classifications. These relationships come from the record, not verified GBIF
+matches. Species names link to a GBIF name search. Flat classifications remain
+unlinked until source-backed relationships are added to a record. The separate
+pollen migration package carries its GBIF family and genus links. Migration
+packages and their provenance notes are kept outside this repository; importing
+one is an explicit catalogue operation, not part of deployment or startup.
 
 The portal requests `view=portal`; the standalone and legacy fragment views use
 `view=default`. The IZRK home facet template adds category/resource icons while
