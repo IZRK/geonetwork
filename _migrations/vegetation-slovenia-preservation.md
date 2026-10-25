@@ -32,7 +32,7 @@ The extracted source image filenames use decomposed Unicode while the source man
 - Direct source comparison confirmed content, access settings, and attachment bytes.
 - The record's index transform emitted all seven exact keywords in both `tag` and `allKeywords`, with `tagNumber` 7.
 - The source ISO XML fails strict `gmd.xsd` validation: it is missing required top-level metadata contact and `dateStamp` fields before `identificationInfo`. The source was not modified; this migration records their absence. The source also has no taxonomy or temporal extent, so none were added.
-- No local catalogue is running at `http://localhost:8080/geonetwork`; live import, search, and rendered display remain unverified. Importing this MEF does not deploy formatter code or reindex records in a hosted catalogue.
+- Local import and record display are documented in `README.md`; hosted search and display remain to be checked. Importing this MEF does not deploy formatter code or reindex records in a hosted catalogue.
 
 
 - EML Creator mapping: following the data owner's instruction, used Urban Šilc (custodian; BIJH ZRC SAZU), Filip Küzmič (custodian; BIJH ZRC SAZU) as the required EML Creator(s); the ISO source role remains represented as an associated party.

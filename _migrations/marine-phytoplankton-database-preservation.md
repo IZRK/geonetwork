@@ -19,7 +19,7 @@ Output: `marine-phytoplankton-database-eml-gbif.mef`
 - Direct source and archive comparison confirmed the preserved fields and the absence of source attachments.
 - The index transform emitted all three exact keywords in `tag` and `allKeywords`, with `tagNumber` 3.
 - The original ISO export fails strict `gmd.xsd` validation: `identificationInfo` appears before required top-level hierarchy/contact elements, and the source `dateStamp` is empty. The original source was not changed.
-- There are no source attachment bytes to compare or carry into the MEF. No local live catalogue import or rendered-record check was performed; hosted import, search, and display remain unverified.
+- There are no source attachment bytes to compare or carry into the MEF. The local import and record display are documented in `README.md`; hosted search and display remain to be checked.
 
 
 - EML Creator mapping: following the data owner's instruction, used Andreja Ramšak (custodian; Marine Biology Station Piran - National Institute of Biology) as the required EML Creator(s); the ISO source role remains represented as an associated party.

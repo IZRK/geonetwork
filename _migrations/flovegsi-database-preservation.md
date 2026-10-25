@@ -26,4 +26,4 @@ Output: `flovegsi-database-eml-gbif.mef`
 
 ## Verification
 
-The conversion test suite checks source/MEF identity, exact abstract and keywords, manifests, and attachment hashes. The generated XML is validated against the local EML-GBIF schema. Live catalogue import, indexing and rendering have not been performed.
+The conversion test suite checks source/MEF identity, exact abstract and keywords, manifests, and attachment hashes. The generated XML is validated against the local EML-GBIF schema. Local import and record display are documented in `README.md`; hosted deployment remains to be checked.

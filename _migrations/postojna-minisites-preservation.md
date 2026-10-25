@@ -25,7 +25,8 @@ The source has no temporal or taxonomic extent, resource distribution URL, or ri
 - Direct source comparison confirmed content, coordinates, UUID, categories, privileges, and the attachment manifest.
 - Actual record index transform: all six keywords appear in `tag.default` and `allKeywords`; `tagNumber` is 6.
 - The source ISO XML fails strict local `gmd.xsd` validation because its top-level `dateStamp` is absent. The source was not edited.
-- No catalogue responded on `localhost:8080`; live record view, image loading, and keyword search remain unverified.
+- Local import and record display are documented in `README.md`; hosted image
+  loading and keyword search remain to be checked.
 
 The EML portal's Technical information shows **Source citation creation date**
 as `2009-12-04` from the ISO metadata. The MEF retains the catalogue record's

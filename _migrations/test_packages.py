@@ -1,10 +1,11 @@
-"""Independent source-to-target checks for the nine new migration packages."""
+"""Check committed migration packages, with source comparisons when available."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -12,9 +13,24 @@ from urllib.parse import quote, unquote, urlparse
 from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 
-from build_remaining_mefs import CORRECTED_PARTY_NAMES, RECORDS, ROOT
-
-
+ROOT = Path(__file__).resolve().parent
+RECORDS = {
+    "6006d62c-5143-4bbc-ad4c-9d9375b0f499": "skocjan-airborne-bacteria",
+    "1b83ee14-6498-4f9b-a297-eb1692095c1a": "skocjan-detected-pathogens",
+    "9a5a0578-f6c5-4c44-9ca6-e23baada5ffb": "flovegsi-database",
+    "293dcc3b-8e9d-4c74-bfb2-67eddee69417": "institute-of-biology-herbarium",
+    "2a1a1d63-9b2d-48d2-931d-b18945a580d5": "slovenian-bird-ringing-database",
+    "b5c2c64a-325b-42d1-b5ad-2198ad434a55": "marine-genomic-arms-database",
+    "aff1a1d3-46df-46df-a693-7d249134633c": "skocjan-caves-lter-site",
+    "ce4ccbc2-ebba-43d7-af35-8aee7e6f7935": "postojna-pojs-minisite",
+    "cec7e833-ef3c-443d-984b-5e0b15418375": "predjama-pr2-minisite",
+}
+CORRECTED_PARTY_NAMES = {
+    "9a5a0578-f6c5-4c44-9ca6-e23baada5ffb": {
+        "Andrej Seliökar": "Andrej Seliškar",
+        "Tomaû Seliökar": "Tomaž Seliškar",
+    },
+}
 NS = {"gmd": "http://www.isotc211.org/2005/gmd", "gco": "http://www.isotc211.org/2005/gco"}
 XSD = ROOT.parent / "schemas/eml-gbif/src/main/plugin/eml-gbif/schema/eml.xsd"
 INDEX_XSL = ROOT.parent / "schemas/eml-gbif/src/main/plugin/eml-gbif/index-fields/index.xsl"
@@ -26,6 +42,29 @@ def texts(root: ET.Element, path: str, ns: dict[str, str] | None = None) -> list
 
 
 class MigrationPackagesTest(unittest.TestCase):
+    def test_committed_packages_are_self_consistent(self):
+        packages = sorted(ROOT.glob("*.mef"))
+        self.assertEqual(17, len(packages))
+        for package in packages:
+            with self.subTest(package=package.name), ZipFile(package) as archive:
+                self.assertIsNone(archive.testzip())
+                names = set(archive.namelist())
+                info_name = next(name for name in names if name.endswith("/info.xml"))
+                info = ET.fromstring(archive.read(info_name))
+                uuid = info.findtext("general/uuid")
+                self.assertEqual("eml-gbif", info.findtext("general/schema"))
+                self.assertEqual(f"{uuid}/info.xml", info_name)
+                eml = ET.fromstring(archive.read(f"{uuid}/metadata/metadata.xml"))
+                self.assertEqual(uuid, eml.get("packageId"))
+                self.assertEqual(uuid, eml.findtext("dataset/alternateIdentifier"))
+                for scope in ("public", "private"):
+                    declared = {node.get("name") for node in info.findall(f"{scope}/file")}
+                    actual = {name.removeprefix(f"{uuid}/{scope}/") for name in names
+                              if name.startswith(f"{uuid}/{scope}/") and not name.endswith("/")}
+                    self.assertEqual(declared, actual)
+
+    @unittest.skipUnless(all((ROOT / "source-exports" / f"{uuid}.zip").exists()
+                             for uuid in RECORDS), "source exports are not part of the repository")
     def test_every_package_preserves_source_record_and_access(self):
         for uuid, slug in RECORDS.items():
             with self.subTest(uuid=uuid), ZipFile(ROOT / "source-exports" / f"{uuid}.zip") as source, \
@@ -129,16 +168,21 @@ class MigrationPackagesTest(unittest.TestCase):
         self.assertGreater(len(paragraphs), 10)
         self.assertTrue(all(paragraph.strip() for paragraph in paragraphs))
 
-    def test_all_generated_metadata_validate_against_local_profile(self):
+    @unittest.skipUnless(shutil.which("xmllint"), "xmllint is unavailable")
+    def test_all_committed_metadata_validate_against_local_profile(self):
         with tempfile.TemporaryDirectory() as directory:
-            for uuid, slug in RECORDS.items():
-                with self.subTest(uuid=uuid), ZipFile(ROOT / f"{slug}-eml-gbif.mef") as archive:
-                    xml = Path(directory) / f"{uuid}.xml"
-                    xml.write_bytes(archive.read(f"{uuid}/metadata/metadata.xml"))
+            for package in sorted(ROOT.glob("*.mef")):
+                with self.subTest(package=package.name), ZipFile(package) as archive:
+                    metadata_name = next(name for name in archive.namelist()
+                                         if name.endswith("/metadata/metadata.xml"))
+                    xml = Path(directory) / f"{package.stem}.xml"
+                    xml.write_bytes(archive.read(metadata_name))
                     result = subprocess.run(["xmllint", "--nonet", "--noout", "--schema", str(XSD), str(xml)],
                                             capture_output=True, text=True)
                     self.assertEqual(0, result.returncode, result.stderr)
 
+    @unittest.skipUnless(shutil.which("java") and shutil.which("javac") and WAR_LIB.exists(),
+                         "built web archive and JDK are required")
     def test_index_transform_emits_every_source_keyword(self):
         # GeoNetwork's XslUtil expects a running Spring context. This narrow
         # test shim supplies only the URL setting and JSON escaping; the real
@@ -175,10 +219,12 @@ public final class XslUtil {
                     self.assertEqual(expected, [item["default"] for item in tag])
                     self.assertEqual(expected, [item["default"] for item in all_keywords])
                     self.assertEqual(len(expected), int(output.findtext("tagNumber")))
-                    with ZipFile(ROOT / "source-exports" / f"{uuid}.zip") as source:
-                        iso = ET.fromstring(source.read(f"{uuid}/metadata/metadata.xml"))
-                    expected_images = len(iso.findall(".//gmd:MD_BrowseGraphic", NS))
-                    self.assertEqual(expected_images, len(output.findall("overview")))
+                    source_path = ROOT / "source-exports" / f"{uuid}.zip"
+                    if source_path.exists():
+                        with ZipFile(source_path) as source:
+                            iso = ET.fromstring(source.read(f"{uuid}/metadata/metadata.xml"))
+                        expected_images = len(iso.findall(".//gmd:MD_BrowseGraphic", NS))
+                        self.assertEqual(expected_images, len(output.findall("overview")))
 
 
 if __name__ == "__main__":
