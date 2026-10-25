@@ -4,8 +4,10 @@ This directory contains 17 MEFs for the `izrk` merge. Eight packages already
 existed; nine more were converted from the reviewed ISO 19139 records on
 24 October 2026. All 17 source ZIPs and their extracted contents are in
 `source-exports/` locally and ignored by Git. They remain available for audit;
-`build_remaining_mefs.py` only converts the nine new explicit UUIDs. The original
-exports were not modified. Pollen was already EML-GBIF in its source export.
+the original exports were not modified. Pollen was already EML-GBIF in its
+source export. The committed MEFs are the import artifacts. The one-off
+converter was removed because its private source exports are not in this
+repository; a new migration requires a new reviewed conversion.
 
 All nine new MEFs passed the local EML-GBIF XSD and independent comparison of
 record identity, title, abstract, keywords, geographic coordinates, source
@@ -78,4 +80,8 @@ All 17 UUID pages were then opened in the local catalogue and displayed
 **EML / GBIF** with their expected overview-image counts and keyword sections.
 A Vegetation keyword filter returned the Vegetation of Slovenia record. Files
 for the Herbarium and Amphipoda records matched their MEF attachments by
-SHA-256. The three migration build tests passed after import.
+SHA-256. The package tests passed after import. Run them from the repository
+root with `python3 -m unittest discover -s _migrations -p 'test_*.py'`.
+Checks against the original ISO exports run when `source-exports/` is present;
+committed-package checks run without it. XML validation requires `xmllint`,
+and the index transform check requires a built web archive and JDK.

@@ -50,8 +50,8 @@ The private directory and private manifest are empty in both source and target.
   `tag.default` and `allKeywords`, with `tagNumber=6`.
 - The original ISO export fails strict local `gmd.xsd` because top-level
   `gmd:contact` and `gmd:dateStamp` are absent. This is recorded in `PROBLEMS.md`.
-- No local GeoNetwork service responds at `localhost:8080`, so live image
-  loading, record view, import, and keyword-link search remain unverified.
+- Local import and record display are documented in `README.md`; hosted image
+  loading and keyword-link search remain to be checked.
 
 The hosted catalogue needs the current EML-GBIF formatter for all three images
 to appear. Import this MEF after deploying that formatter, then check the site
