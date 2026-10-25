@@ -13,7 +13,13 @@ STYLESHEET = (Path(__file__).resolve().parents[2]
 
 
 class TaxonomyTest(unittest.TestCase):
-    def render(self, coverage, uuid=""):
+    @staticmethod
+    def rendered_taxon_names(result):
+        labels = result.findall(".//span[@class='izrk-taxon-name']")
+        searches = result.findall(".//a[@class='izrk-taxon-search']")
+        return [node.text for node in labels + searches]
+
+    def render(self, coverage):
         with tempfile.TemporaryDirectory() as directory:
             directory = Path(directory)
             (directory / "input.xml").write_text(coverage)
@@ -24,7 +30,6 @@ class TaxonomyTest(unittest.TestCase):
               <xsl:template match="/">
                 <result><xsl:call-template name="eml-taxonomy">
                   <xsl:with-param name="coverage" select="//taxonomicCoverage"/>
-                  <xsl:with-param name="uuid" select="'{uuid}'"/>
                 </xsl:call-template></result>
               </xsl:template>
             </xsl:stylesheet>''')
@@ -41,7 +46,7 @@ class TaxonomyTest(unittest.TestCase):
             f"<taxonomicClassification><taxonRankName>{'Genus' if i % 2 else 'Species'}</taxonRankName>"
             f"<taxonRankValue>{name}</taxonRankValue></taxonomicClassification>"
             for i, name in enumerate(names)) + "</taxonomicCoverage>")
-        rendered = [n.text for n in result.findall(".//span[@class='izrk-taxon-name']")]
+        rendered = self.rendered_taxon_names(result)
         self.assertCountEqual(names, rendered)
         self.assertEqual(["Genus", "Species"], [n.text for n in result.findall(".//h5")])
         self.assertIn("166 recorded entries", "".join(result.itertext()))
@@ -65,49 +70,18 @@ class TaxonomyTest(unittest.TestCase):
         for value in ["Plants observed at the site.", "Rosaceae", "Rosa",
                       "Rosa canina", "Dog rose", "GBIF", "family-1"]:
             self.assertIn(value, text)
-        self.assertEqual(3, len(result.findall(".//span[@class='izrk-taxon-name']")))
-        self.assertEqual("https://www.gbif.org/species/3002469", result.find(".//a").get("href"))
+        self.assertEqual(3, len(self.rendered_taxon_names(result)))
+        self.assertIsNotNone(result.find(".//a[@href='https://www.gbif.org/species/3002469']"))
         family = result.find(".//details[@data-name='Rosaceae']")
         genus = family.find(".//details[@data-name='Rosa']")
         self.assertIn("Rosa canina", "".join(genus.itertext()))
 
-    def test_reference_distinguishes_valeriana_and_valerianella(self):
-        result = self.render('''<taxonomicCoverage>
-          <taxonomicClassification><taxonRankName>Genus</taxonRankName>
-            <taxonRankValue>Valeriana</taxonRankValue></taxonomicClassification>
-          <taxonomicClassification><taxonRankName>Species</taxonRankName>
-            <taxonRankValue>Valerianella eriocarpa</taxonRankValue></taxonomicClassification>
-        </taxonomicCoverage>''', "9f64b6e3-22be-4f17-9cc0-8658c7817867")
-        family = result.find(".//details[@data-name='Caprifoliaceae']")
-        self.assertIsNotNone(family)
-        genus = family.find(".//details[@data-name='Valerianella']")
-        self.assertIn("Valerianella eriocarpa", "".join(genus.itertext()))
-        self.assertIn("Valeriana", "".join(family.itertext()))
-        self.assertEqual(2, len(result.findall(".//span[@class='izrk-taxon-name']")))
-
-    def test_reference_is_record_scoped_and_does_not_guess_for_other_records(self):
+    def test_flat_name_does_not_inherit_an_app_specific_parent(self):
         result = self.render('''<taxonomicCoverage><taxonomicClassification>
           <taxonRankName>Species</taxonRankName><taxonRankValue>Valerianella eriocarpa</taxonRankValue>
-        </taxonomicClassification></taxonomicCoverage>''', "another-record")
+        </taxonomicClassification></taxonomicCoverage>''')
         self.assertNotIn("Caprifoliaceae", "".join(result.itertext()))
         self.assertIn("Unlinked names", "".join(result.itertext()))
-
-    def test_recorded_parents_take_priority_over_reference(self):
-        result = self.render('''<taxonomicCoverage><taxonomicClassification>
-          <taxonRankName>Family</taxonRankName><taxonRankValue>Recorded family</taxonRankValue>
-          <taxonomicClassification><taxonRankName>Genus</taxonRankName>
-            <taxonRankValue>Valeriana</taxonRankValue></taxonomicClassification>
-        </taxonomicClassification></taxonomicCoverage>''', "9f64b6e3-22be-4f17-9cc0-8658c7817867")
-        self.assertNotIn("Caprifoliaceae", "".join(result.itertext()))
-        self.assertIn("Valeriana", "".join(result.find(".//details[@data-name='Recorded family']").itertext()))
-
-    def test_explicit_source_identifiers_bypass_name_only_enrichment(self):
-        result = self.render('''<taxonomicCoverage><taxonomicClassification>
-          <taxonRankName>Genus</taxonRankName><taxonRankValue>Valeriana</taxonRankValue>
-          <taxonId provider="Source">source-specific-id</taxonId>
-        </taxonomicClassification></taxonomicCoverage>''', "9f64b6e3-22be-4f17-9cc0-8658c7817867")
-        self.assertNotIn("Caprifoliaceae", "".join(result.itertext()))
-        self.assertIn("source-specific-id", "".join(result.itertext()))
 
     def test_homonyms_in_different_families_stay_separate(self):
         result = self.render("<taxonomicCoverage>" + "".join(f'''

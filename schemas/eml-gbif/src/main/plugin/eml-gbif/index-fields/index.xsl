@@ -3,6 +3,9 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 								xmlns:dc="http://purl.org/dc/terms/" 
 								xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+								xmlns:eml21="eml://ecoinformatics.org/eml-2.1.1"
+								xmlns:xs="http://www.w3.org/2001/XMLSchema"
+								xmlns:eml-index="http://geonetwork-opensource.org/xsl/functions/eml-index"
 								xmlns:util="java:org.fao.geonet.util.XslUtil"
 								exclude-result-prefixes="#all">	
 
@@ -19,6 +22,22 @@
 	<!-- ========================================================================================= -->
 	
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
+	<xsl:param name="recordUuid" as="xs:string" select="''"/>
+
+	<xsl:function name="eml-index:overview-url" as="xs:string">
+		<xsl:param name="value" as="xs:string?"/>
+		<xsl:param name="uuid" as="xs:string"/>
+		<xsl:param name="nodeUrl" as="xs:string"/>
+		<xsl:variable name="path" select="normalize-space($value)"/>
+		<xsl:sequence select="if (matches($path, '^https?://', 'i')) then $path
+			else if ($path != '' and $path != '.' and $path != '..' and $uuid != '' and $nodeUrl != ''
+				and not(contains($path, '/')) and not(contains($path, '\'))
+				and not(contains($path, '?')) and not(contains($path, '#'))
+				and not(contains($path, ':')))
+			then concat($nodeUrl, if (ends-with($nodeUrl, '/')) then '' else '/',
+				'api/records/', $uuid, '/attachments/', $path)
+			else ''"/>
+	</xsl:function>
 
 
 	<!-- ========================================================================================= -->
@@ -27,13 +46,35 @@
 		<Document locale="eng">
 			<Field name="_locale" string="eng" store="true" index="true" token="false"/>
 			<Field name="_docLocale" string="eng" store="true" index="true" token="false"/>
-			<xsl:apply-templates select="eml:eml" mode="metadata"/>
+			<xsl:apply-templates select="eml:eml | eml21:eml" mode="metadata"/>
 		</Document>
 	</xsl:template>
 	
 	<!-- ========================================================================================= -->
 
 	<xsl:template match="*" mode="metadata">
+		<xsl:variable name="packageId" select="normalize-space(@packageId)"/>
+		<xsl:variable name="uuid" as="xs:string"
+			select="if (normalize-space($recordUuid) != '') then normalize-space($recordUuid)
+				else if (matches($packageId, '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'))
+				then $packageId else ''"/>
+		<xsl:variable name="overviewPaths" as="xs:string*"
+			select="(normalize-space(string(additionalMetadata/metadata/gbif/resourceLogoUrl[1])),
+				for $line in tokenize(string-join(dataset/additionalInfo/para, '&#10;'), '&#10;')
+				return if (starts-with(normalize-space($line), 'ISO additional browse image: '))
+					then normalize-space(substring-after($line, 'ISO additional browse image: '))
+					else ())[. != '']"/>
+		<xsl:variable name="nodeUrl"
+			select="if (exists($overviewPaths[not(matches(., '^https?://', 'i'))]))
+				then util:getSettingValue('nodeUrl') else ''"/>
+		<xsl:variable name="overviews" as="xs:string*"
+			select="for $path in distinct-values($overviewPaths)
+				return eml-index:overview-url($path, $uuid, $nodeUrl)"/>
+		<Field name="hasOverview" string="{if (exists($overviews[. != ''])) then 'true' else 'false'}"
+			store="true" index="true"/>
+		<xsl:for-each select="$overviews[. != '']">
+			<overview type="object">{"url":"<xsl:value-of select="util:escapeForJson(.)"/>"}</overview>
+		</xsl:for-each>
 
 		<xsl:for-each select="dataset">
 		
@@ -77,16 +118,17 @@
 	
 			<xsl:for-each select="abstract">
 				<Field name="abstract" string="{normalize-space(string(.))}" store="true" index="true"/>
+				<xsl:variable name="abstractText" select="if (para) then string-join(for $paragraph in para return normalize-space(string($paragraph)), '&#10;&#10;') else normalize-space(string(.))"/>
         <xsl:variable name="resourceAbstractObject"
                       select="concat('{',
-                                '&quot;default&quot;:&quot;', util:escapeForJson(normalize-space(string(.))), '&quot;,',
-                                '&quot;langeng&quot;:&quot;', util:escapeForJson(normalize-space(string(.))), '&quot;',
+                                '&quot;default&quot;:&quot;', util:escapeForJson($abstractText), '&quot;,',
+                                '&quot;langeng&quot;:&quot;', util:escapeForJson($abstractText), '&quot;',
                               '}')"/>
         <resourceAbstractObject type="object">
           <xsl:value-of select="$resourceAbstractObject"/>
         </resourceAbstractObject>
         <resourceAbstract>
-          <xsl:value-of select="normalize-space(string(.))"/>
+          <xsl:value-of select="$abstractText"/>
         </resourceAbstract>
 			</xsl:for-each>
 
@@ -124,15 +166,21 @@
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 
-      <xsl:variable name="lower">abcdefghijklmnopqrstuvwxyz</xsl:variable>
-      <xsl:variable name="upper">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
 			<xsl:for-each select="keywordSet">
-				<xsl:for-each select="keyword">
-          <xsl:variable name="keywordLower" select="translate(string(.),$upper,$lower)"/>
+				<xsl:for-each select="keyword[normalize-space(.) != '']">
           <Field name="keyword" string="{string(.)}" store="true" index="true"/>
 					<Field name="subject" string="{string(.)}" store="true" index="true"/>
 				</xsl:for-each>
 			</xsl:for-each>
+
+      <!-- Match the tag.* field queried by keyword links in the record view. -->
+      <tag type="object">[<xsl:for-each select="keywordSet/keyword[normalize-space(.) != '']">
+        {"default":"<xsl:value-of select="util:escapeForJson(normalize-space(.))"/>"}<xsl:if test="position() != last()">,</xsl:if>
+      </xsl:for-each>]</tag>
+      <tagNumber><xsl:value-of select="count(keywordSet/keyword[normalize-space(.) != ''])"/></tagNumber>
+      <allKeywords type="object">{"otherKeywords-theme":{"title":"Keywords","theme":"theme","keywords":[<xsl:for-each select="keywordSet/keyword[normalize-space(.) != '']">
+        {"default":"<xsl:value-of select="util:escapeForJson(normalize-space(.))"/>"}<xsl:if test="position() != last()">,</xsl:if>
+      </xsl:for-each>]}}</allKeywords>
 	
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<!-- Organization could be in associatedParty or in contact -->	
@@ -269,8 +317,8 @@
 	
 	<xsl:template match="*" mode="latLon">
 
-		<xsl:if test="number(westBoundingCoordinate) and number(southBoundingCoordinate) and number(eastBoundingCoordinate) and number(northBoundingCoordinate)">
-			<xsl:variable name="format" select="'##.00'"></xsl:variable>
+		<xsl:if test="westBoundingCoordinate castable as xs:double and southBoundingCoordinate castable as xs:double and eastBoundingCoordinate castable as xs:double and northBoundingCoordinate castable as xs:double">
+			<xsl:variable name="format" select="'0.00'"></xsl:variable>
 
 			<Field name="westBL" string="{format-number(westBoundingCoordinate, $format)}" store="true" index="true"/>
 			<Field name="southBL" string="{format-number(southBoundingCoordinate, $format)}" store="true" index="true"/>
