@@ -1,5 +1,51 @@
 # Problems and follow-up
 
+## Marine genomic and metagenomic database record lacks a description (2026-10-24)
+
+The hosted ISO 19139 record `b5c2c64a-325b-42d1-b5ad-2198ad434a55`
+has no visible abstract or data access link. Its title suggests biodiversity
+sequence data, but the record only supplies location, keywords, and contacts.
+The source-preserving EML-GBIF MEF now records the missing abstract explicitly,
+but its suitability for GBIF publication remains conditional. Confirm the
+dataset scope, access, and description with the custodian before importing it.
+
+## Other source metadata gaps found during EML-GBIF conversion (2026-10-24)
+
+The ISO records for Škocjan airborne bacterial diversity
+(`6006d62c-5143-4bbc-ad4c-9d9375b0f499`) and detected pathogens
+(`1b83ee14-6498-4f9b-a297-eb1692095c1a`) describe Excel data and provide
+sampling details, but their MEF exports contain only images and no data file or
+online data link. The converted MEFs preserve that limitation; the data owner
+should supply the underlying tables before these records are presented as
+GBIF-accessible datasets.
+
+The Predjama PR-2 minisite record (`cec7e833-ef3c-443d-984b-5e0b15418375`)
+has no abstract; its title also spells “System” as “Sstem.” The conversion
+retains the source title and an explicit missing-abstract notice. Correct the
+source with the owner before public import.
+
+The FloVegSi source (`9a5a0578-f6c5-4c44-9ca6-e23baada5ffb`) records two
+author names as “Andrej Seliökar” and “Tomaû Seliökar,” which are encoding
+corruption. The converted EML corrects them to “Andrej Seliškar” and “Tomaž
+Seliškar,” confirmed by the BIJH-hosted FloVegSi paper and ZRC/Cobiss records.
+The original ISO source export remains unchanged; its source record should be
+corrected by the owner.
+
+## EML portal additional information and PO.J.S abstract formatting (resolved in source, 2026-10-25)
+
+The EML portal only rendered the migration's additional information as styled
+label/value rows when every line had an `ISO …: …` form. An explanatory note
+therefore made an entire block in records such as Herbarium, ARMS, Škocjan
+LTER, PO.J.S, BRDbase, and Predjama fall back to plain paragraphs. The portal
+now formats each `label: value` line consistently and styles note lines in the
+same information panel.
+
+The PO.J.S ISO abstract contains a “Related publications:” heading followed by
+citations separated with blank lines, but conversion placed everything in a
+single EML paragraph. The converted record now keeps the heading and each
+citation in its own paragraph, following the structure used by the Amphipoda
+record. The source wording remains intact.
+
 ## Building services with Java 25 fails (2026-10-24)
 
 The project compiles for Java 11, but the local default JDK is Java 25. Its
@@ -386,7 +432,8 @@ original export. A temporary validation probe passed after copying the existing
 identification contact and metadata language into their required positions and
 using the export's change date as `dateStamp`. This applies to the ISO source;
 the EML-GBIF target package validates against the customized local profile.
-GeoNetwork's actual import behavior remains to be checked on a running instance.
+The EML-GBIF package imported into the local GeoNetwork instance on 25 October
+2026; the ISO source defect remains.
 
 ## EML-Gbif keyword filters returned no records (resolved in source, 2026-10-02)
 
@@ -431,3 +478,12 @@ schema still requires a top-level `gmd:contact`. The original export is kept
 unchanged; the converted EML-GBIF XML validates against the updated local
 profile. The source defect should be corrected in the ISO record if that record
 continues to be maintained.
+
+## Local Jetty does not retain its database encryptor key (2026-10-25)
+
+On local GeoNetwork startup, the encryptor reports that
+`web/src/main/webapp/WEB-INF/data/config/encryptor.properties` is missing and
+generates a new random key. This repeated after restarting Jetty for the MEF
+import. Any passwords encrypted with a prior key may become unreadable. Persist
+the local key outside the generated webapp and restore it on startup before
+relying on encrypted catalogue credentials.

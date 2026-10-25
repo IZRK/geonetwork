@@ -17,6 +17,9 @@
     <xsl:variable name="sourceCreationLine"
                   select="tokenize(string-join($metadata/dataset/additionalInfo/para, '&#10;'), '&#10;')
                           [starts-with(normalize-space(.), 'ISO citation date (creation): ')][1]"/>
+    <xsl:variable name="additionalInfoLines"
+                  select="tokenize(replace(string-join($metadata/dataset/additionalInfo/para, '&#10;'), '&#13;&#10;?', '&#10;'), '&#10;')
+                          [normalize-space(.) != '']"/>
     <article class="izrk-eml-portal" id="{$metadataUuid}">
       <div class="row izrk-record-header gn-card gn-card-dataset">
         <div class="col-md-8 gn-record">
@@ -91,18 +94,27 @@
               <xsl:with-param name="value" select="'EML / GBIF'"/>
             </xsl:call-template>
           </div>
-          <xsl:if test="normalize-space($metadata/dataset/additionalInfo) != ''">
+          <xsl:if test="exists($additionalInfoLines[
+            not(starts-with(normalize-space(.), 'ISO additional browse image: '))
+            and not(starts-with(normalize-space(.), 'Creator role is unconfirmed'))
+            and not(starts-with(normalize-space(.), 'ISO responsible-party email without a name or organization: '))
+            and not(starts-with(normalize-space(.), 'Filip Küzmič is listed as the EML contact because the profile requires one;'))
+            and not(starts-with(normalize-space(.), 'ISO metadata contact and dateStamp are absent from the source record.'))])">
             <div class="izrk-eml-additional-info">
               <h3>Additional information</h3>
               <xsl:for-each select="$metadata/dataset/additionalInfo/para[normalize-space(.) != '']">
                 <xsl:variable name="lines"
                               select="tokenize(replace(string(.), '&#13;&#10;?', '&#10;'), '&#10;')[normalize-space(.) != '']"/>
-                <xsl:choose>
-                  <xsl:when test="every $line in $lines satisfies
-                                  starts-with(normalize-space($line), 'ISO ') and contains($line, ': ')">
-                    <div class="izrk-eml-additional-entries">
-                      <xsl:for-each select="$lines">
-                        <xsl:variable name="line" select="normalize-space(.)"/>
+                <div class="izrk-eml-additional-entries">
+                  <xsl:for-each select="$lines[
+                    not(starts-with(normalize-space(.), 'ISO additional browse image: '))
+                    and not(starts-with(normalize-space(.), 'Creator role is unconfirmed'))
+                    and not(starts-with(normalize-space(.), 'ISO responsible-party email without a name or organization: '))
+                    and not(starts-with(normalize-space(.), 'Filip Küzmič is listed as the EML contact because the profile requires one;'))
+                    and not(starts-with(normalize-space(.), 'ISO metadata contact and dateStamp are absent from the source record.'))]">
+                    <xsl:variable name="line" select="normalize-space(.)"/>
+                    <xsl:choose>
+                      <xsl:when test="contains($line, ': ')">
                         <div class="izrk-eml-additional-entry">
                           <span class="izrk-eml-additional-label"><xsl:value-of select="substring-before($line, ': ')"/></span>
                           <span class="izrk-eml-additional-value">
@@ -111,15 +123,17 @@
                             </xsl:call-template>
                           </span>
                         </div>
-                      </xsl:for-each>
-                    </div>
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <xsl:call-template name="render-paragraph-html">
-                      <xsl:with-param name="node" select="."/>
-                    </xsl:call-template>
-                  </xsl:otherwise>
-                </xsl:choose>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <p class="izrk-eml-additional-note">
+                          <xsl:call-template name="addLineBreaksAndHyperlinks">
+                            <xsl:with-param name="txt" select="$line"/>
+                          </xsl:call-template>
+                        </p>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:for-each>
+                </div>
               </xsl:for-each>
             </div>
           </xsl:if>
