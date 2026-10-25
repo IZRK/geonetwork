@@ -57,3 +57,6 @@ The hosted catalogue needs the current EML-GBIF formatter for all three images
 to appear. Import this MEF after deploying that formatter, then check the site
 record and keyword links. Importing under the original UUID may collide with
 the ISO version; use the catalogue's intended replacement handling.
+
+
+- EML Creator mapping: following the data owner's instruction, used Matej Blatnik (custodian; IZRK ZRC SAZU) as the required EML Creator(s); the ISO source role remains represented as an associated party.

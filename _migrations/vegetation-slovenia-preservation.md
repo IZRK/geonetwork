@@ -8,7 +8,7 @@ Output: `vegetation-slovenia-eml-gbif.mef`
 
 - Kept the source UUID as the EML `packageId`, alternate identifier, and MEF UUID. Preserved the source catalogue creation date, categories, privileges, and all four public attachments; removed source-instance IDs from `info.xml`.
 - Preserved the title, full abstract (two source paragraphs), and all seven keywords in source order: Flora; Vegetation; TurboVeg; BIJH; LifeWatch Slovenia; ZRC SAZU; RI-SI-LifeWatch.
-- Mapped the source organization `BIJH ZRC SAZU` to the profile-required creator. The two named parties remain associated custodians: Urban Šilc (`urban.silc@zrc-sazu.si`) and Filip Küzmič (`filip.kuzmic@zrc-sazu.si`). Filip is also used as the required EML contact; the source gives him a custodian role, so the contact role is not confirmed. These role caveats are stated in `additionalInfo`.
+- Mapped the source organization `BIJH ZRC SAZU` to the profile-required creator. The two named parties remain associated custodians: Urban Šilc (`urban.silc@zrc-sazu.si`) and Filip Küzmič (`filip.kuzmic@zrc-sazu.si`). Filip is also used as the required EML contact; the source gives him a custodian role, so the contact role is not confirmed. The role caveats are recorded here rather than in user-facing `additionalInfo`.
 - Preserved the geographic extent as Slovenia, with bounds west 13.3753, east 16.6106, north 46.8766, south 45.4218. Mapped the source hierarchy `Services and databases`, status `onGoing`, and metadata language `eng` to `additionalInfo`; hierarchy is also in GBIF metadata.
 - Preserved both original download URLs in separate EML distribution entries with readable descriptions. The source ISO citation date is `2003-01-01` with type `creation`, so it remains identified as a creation date and is not used as `pubDate`.
 - Preserved the two browse images in source order. The first image is the GBIF resource logo and the second is referenced through the local additional-overview convention.
@@ -33,3 +33,6 @@ The extracted source image filenames use decomposed Unicode while the source man
 - The record's index transform emitted all seven exact keywords in both `tag` and `allKeywords`, with `tagNumber` 7.
 - The source ISO XML fails strict `gmd.xsd` validation: it is missing required top-level metadata contact and `dateStamp` fields before `identificationInfo`. The source was not modified; this migration records their absence. The source also has no taxonomy or temporal extent, so none were added.
 - No local catalogue is running at `http://localhost:8080/geonetwork`; live import, search, and rendered display remain unverified. Importing this MEF does not deploy formatter code or reindex records in a hosted catalogue.
+
+
+- EML Creator mapping: following the data owner's instruction, used Urban Šilc (custodian; BIJH ZRC SAZU), Filip Küzmič (custodian; BIJH ZRC SAZU) as the required EML Creator(s); the ISO source role remains represented as an associated party.
