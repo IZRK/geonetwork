@@ -2813,116 +2813,37 @@
               var label =
                 img.label || $filter("gnLocalized")(img.title, scope.lang) || "";
               modalElt = angular.element(
-                '<div class="modal fade in gn-img-modal-lightbox" tabindex="-1" role="dialog" aria-modal="true">' +
+                '<div class="modal fade in" role="dialog" aria-modal="true">' +
                   '<div class="modal-dialog gn-img-modal in" role="document">' +
-                  '  <div class="gn-img-modal-viewport">' +
-                  "    <img/>" +
-                  "  </div>" +
-                  '  <div class="gn-img-modal-controls" role="group" aria-label="Image zoom controls">' +
-                  '    <button type="button" class="btn btn-default gn-img-zoom-out" aria-label="Zoom out" title="Zoom out">−</button>' +
-                  '    <button type="button" class="btn btn-default gn-img-zoom-reset" aria-label="Reset zoom" title="Reset zoom">100%</button>' +
-                  '    <button type="button" class="btn btn-default gn-img-zoom-in" aria-label="Zoom in" title="Zoom in">+</button>' +
-                  "  </div>" +
                   '  <button type="button" class="btn btn-danger gn-btn-modal-img" aria-label="Close image">' +
-                  "×</button>" +
-                  (label != ""
+                  '    <i class="fa fa-times" aria-hidden="true"></i>' +
+                  "  </button>" +
+                  "  <img/>" +
+                  (label !== ""
                     ? '<div class="gn-img-background"><div class="gn-img-thumbnail-caption"></div></div>'
                     : "") +
                   "</div>" +
                   "</div>"
               );
 
-              modalElt.attr("id", "gn-img-modal-" + (img.id || img.lUrl || img.url));
-              var modalImage = modalElt.find("img").first();
-              modalImage
+              modalElt.find("img")
                 .attr("src", attr.ngSrc || img.lUrl || img.url || img.id)
                 .attr("alt", label);
-              if (label != "") {
+              if (label !== "") {
                 modalElt.find(".gn-img-thumbnail-caption").text(label);
               }
 
               $(document.body).append(modalElt);
               modalElt.modal();
-              modalElt.on("click", function (event) {
-                if (event.target === modalElt[0]) {
-                  modalElt.modal("hide");
+              var displayedModal = modalElt;
+              displayedModal.on("hidden.bs.modal", function () {
+                displayedModal.remove();
+                if (modalElt === displayedModal) {
+                  modalElt = null;
                 }
               });
-              var viewport = modalElt.find(".gn-img-modal-viewport");
-              var zoom = 1;
-
-              viewport.on("click", function (event) {
-                if (event.target === viewport[0]) {
-                  modalElt.modal("hide");
-                }
-              });
-
-              function renderImageZoom() {
-                var image = modalImage[0];
-                if (!image.naturalWidth || !image.naturalHeight) {
-                  return;
-                }
-                var fit = Math.min(
-                  viewport.width() / image.naturalWidth,
-                  viewport.height() / image.naturalHeight,
-                  1
-                );
-                image.style.maxWidth = "none";
-                image.style.maxHeight = "none";
-                image.style.width = image.naturalWidth * fit * zoom + "px";
-                image.style.height = image.naturalHeight * fit * zoom + "px";
-                modalElt.find(".gn-img-zoom-reset").text(Math.round(zoom * 100) + "%");
-              }
-
-              function setZoom(value) {
-                zoom = Math.max(0.25, Math.min(5, value));
-                renderImageZoom();
-              }
-
-              modalImage.on("load", renderImageZoom);
-              if (modalImage[0].complete) {
-                renderImageZoom();
-              }
-              modalElt.find(".gn-img-zoom-in").on("click", function () {
-                setZoom(zoom * 1.25);
-              });
-              modalElt.find(".gn-img-zoom-out").on("click", function () {
-                setZoom(zoom / 1.25);
-              });
-              modalElt.find(".gn-img-zoom-reset").on("click", function () {
-                setZoom(1);
-                viewport.scrollTop(0).scrollLeft(0);
-              });
-              modalImage.on("dblclick", function () {
-                setZoom(zoom === 1 ? 2 : 1);
-              });
-              viewport.on("wheel", function (event) {
-                event.preventDefault();
-                setZoom(zoom * (event.originalEvent.deltaY < 0 ? 1.1 : 1 / 1.1));
-              });
-              modalElt.on("keydown", function (event) {
-                if (event.key === "+" || event.key === "=") {
-                  event.preventDefault();
-                  setZoom(zoom * 1.25);
-                } else if (event.key === "-") {
-                  event.preventDefault();
-                  setZoom(zoom / 1.25);
-                } else if (event.key === "0") {
-                  setZoom(1);
-                  viewport.scrollTop(0).scrollLeft(0);
-                }
-              });
-              modalElt.on("hidden.bs.modal", function () {
-                var closedModal = modalElt;
-                if (closedModal) {
-                  closedModal.remove();
-                  if (modalElt === closedModal) {
-                    modalElt = null;
-                  }
-                }
-              });
-              modalElt.find(".gn-btn-modal-img").on("click", function () {
-                modalElt.modal("hide");
+              displayedModal.find(".gn-btn-modal-img").on("click", function () {
+                displayedModal.modal("hide");
               });
             }
           });

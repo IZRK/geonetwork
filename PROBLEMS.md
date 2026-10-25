@@ -47,6 +47,13 @@ The portal templates reference project logos under
 `favicon.png` and `logo.png`. Supply the actual institutional artwork before
 those references can render after deployment.
 
+## Shared extent coordinates resemble editable fields
+
+The shared extent formatter renders coordinates as read-only HTML inputs.
+They can look editable on record pages and in PDF output. The separate PDF
+fix should handle this shared renderer without coupling it to the EML
+migration branch.
+
 ## Local development environment
 
 - Java 25 introduces `java.lang.IO`, which conflicts with the project's
