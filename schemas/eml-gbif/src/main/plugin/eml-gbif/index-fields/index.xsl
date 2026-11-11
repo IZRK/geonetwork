@@ -39,6 +39,14 @@
 			else ''"/>
 	</xsl:function>
 
+	<xsl:function name="eml-index:abstract-blocks" as="xs:string*">
+		<xsl:param name="nodes" as="node()*"/>
+		<xsl:for-each select="$nodes[normalize-space(.) != '']">
+			<xsl:sequence select="if (self::section) then eml-index:abstract-blocks(node())
+				else normalize-space(string(.))"/>
+		</xsl:for-each>
+	</xsl:function>
+
 
 	<!-- ========================================================================================= -->
 
@@ -70,8 +78,7 @@
 		<xsl:variable name="overviews" as="xs:string*"
 			select="for $path in distinct-values($overviewPaths)
 				return eml-index:overview-url($path, $uuid, $nodeUrl)"/>
-		<Field name="hasOverview" string="{if (exists($overviews[. != ''])) then 'true' else 'false'}"
-			store="true" index="true"/>
+		<hasOverview><xsl:value-of select="exists($overviews[. != ''])"/></hasOverview>
 		<xsl:for-each select="$overviews[. != '']">
 			<overview type="object">{"url":"<xsl:value-of select="util:escapeForJson(.)"/>"}</overview>
 		</xsl:for-each>
@@ -118,7 +125,7 @@
 	
 			<xsl:for-each select="abstract">
 				<Field name="abstract" string="{normalize-space(string(.))}" store="true" index="true"/>
-				<xsl:variable name="abstractText" select="if (para) then string-join(for $paragraph in para return normalize-space(string($paragraph)), '&#10;&#10;') else normalize-space(string(.))"/>
+				<xsl:variable name="abstractText" select="string-join(eml-index:abstract-blocks(node()), '&#10;&#10;')"/>
         <xsl:variable name="resourceAbstractObject"
                       select="concat('{',
                                 '&quot;default&quot;:&quot;', util:escapeForJson($abstractText), '&quot;,',
