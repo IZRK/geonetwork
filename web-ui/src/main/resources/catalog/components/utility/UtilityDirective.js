@@ -2642,6 +2642,10 @@
    */
   module.filter("thumbnailUrlSize", function () {
     return function (href, size) {
+      // Browsers can display WebP, but the attachment resize endpoint cannot decode it.
+      if (href && /\.webp(?:[?#]|$)/i.test(href)) {
+        return href;
+      }
       if (href && href.indexOf("api/records/") !== -1) {
         var suffix = "size=" + (size || 140);
         return href.indexOf("?") !== -1 ? href + "&" + suffix : href + "?" + suffix;
@@ -2650,6 +2654,53 @@
       }
     };
   });
+  module.filter("linkifyUrls", [
+    "$filter",
+    function ($filter) {
+      var linky = $filter("linky");
+      var urlPattern = /https?:\/\/[^\s<>"']+/gi;
+
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, function (character) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+          }[character];
+        });
+      }
+
+      return function (value) {
+        if (!angular.isString(value)) {
+          return value;
+        }
+
+        var output = [];
+        var lastIndex = 0;
+        var match;
+        urlPattern.lastIndex = 0;
+
+        while ((match = urlPattern.exec(value))) {
+          var url = match[0];
+          var trailing = "";
+          while (/[.,;:!?]$/.test(url)) {
+            trailing = url.charAt(url.length - 1) + trailing;
+            url = url.slice(0, -1);
+          }
+
+          output.push(escapeHtml(value.slice(lastIndex, match.index)));
+          output.push(linky(url));
+          output.push(escapeHtml(trailing));
+          lastIndex = match.index + match[0].length;
+        }
+
+        output.push(escapeHtml(value.slice(lastIndex)));
+        return output.join("");
+      };
+    }
+  ]);
   module.filter("newlines", function () {
     return function (value) {
       if (angular.isArray(value)) {
@@ -2725,19 +2776,31 @@
           element.bind("click", function () {
             var imgOrMd = scope.$eval(attr["gnImgModal"]);
             var img = undefined;
-            if (imgOrMd.overview) {
+            var clickedImageUrl = element.attr("src");
+            if (imgOrMd && imgOrMd.overview) {
               var imgs = imgOrMd.overview;
-              var url = $(element).attr("src");
-              for (var i = 0; i < imgs.list.length; i++) {
+              var overviewList = imgs.list || [];
+              for (var i = 0; i < overviewList.length; i++) {
                 // the thumbnails url might end with `?approved=false/true`, which is not
                 // present on img
-                if (imgs.list[i].url.indexOf(url) === 0) {
-                  img = imgs.list[i];
+                if (
+                  clickedImageUrl &&
+                  overviewList[i].url &&
+                  (overviewList[i].url.indexOf(clickedImageUrl) === 0 ||
+                    clickedImageUrl.indexOf(overviewList[i].url) === 0)
+                ) {
+                  img = overviewList[i];
                   break;
                 }
               }
-            } else {
+            } else if (imgOrMd && (imgOrMd.url || imgOrMd.lUrl)) {
               img = imgOrMd;
+            }
+            // EML detail formatters can render attachment images even when the
+            // corresponding overview has not yet been indexed on the record.
+            // Use the actual clicked image in that case instead of the record UUID.
+            if (!img && clickedImageUrl) {
+              img = { url: clickedImageUrl, lUrl: clickedImageUrl };
             }
 
             // Toggle the modal if already displayed
@@ -2749,38 +2812,38 @@
             if (img) {
               var label =
                 img.label || $filter("gnLocalized")(img.title, scope.lang) || "";
-              var labelDiv =
-                '<div class="gn-img-background">' +
-                '  <div class="gn-img-thumbnail-caption">' +
-                label +
-                "</div>" +
-                "</div>";
               modalElt = angular.element(
-                "" +
-                  '<div class="modal fade in"' +
-                  '     id="gn-img-modal-' +
-                  (img.id || img.lUrl || img.url) +
-                  '">' +
-                  '<div class="modal-dialog gn-img-modal in">' +
-                  '  <button type=button class="btn btn-danger gn-btn-modal-img">' +
-                  '<i class="fa fa-times"></i></button>' +
-                  '  <img src="' +
-                  (attr.ngSrc || img.lUrl || img.url || img.id) +
-                  '"/>' +
-                  (label != "" ? labelDiv : "") +
+                '<div class="modal fade in" role="dialog" aria-modal="true">' +
+                  '<div class="modal-dialog gn-img-modal in" role="document">' +
+                  '  <button type="button" class="btn btn-danger gn-btn-modal-img" aria-label="Close image">' +
+                  '    <i class="fa fa-times" aria-hidden="true"></i>' +
+                  "  </button>" +
+                  "  <img/>" +
+                  (label !== ""
+                    ? '<div class="gn-img-background"><div class="gn-img-thumbnail-caption"></div></div>'
+                    : "") +
                   "</div>" +
                   "</div>"
               );
 
+              modalElt.find("img")
+                .attr("src", attr.ngSrc || img.lUrl || img.url || img.id)
+                .attr("alt", label);
+              if (label !== "") {
+                modalElt.find(".gn-img-thumbnail-caption").text(label);
+              }
+
               $(document.body).append(modalElt);
               modalElt.modal();
-              modalElt.on("hidden.bs.modal", function () {
-                if (modalElt) {
-                  modalElt.remove();
+              var displayedModal = modalElt;
+              displayedModal.on("hidden.bs.modal", function () {
+                displayedModal.remove();
+                if (modalElt === displayedModal) {
+                  modalElt = null;
                 }
               });
-              modalElt.find(".gn-btn-modal-img").on("click", function () {
-                modalElt.modal("hide");
+              displayedModal.find(".gn-btn-modal-img").on("click", function () {
+                displayedModal.modal("hide");
               });
             }
           });

@@ -35,7 +35,7 @@
           </xs:annotation>
         </xs:element>
         <xs:element ref="associatedParty" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element ref="pubDate"/>
+        <xs:element ref="pubDate" minOccurs="0"/>
         <xs:element ref="language" minOccurs="0"/>
         <xs:element ref="abstract"/>
         <xs:element ref="keywordSet" minOccurs="0" maxOccurs="unbounded"/>
@@ -199,7 +199,7 @@
             <xs:documentation>This field names a keyword or key phrase that concisely describes the resource or is related to the resource. Each keyword field should contain one and only one keyword</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="keywordThesaurus" type="NonEmptyStringType">
+        <xs:element name="keywordThesaurus" type="NonEmptyStringType" minOccurs="0">
           <xs:annotation>
             <xs:documentation>The name of the official keyword thesaurus from which keyword was derived</xs:documentation>
           </xs:annotation>
@@ -360,33 +360,23 @@
             <xs:documentation>A general description of the range of taxa addressed in the data set or collection</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="taxonomicClassification" maxOccurs="unbounded">
+        <xs:element name="taxonomicClassification" type="TaxonomicClassificationType" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation>Information about the range of taxa addressed in the dataset or collection</xs:documentation>
           </xs:annotation>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="taxonRankName" type="NonEmptyStringType" minOccurs="0">
-                <xs:annotation>
-                  <xs:documentation>The name of the taxonomic rank for which the Taxon rank value is provided, e.g., Phylum, Class, Genus, Species</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="taxonRankValue" type="NonEmptyStringType">
-                <xs:annotation>
-                  <xs:documentation>The name representing the taxonomic rank of the taxon being described</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="commonName" type="NonEmptyStringType" minOccurs="0">
-                <xs:annotation>
-                  <xs:documentation>Applicable common names; these common names may be general descriptions of a group of organisms if appropriate, e.g., invertebrates, waterfowl</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
         </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:complexType name="TaxonomicClassificationType">
+    <xs:sequence>
+      <xs:element name="taxonRankName" type="NonEmptyStringType" minOccurs="0"/>
+      <xs:element name="taxonRankValue" type="NonEmptyStringType"/>
+      <xs:element name="commonName" type="NonEmptyStringType" minOccurs="0"/>
+      <xs:element name="taxonomicClassification" type="TaxonomicClassificationType"
+                  minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
   <xs:element name="purpose" type="TextType">
     <xs:annotation>
       <xs:documentation>A synopsis of the purpose of this dataset. It may include one or more paragraphs, including a summary of key findings if appropriate.</xs:documentation>

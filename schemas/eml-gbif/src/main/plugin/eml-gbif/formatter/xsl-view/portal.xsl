@@ -14,12 +14,26 @@
   </xsl:template>
 
   <xsl:template name="eml-portal-record">
+    <xsl:variable name="sourceCreationLine"
+                  select="tokenize(string-join($metadata/dataset/additionalInfo/para, '&#10;'), '&#10;')
+                          [starts-with(normalize-space(.), 'ISO citation date (creation): ')][1]"/>
+    <xsl:variable name="additionalInfoLines"
+                  select="tokenize(replace(string-join($metadata/dataset/additionalInfo/para, '&#10;'), '&#13;&#10;?', '&#10;'), '&#10;')
+                          [normalize-space(.) != ''
+                           and not(starts-with(normalize-space(.), 'ISO additional browse image: '))]"/>
     <article class="izrk-eml-portal" id="{$metadataUuid}">
       <div class="row izrk-record-header gn-card gn-card-dataset">
         <div class="col-md-8 gn-record">
           <div class="izrk-resource-type"><i class="fa gn-icon-dataset" aria-hidden="true"></i> Dataset</div>
           <h1 class="gn-break"><xsl:value-of select="$metadata/dataset/title"/></h1>
-          <xsl:apply-templates mode="getMetadataHeader" select="$metadata"/>
+          <xsl:if test="normalize-space($metadata/dataset/abstract) != ''">
+            <section class="izrk-eml-abstract">
+              <h2>Abstract</h2>
+              <xsl:call-template name="render-paragraph-html">
+                <xsl:with-param name="node" select="$metadata/dataset/abstract"/>
+              </xsl:call-template>
+            </section>
+          </xsl:if>
         </div>
         <aside class="col-md-4 gn-md-side">
           <xsl:apply-templates mode="getOverviews" select="$metadata"/>
@@ -56,9 +70,19 @@
           <h2><i class="fa fa-sliders" aria-hidden="true"></i> Technical information</h2>
           <div class="izrk-eml-facts">
             <xsl:call-template name="eml-portal-fact">
+              <xsl:with-param name="label" select="'Source citation creation date'"/>
+              <xsl:with-param name="icon" select="'calendar'"/>
+              <xsl:with-param name="value" select="normalize-space(substring-after($sourceCreationLine, 'ISO citation date (creation): '))"/>
+            </xsl:call-template>
+            <xsl:call-template name="eml-portal-fact">
               <xsl:with-param name="label" select="'Publication date'"/>
               <xsl:with-param name="icon" select="'calendar'"/>
               <xsl:with-param name="value" select="$metadata/dataset/pubDate"/>
+            </xsl:call-template>
+            <xsl:call-template name="eml-portal-fact">
+              <xsl:with-param name="label" select="'Categories'"/>
+              <xsl:with-param name="icon" select="'folder-open'"/>
+              <xsl:with-param name="value" select="string-join(/root/info/record/metadatacategories/*/name[normalize-space(.) != ''], ', ')"/>
             </xsl:call-template>
             <xsl:call-template name="eml-portal-fact">
               <xsl:with-param name="label" select="'Language'"/>
@@ -71,6 +95,35 @@
               <xsl:with-param name="value" select="'EML / GBIF'"/>
             </xsl:call-template>
           </div>
+          <xsl:if test="exists($additionalInfoLines)">
+            <div class="izrk-eml-additional-info">
+              <h3>Additional information</h3>
+              <div class="izrk-eml-additional-entries">
+                <xsl:for-each select="$additionalInfoLines">
+                  <xsl:variable name="line" select="normalize-space(.)"/>
+                  <xsl:choose>
+                    <xsl:when test="contains($line, ': ')">
+                      <div class="izrk-eml-additional-entry">
+                        <span class="izrk-eml-additional-label"><xsl:value-of select="substring-before($line, ': ')"/></span>
+                        <span class="izrk-eml-additional-value">
+                          <xsl:call-template name="addLineBreaksAndHyperlinks">
+                            <xsl:with-param name="txt" select="substring-after($line, ': ')"/>
+                          </xsl:call-template>
+                        </span>
+                      </div>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <p class="izrk-eml-additional-note">
+                        <xsl:call-template name="addLineBreaksAndHyperlinks">
+                          <xsl:with-param name="txt" select="$line"/>
+                        </xsl:call-template>
+                      </p>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </div>
+            </div>
+          </xsl:if>
           <xsl:if test="not($metadata/dataset/coverage/geographicCoverage[normalize-space(.) != ''])"><xsl:call-template name="eml-temporal-coverage"/></xsl:if>
           <xsl:call-template name="eml-taxonomic-coverage"/>
           <xsl:call-template name="eml-methods"/>
