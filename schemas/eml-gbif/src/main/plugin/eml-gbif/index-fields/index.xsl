@@ -260,21 +260,24 @@
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- === Other stuff from the additionalMetadata block === -->
+		<xsl:choose>
+			<xsl:when test="additionalMetadata/metadata/gbif/hierarchyLevel">
+				<xsl:for-each select="additionalMetadata/metadata/gbif/hierarchyLevel">
+					<Field name="type" string="{string(.)}" store="true" index="true"/>
+				</xsl:for-each>
+			</xsl:when>
+			<xsl:otherwise>
+				<Field name="type" string="dataset" store="true" index="true"/>
+			</xsl:otherwise>
+		</xsl:choose>
+
+		<xsl:for-each select="dataset/dataTable/physical/dataFormat/textFormat">
+			<Field name="format" string="text" store="true" index="true"/>
+		</xsl:for-each>
 
 		<xsl:for-each select="additionalMetadata/metadata/gbif">
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		
-			<xsl:choose>
-				<xsl:when test="hierarchyLevel">
-					<xsl:for-each select="hierarchyLevel">
-						<Field name="type" string="{string(.)}" store="true" index="true"/>
-					</xsl:for-each>
-				</xsl:when>
-				<xsl:otherwise>
-					<Field name="type" string="dataset" store="true" index="true"/>
-				</xsl:otherwise>
-			</xsl:choose>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<xsl:for-each select="physical">

@@ -1,5 +1,22 @@
 # Open problems
 
+## Self-linked associated record on the Epikarst copepoda page
+
+Record `c7710542-10ea-43e8-b4d7-9bdd3d559905` shows itself under
+“Associated record”, so opening the card leaves the page unchanged. Its live
+ISO 19139 XML contains a `gmd:featureCatalogueCitation` whose `uuidref` and
+`xlink:href` are both the LifeWatch catalogue URL ending in this same UUID.
+The ISO 19139 indexer writes the citation's `uuidref` to `hasfeaturecat`, and
+the reverse `hasfeaturecats` lookup returns the current record. The record
+view labels that result “Associated record” and links it by UUID.
+
+Review the source citation with the record owner: it appears to describe a
+remote copy of this dataset, not a feature catalogue. Correct or remove the
+misclassified citation and reindex the record. The association API now
+excludes the current UUID from reverse relations in the source tree, but the
+live portal needs a deployment before that safeguard takes effect. See GitHub
+issue #11.
+
 ## Source records need owner review before GBIF publication
 
 - Marine genomic ARMS (`b5c2c64a-325b-42d1-b5ad-2198ad434a55`) has no
@@ -64,3 +81,13 @@ migration branch.
   `web/src/main/webapp/WEB-INF/data/config/encryptor.properties` key after a
   restart. Persist that key outside generated webapp content before relying on
   locally encrypted catalogue credentials.
+
+### P-001: EML records without GBIF metadata lose type and format in search
+
+- **Status:** Resolved
+- **Severity:** Medium
+- **Component:** `schemas/eml-gbif/src/main/plugin/eml-gbif/index-fields/index.xsl`
+- **Description:** The indexer emits `type` and `format` only inside `additionalMetadata/metadata/gbif`. The Pollen EML MEF has no such block but declares a dataset and a text-format table.
+- **Impact:** Search clients, including KarstDB, receive no type or declared format for that record; related filters and FAIR indicators can undercount it.
+- **Evidence:** `index.xsl` lines 257–287; `geonetwork-eml-migrations/pollen-eml-gbif.mef` contains `dataset/dataTable/physical/dataFormat/textFormat` and `objectName=BRAIN_NER64.csv`.
+- **Resolution:** The indexer now emits the GBIF hierarchy level or a `dataset` default independently of the optional GBIF block, and indexes a table's declared `textFormat` as `text`. Regression tests cover metadata without a GBIF block and hierarchy-level precedence.

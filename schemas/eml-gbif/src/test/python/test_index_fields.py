@@ -56,15 +56,23 @@ public class IndexDocument {
                         "-d", str(cls.work), str(CONVERTER), str(source)],
                        check=True, capture_output=True, text=True)
 
-    def index(self, abstract, logo=None):
+    def index(self, abstract, logo=None, hierarchy_level=None, text_format=False):
         root = ET.Element(f"{{{EML}}}eml", packageId="example", scope="system", system="test")
         dataset = ET.SubElement(root, "dataset")
         ET.SubElement(dataset, "title").text = "Example"
         dataset.append(ET.fromstring(abstract))
-        if logo:
+        if text_format:
+            data_table = ET.SubElement(dataset, "dataTable")
+            physical = ET.SubElement(data_table, "physical")
+            data_format = ET.SubElement(physical, "dataFormat")
+            ET.SubElement(data_format, "textFormat")
+        if logo or hierarchy_level:
             gbif = ET.SubElement(ET.SubElement(ET.SubElement(root, "additionalMetadata"),
                                              "metadata"), "gbif")
-            ET.SubElement(gbif, "resourceLogoUrl").text = logo
+            if logo:
+                ET.SubElement(gbif, "resourceLogoUrl").text = logo
+            if hierarchy_level:
+                ET.SubElement(gbif, "hierarchyLevel").text = hierarchy_level
         input_path = self.work / "input.xml"
         output_path = self.work / "index.json"
         ET.ElementTree(root).write(input_path, encoding="utf-8")
@@ -99,6 +107,15 @@ public class IndexDocument {
         result = self.index("<abstract><para>Example.</para></abstract>")
         self.assertEqual("false", result["hasOverview"])
         self.assertNotIn("overview", result)
+
+    def test_records_without_gbif_metadata_index_dataset_type_and_text_format(self):
+        result = self.index("<abstract>Example.</abstract>", text_format=True)
+        self.assertEqual("dataset", result["type"])
+        self.assertEqual(["text"], result["format"])
+
+    def test_gbif_hierarchy_level_overrides_default_dataset_type(self):
+        result = self.index("<abstract>Example.</abstract>", hierarchy_level="collection")
+        self.assertEqual("collection", result["type"])
 
 
 if __name__ == "__main__":
