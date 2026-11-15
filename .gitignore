@@ -9,6 +9,8 @@
 git*.properties
 
 # Directories and paths
+__pycache__/
+*.py[cod]
 */*/.*
 */*/target/
 */target/
@@ -65,6 +67,7 @@ web/logs/
 web/src/main/webapp/META-INF/MANIFEST.MF
 web/src/main/webapp/WEB-INF/data/0*
 web/src/main/webapp/WEB-INF/data/config/encryptor.properties
+_migrations/
 web/src/main/webapp/WEB-INF/data/config/codelist/external/thesauri/theme/mobility-theme.rdf
 web/src/main/webapp/WEB-INF/data/config/index/records.json
 web/src/main/webapp/WEB-INF/data/config/schema_plugins/*

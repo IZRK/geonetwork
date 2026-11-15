@@ -112,13 +112,20 @@
 
   module.directive("gnRecordMosaic", [
     "$http",
-    function ($http) {
+    "gnLangs",
+    function ($http, gnLangs) {
       return {
         restrict: "A",
         replace: true,
         scope: {
           query: "@gnRecordMosaic",
+          // Records already loaded (eg. related records in the record view):
+          // all their overviews are displayed, without links.
           records: "=",
+          // Curated list of {uuid, link}. When not empty, query is ignored.
+          items: "=?",
+          // Home page layout: "gallery" (default) or "grid"
+          layout: "@",
           sort: "@",
           size: "@",
           imageSize: "@"
@@ -128,32 +135,146 @@
           scope.images = [];
           scope.imageSize = parseInt(attrs.imagesize) || 300;
 
+          function getOverview(h) {
+            return (
+              h.overview ||
+              (h._source && h._source.overview) ||
+              (h.fields && h.fields.overview)
+            );
+          }
+
+          // All images of the records (record view), no image twice.
           function loadImages(hits) {
+            var seen = {};
             hits &&
               hits.map &&
               hits.map(function (h) {
-                var overview =
-                  h.overview ||
-                  (h._source && h._source.overview) ||
-                  (h.fields && h.fields.overview);
-                if (overview) {
-                  scope.images = scope.images.concat(overview);
-                }
+                [].concat(getOverview(h) || []).forEach(function (o) {
+                  var key = o && (o.url || o.data);
+                  if (key && !seen[key]) {
+                    seen[key] = true;
+                    scope.images.push(o);
+                  }
+                });
               });
             if (scope.size) {
               scope.images = scope.images.slice(0, scope.size);
             }
           }
 
+          // Home page tiles for the items ({uuid, link}, in display order) found in
+          // the search hits: one image per record (the first overview), no image
+          // twice, max tiles displayed.
+          function loadTiles(hits, items, max) {
+            var hitsByUuid = {},
+              seen = {},
+              tiles = [];
+            // Keeps the first hit if a UUID appears twice
+            hits.forEach(function (h) {
+              hitsByUuid[h._source.uuid] = hitsByUuid[h._source.uuid] || h;
+            });
+            items.forEach(function (item) {
+              var h = hitsByUuid[item.uuid],
+                overview = h && [].concat(getOverview(h) || [])[0],
+                key = overview && (overview.url || overview.data);
+              // Not found (eg. not visible to the user) or no overview: expected,
+              // so not logged.
+              if (!key || seen[key]) {
+                return;
+              }
+              seen[key] = true;
+              var title = h._source.resourceTitleObject || {};
+              // Only links inside the application (#/...), to prevent redirecting
+              // users to other sites.
+              var link = /^#\//.test(item.link) ? item.link : "#/metadata/" + item.uuid;
+              if (item.link && link !== item.link) {
+                console.warn(
+                  "Mosaic: only links starting with #/ are allowed, ignoring " + item.link
+                );
+              }
+              tiles.push({
+                id: tiles.length,
+                image: overview,
+                title: title["lang" + gnLangs.current] || title.default,
+                link: link
+              });
+            });
+            // Extra tiles (beyond max) replace the ones with a broken image.
+            scope.tiles = tiles;
+            scope.limit = max || tiles.length;
+            updateLayout();
+          }
+
+          function updateLayout() {
+            var count = Math.min(scope.limit, scope.tiles.length);
+            scope.visible = count;
+            // Balanced rows, 4 columns at most (eg. 6 > 3+3, 7 > 4+3), 3 at least
+            // so 1 or 2 records are not stretched to the full width (centred).
+            scope.columns = Math.max(3, Math.ceil(count / Math.ceil(count / 4)) || 0);
+          }
+
+          // Hide images failing to load (eg. 404). The error event does not bubble,
+          // so it is captured on the mosaic element.
+          element[0].addEventListener(
+            "error",
+            function (e) {
+              if (e.target.tagName !== "IMG") {
+                return;
+              }
+              var tile = e.target.closest("[data-tile-id]");
+              (tile || e.target.parentNode).style.display = "none";
+              if (tile && scope.tiles) {
+                // Remove the tile (instead of only hiding it) so the gallery
+                // nth-child sizes and the grid columns ignore it.
+                var id = parseInt(tile.getAttribute("data-tile-id"));
+                scope.$applyAsync(function () {
+                  scope.tiles = scope.tiles.filter(function (t) {
+                    return t.id !== id;
+                  });
+                  updateLayout();
+                });
+              }
+            },
+            true
+          );
+
           if (scope.records) {
             loadImages(scope.records);
           }
 
-          if (scope.query) {
+          var items = (angular.isArray(scope.items) ? scope.items : [])
+            .filter(function (i) {
+              return i && i.uuid && i.uuid.trim();
+            })
+            .map(function (i) {
+              return { uuid: i.uuid.trim(), link: i.link };
+            });
+
+          // configured records
+          if (items.length > 0) {
+            $http
+              .post("../api/search/records/_search", {
+                _source: { includes: ["uuid", "overview", "resourceTitleObject"] },
+                size: items.length,
+                query: {
+                  terms: {
+                    uuid: items.map(function (i) {
+                      return i.uuid;
+                    })
+                  }
+                }
+              })
+              .then(function (r) {
+                loadTiles(r.data.hits.hits, items);
+              });
+          } else if (scope.query) {
+            // random records
+            var max = parseInt(scope.size) || 10;
             var query = {
-              _source: { includes: ["overview"] },
+              _source: { includes: ["uuid", "overview", "resourceTitleObject"] },
               from: 0,
-              size: scope.size || 10,
+              // Fetch spare records to replace duplicated images and images that fail to load
+              size: max * 2,
               query: {
                 bool: {
                   must: [
@@ -184,7 +305,13 @@
             }
 
             $http.post("../api/search/records/_search", query).then(function (r) {
-              loadImages(r.data.hits.hits);
+              loadTiles(
+                r.data.hits.hits,
+                r.data.hits.hits.map(function (h) {
+                  return { uuid: h._source.uuid };
+                }),
+                max
+              );
             });
           }
         }
@@ -2642,6 +2769,10 @@
    */
   module.filter("thumbnailUrlSize", function () {
     return function (href, size) {
+      // Browsers can display WebP, but the attachment resize endpoint cannot decode it.
+      if (href && /\.webp(?:[?#]|$)/i.test(href)) {
+        return href;
+      }
       if (href && href.indexOf("api/records/") !== -1) {
         var suffix = "size=" + (size || 140);
         return href.indexOf("?") !== -1 ? href + "&" + suffix : href + "?" + suffix;
@@ -2650,6 +2781,53 @@
       }
     };
   });
+  module.filter("linkifyUrls", [
+    "$filter",
+    function ($filter) {
+      var linky = $filter("linky");
+      var urlPattern = /https?:\/\/[^\s<>"']+/gi;
+
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, function (character) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+          }[character];
+        });
+      }
+
+      return function (value) {
+        if (!angular.isString(value)) {
+          return value;
+        }
+
+        var output = [];
+        var lastIndex = 0;
+        var match;
+        urlPattern.lastIndex = 0;
+
+        while ((match = urlPattern.exec(value))) {
+          var url = match[0];
+          var trailing = "";
+          while (/[.,;:!?]$/.test(url)) {
+            trailing = url.charAt(url.length - 1) + trailing;
+            url = url.slice(0, -1);
+          }
+
+          output.push(escapeHtml(value.slice(lastIndex, match.index)));
+          output.push(linky(url));
+          output.push(escapeHtml(trailing));
+          lastIndex = match.index + match[0].length;
+        }
+
+        output.push(escapeHtml(value.slice(lastIndex)));
+        return output.join("");
+      };
+    }
+  ]);
   module.filter("newlines", function () {
     return function (value) {
       if (angular.isArray(value)) {
@@ -2725,19 +2903,31 @@
           element.bind("click", function () {
             var imgOrMd = scope.$eval(attr["gnImgModal"]);
             var img = undefined;
-            if (imgOrMd.overview) {
+            var clickedImageUrl = element.attr("src");
+            if (imgOrMd && imgOrMd.overview) {
               var imgs = imgOrMd.overview;
-              var url = $(element).attr("src");
-              for (var i = 0; i < imgs.list.length; i++) {
+              var overviewList = imgs.list || [];
+              for (var i = 0; i < overviewList.length; i++) {
                 // the thumbnails url might end with `?approved=false/true`, which is not
                 // present on img
-                if (imgs.list[i].url.indexOf(url) === 0) {
-                  img = imgs.list[i];
+                if (
+                  clickedImageUrl &&
+                  overviewList[i].url &&
+                  (overviewList[i].url.indexOf(clickedImageUrl) === 0 ||
+                    clickedImageUrl.indexOf(overviewList[i].url) === 0)
+                ) {
+                  img = overviewList[i];
                   break;
                 }
               }
-            } else {
+            } else if (imgOrMd && (imgOrMd.url || imgOrMd.lUrl)) {
               img = imgOrMd;
+            }
+            // EML detail formatters can render attachment images even when the
+            // corresponding overview has not yet been indexed on the record.
+            // Use the actual clicked image in that case instead of the record UUID.
+            if (!img && clickedImageUrl) {
+              img = { url: clickedImageUrl, lUrl: clickedImageUrl };
             }
 
             // Toggle the modal if already displayed
@@ -2749,38 +2939,38 @@
             if (img) {
               var label =
                 img.label || $filter("gnLocalized")(img.title, scope.lang) || "";
-              var labelDiv =
-                '<div class="gn-img-background">' +
-                '  <div class="gn-img-thumbnail-caption">' +
-                label +
-                "</div>" +
-                "</div>";
               modalElt = angular.element(
-                "" +
-                  '<div class="modal fade in"' +
-                  '     id="gn-img-modal-' +
-                  (img.id || img.lUrl || img.url) +
-                  '">' +
-                  '<div class="modal-dialog gn-img-modal in">' +
-                  '  <button type=button class="btn btn-danger gn-btn-modal-img">' +
-                  '<i class="fa fa-times"></i></button>' +
-                  '  <img src="' +
-                  (attr.ngSrc || img.lUrl || img.url || img.id) +
-                  '"/>' +
-                  (label != "" ? labelDiv : "") +
+                '<div class="modal fade in" role="dialog" aria-modal="true">' +
+                  '<div class="modal-dialog gn-img-modal in" role="document">' +
+                  '  <button type="button" class="btn btn-danger gn-btn-modal-img" aria-label="Close image">' +
+                  '    <i class="fa fa-times" aria-hidden="true"></i>' +
+                  "  </button>" +
+                  "  <img/>" +
+                  (label !== ""
+                    ? '<div class="gn-img-background"><div class="gn-img-thumbnail-caption"></div></div>'
+                    : "") +
                   "</div>" +
                   "</div>"
               );
 
+              modalElt.find("img")
+                .attr("src", attr.ngSrc || img.lUrl || img.url || img.id)
+                .attr("alt", label);
+              if (label !== "") {
+                modalElt.find(".gn-img-thumbnail-caption").text(label);
+              }
+
               $(document.body).append(modalElt);
               modalElt.modal();
-              modalElt.on("hidden.bs.modal", function () {
-                if (modalElt) {
-                  modalElt.remove();
+              var displayedModal = modalElt;
+              displayedModal.on("hidden.bs.modal", function () {
+                displayedModal.remove();
+                if (modalElt === displayedModal) {
+                  modalElt = null;
                 }
               });
-              modalElt.find(".gn-btn-modal-img").on("click", function () {
-                modalElt.modal("hide");
+              displayedModal.find(".gn-btn-modal-img").on("click", function () {
+                displayedModal.modal("hide");
               });
             }
           });

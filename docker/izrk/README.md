@@ -128,31 +128,15 @@ is retained. The classification has a bounded scrolling area to keep long lists
 from lengthening the page. Unlinked names are ordered from broader to narrower
 ranks without implying parent relationships.
 
-The pollen record `9f64b6e3-22be-4f17-9cc0-8658c7817867` also has an explicitly
-labelled, frozen GBIF reference classification in the plugin's
-`formatter/taxonomy-reference.xml`. This display layer leaves catalogue XML and
-the search index unchanged, and makes no network requests during rendering.
-It is scoped to the record UUID and exact recorded names/ranks. Nested source
-classifications and explicit source taxon identifiers bypass enrichment.
-The 20 September 2026 snapshot matches 150 of the 165 recorded entries; the
-remaining 15 are shown separately with the reason they were not resolved.
-Queries use the Plantae context established by this pollen/plant dataset.
-Fuzzy matches, conflicting classifications, nonaccepted names and rank
-mismatches cannot supply inferred parents. Original synonym names are retained.
-
-To review or regenerate a reference from a CSV with `UUID` and `DATA` columns
-(EML XML), run from the repository root:
-
-```bash
-python3 schemas/eml-gbif/scripts/build_taxonomy_reference.py records.csv \
-  schemas/eml-gbif/src/main/plugin/eml-gbif/formatter/taxonomy-reference.xml \
-  --cache /path/to/gbif-response-cache --kingdom Plantae
-```
-
-Only provide a kingdom established by those records; omit the option for a mixed
-catalogue. Retain the response cache for provenance and use a new cache directory
-for a fresh snapshot. Review changes before packaging. This is a maintenance
-command, not a startup step. It does not import or update records.
+The taxonomy tree is built from each record's EML `taxonomicCoverage`.
+The separately stored Copepoda migration package records two orders and 30
+species from `Epikarst.Copepoda_13caves_taxonomy.xlsx` as nested
+classifications. These relationships come from the record, not verified GBIF
+matches. Species names link to a GBIF name search. Flat classifications remain
+unlinked until source-backed relationships are added to a record. The separate
+pollen migration package carries its GBIF family and genus links. Migration
+packages and their provenance notes are kept outside this repository; importing
+one is an explicit catalogue operation, not part of deployment or startup.
 
 The portal requests `view=portal`; the standalone and legacy fragment views use
 `view=default`. The IZRK home facet template adds category/resource icons while
