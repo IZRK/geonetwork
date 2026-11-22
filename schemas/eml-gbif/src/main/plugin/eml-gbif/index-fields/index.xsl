@@ -6,10 +6,12 @@
 								xmlns:eml21="eml://ecoinformatics.org/eml-2.1.1"
 								xmlns:xs="http://www.w3.org/2001/XMLSchema"
 								xmlns:eml-index="http://geonetwork-opensource.org/xsl/functions/eml-index"
+								xmlns:kdb="http://geonetwork-opensource.org/xsl/functions/kdb-eml"
 								xmlns:util="java:org.fao.geonet.util.XslUtil"
 								exclude-result-prefixes="#all">	
 
 	<xsl:include href="../convert/functions.xsl"/>
+	<xsl:include href="kdb-fields.xsl"/>
 
 	<!-- This file defines what parts of the metadata are indexed by Lucene
 	     Searches can be conducted on indexes defined here. 
@@ -37,6 +39,14 @@
 			then concat($nodeUrl, if (ends-with($nodeUrl, '/')) then '' else '/',
 				'api/records/', $uuid, '/attachments/', $path)
 			else ''"/>
+	</xsl:function>
+
+	<xsl:function name="eml-index:abstract-blocks" as="xs:string*">
+		<xsl:param name="nodes" as="node()*"/>
+		<xsl:for-each select="$nodes[normalize-space(.) != '']">
+			<xsl:sequence select="if (self::section) then eml-index:abstract-blocks(node())
+				else normalize-space(string(.))"/>
+		</xsl:for-each>
 	</xsl:function>
 
 
@@ -70,11 +80,15 @@
 		<xsl:variable name="overviews" as="xs:string*"
 			select="for $path in distinct-values($overviewPaths)
 				return eml-index:overview-url($path, $uuid, $nodeUrl)"/>
-		<Field name="hasOverview" string="{if (exists($overviews[. != ''])) then 'true' else 'false'}"
-			store="true" index="true"/>
+		<hasOverview><xsl:value-of select="exists($overviews[. != ''])"/></hasOverview>
 		<xsl:for-each select="$overviews[. != '']">
 			<overview type="object">{"url":"<xsl:value-of select="util:escapeForJson(.)"/>"}</overview>
 		</xsl:for-each>
+
+		<xsl:call-template name="kdb:index-fields">
+			<xsl:with-param name="eml" select="."/>
+			<xsl:with-param name="dataset" select="dataset[1]"/>
+		</xsl:call-template>
 
 		<xsl:for-each select="dataset">
 		
@@ -107,6 +121,7 @@
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<xsl:for-each select="pubDate">
 				<Field name="publicationDate" string="{string(.)}" store="true" index="true"/>
+				<publicationDate><xsl:value-of select="string(.)"/></publicationDate>
 			</xsl:for-each>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
@@ -118,7 +133,7 @@
 	
 			<xsl:for-each select="abstract">
 				<Field name="abstract" string="{normalize-space(string(.))}" store="true" index="true"/>
-				<xsl:variable name="abstractText" select="if (para) then string-join(for $paragraph in para return normalize-space(string($paragraph)), '&#10;&#10;') else normalize-space(string(.))"/>
+				<xsl:variable name="abstractText" select="string-join(eml-index:abstract-blocks(node()), '&#10;&#10;')"/>
         <xsl:variable name="resourceAbstractObject"
                       select="concat('{',
                                 '&quot;default&quot;:&quot;', util:escapeForJson($abstractText), '&quot;,',
@@ -156,6 +171,8 @@
 
 					<Field name="tempExtentBegin" string="{lower-case(substring-before($times,'|'))}" store="true" index="true"/>
 					<Field name="tempExtentEnd" string="{lower-case(substring-after($times,'|'))}" store="true" index="true"/>
+					<tempExtentBegin><xsl:value-of select="lower-case(substring-before($times,'|'))"/></tempExtentBegin>
+					<tempExtentEnd><xsl:value-of select="lower-case(substring-after($times,'|'))"/></tempExtentEnd>
 				</xsl:for-each>
 
 			</xsl:for-each>
@@ -187,6 +204,7 @@
 
 			<xsl:for-each select="associatedParty[role='pointOfContact' and organizationName]">
 				<Field name="orgName" string="{string(organizationName)}" store="true" index="true"/>
+				<orgName><xsl:value-of select="string(organizationName)"/></orgName>
 			</xsl:for-each>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
@@ -200,6 +218,7 @@
 			<!-- contact field (same as creator field) refers to resource -->
 			<xsl:for-each select="contact[organizationName]|creator[organizationName]">
 				<Field name="orgName" string="{string(organizationName)}" store="true" index="true"/>
+				<orgName><xsl:value-of select="string(organizationName)"/></orgName>
 				<Field name="responsibleParty" string="{concat('pointOfContact|resource|', organizationName, '|')}" store="true" index="false"/>
 			</xsl:for-each>
 
@@ -242,18 +261,19 @@
 			
 			<xsl:for-each select="language">
 				<Field name="datasetLang" string="{string(.)}" store="true" index="true"/>
+				<datasetLang><xsl:value-of select="string(.)"/></datasetLang>
 			</xsl:for-each>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<xsl:for-each select="intellectualRights">
 				<Field name="conditionApplyingToAccessAndUse" string="{normalize-space(string(.))}" store="true" index="true"/>
+				<conditionApplyingToAccessAndUse><xsl:value-of select="normalize-space(string(.))"/></conditionApplyingToAccessAndUse>
 			</xsl:for-each>
 
 		</xsl:for-each>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		<!-- === Other stuff from the additionalMetadata block === -->
-
+		<!-- === Additional GeoNetwork fields === -->
 		<xsl:for-each select="additionalMetadata/metadata/gbif">
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -271,9 +291,6 @@
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<xsl:for-each select="physical">
-				<xsl:for-each select="dataFormat/externallyDefinedFormat/formatName">
-					<Field name="format" string="{string(.)}" store="true" index="true"/>
-				</xsl:for-each>
 
 				<!-- index online protocol -->
 				<xsl:if test="distribution/online/url/@function='download'">

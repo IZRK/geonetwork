@@ -34,6 +34,7 @@ import com.google.common.base.Joiner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -105,6 +106,9 @@ public class MetadataUtils {
     public static final boolean KEEP_XLINK_ATTRIBUTES = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Geonet.SEARCH_ENGINE);
+    private static final Set<RelatedItemType> REVERSE_RELATIONS = EnumSet.of(
+        RelatedItemType.children, RelatedItemType.associated, RelatedItemType.services,
+        RelatedItemType.hasfeaturecats, RelatedItemType.hassources);
 
     public static class RelatedTypeDetails {
         private String query;
@@ -280,8 +284,8 @@ public class MetadataUtils {
                 || type == RelatedItemType.hassources) {
                 queries.put(type,
                     new RelatedTypeDetails(
-                        String.format("+%s:\"%s\"",
-                            RELATED_INDEX_FIELDS.get(type.value()), md.getUuid())
+                        String.format("+%s:\"%s\" -uuid:\"%s\"",
+                            RELATED_INDEX_FIELDS.get(type.value()), md.getUuid(), md.getUuid())
                     ));
             } else if (schemaPlugin != null
                 && (type == RelatedItemType.siblings
@@ -361,11 +365,12 @@ public class MetadataUtils {
                 // and search for records associated and records having parentUuid equal to current
                 queries.put(type,
                     new RelatedTypeDetails(
-                        String.format("(%s:\"%s\" OR uuid:(%s)) AND (draft:\"n\" OR draft:\"e\")",
+                        String.format("(%s:\"%s\" OR uuid:(%s)) AND (draft:\"n\" OR draft:\"e\") -uuid:\"%s\"",
                             RELATED_INDEX_FIELDS.get(type.value()),
                             md.getUuid(),
                             isComposedOfList.stream()
-                                .collect(Collectors.joining("\" OR \"", "\"", "\""))
+                                .collect(Collectors.joining("\" OR \"", "\"", "\"")),
+                            md.getUuid()
                             ),
                         isComposedOfList
                     ));
@@ -396,6 +401,9 @@ public class MetadataUtils {
             List<AssociatedRecord> records = new ArrayList<>();
             if (!result.hits().hits().isEmpty()) {
                 for (Hit e : (List<Hit>) result.hits().hits()) {
+                    if (isSelfReverseRelation(entry.getKey(), md.getUuid(), e.id())) {
+                        continue;
+                    }
                     allCatalogueUuids.add(e.id());
                     AssociatedRecord associatedRecord = new AssociatedRecord();
                     associatedRecord.setUuid(e.id());
@@ -457,6 +465,10 @@ public class MetadataUtils {
 
         // TODO: Editable relation
         return associated;
+    }
+
+    static boolean isSelfReverseRelation(RelatedItemType type, String recordUuid, String relatedUuid) {
+        return REVERSE_RELATIONS.contains(type) && recordUuid.equals(relatedUuid);
     }
 
     private static void buildRemoteRecords(ObjectMapper mapper,
