@@ -6,7 +6,6 @@
 								xmlns:eml21="eml://ecoinformatics.org/eml-2.1.1"
 								xmlns:xs="http://www.w3.org/2001/XMLSchema"
 								xmlns:eml-index="http://geonetwork-opensource.org/xsl/functions/eml-index"
-								xmlns:kdb="http://geonetwork-opensource.org/xsl/functions/kdb-eml"
 								xmlns:util="java:org.fao.geonet.util.XslUtil"
 								exclude-result-prefixes="#all">	
 
@@ -84,11 +83,6 @@
 		<xsl:for-each select="$overviews[. != '']">
 			<overview type="object">{"url":"<xsl:value-of select="util:escapeForJson(.)"/>"}</overview>
 		</xsl:for-each>
-
-		<xsl:call-template name="kdb:index-fields">
-			<xsl:with-param name="eml" select="."/>
-			<xsl:with-param name="dataset" select="dataset[1]"/>
-		</xsl:call-template>
 
 		<xsl:for-each select="dataset">
 		
