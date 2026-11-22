@@ -10,6 +10,7 @@
 								exclude-result-prefixes="#all">	
 
 	<xsl:include href="../convert/functions.xsl"/>
+	<xsl:include href="kdb-fields.xsl"/>
 
 	<!-- This file defines what parts of the metadata are indexed by Lucene
 	     Searches can be conducted on indexes defined here. 
@@ -114,6 +115,7 @@
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<xsl:for-each select="pubDate">
 				<Field name="publicationDate" string="{string(.)}" store="true" index="true"/>
+				<publicationDate><xsl:value-of select="string(.)"/></publicationDate>
 			</xsl:for-each>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
@@ -163,6 +165,8 @@
 
 					<Field name="tempExtentBegin" string="{lower-case(substring-before($times,'|'))}" store="true" index="true"/>
 					<Field name="tempExtentEnd" string="{lower-case(substring-after($times,'|'))}" store="true" index="true"/>
+					<tempExtentBegin><xsl:value-of select="lower-case(substring-before($times,'|'))"/></tempExtentBegin>
+					<tempExtentEnd><xsl:value-of select="lower-case(substring-after($times,'|'))"/></tempExtentEnd>
 				</xsl:for-each>
 
 			</xsl:for-each>
@@ -194,6 +198,7 @@
 
 			<xsl:for-each select="associatedParty[role='pointOfContact' and organizationName]">
 				<Field name="orgName" string="{string(organizationName)}" store="true" index="true"/>
+				<orgName><xsl:value-of select="string(organizationName)"/></orgName>
 			</xsl:for-each>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
@@ -207,6 +212,7 @@
 			<!-- contact field (same as creator field) refers to resource -->
 			<xsl:for-each select="contact[organizationName]|creator[organizationName]">
 				<Field name="orgName" string="{string(organizationName)}" store="true" index="true"/>
+				<orgName><xsl:value-of select="string(organizationName)"/></orgName>
 				<Field name="responsibleParty" string="{concat('pointOfContact|resource|', organizationName, '|')}" store="true" index="false"/>
 			</xsl:for-each>
 
@@ -249,18 +255,19 @@
 			
 			<xsl:for-each select="language">
 				<Field name="datasetLang" string="{string(.)}" store="true" index="true"/>
+				<datasetLang><xsl:value-of select="string(.)"/></datasetLang>
 			</xsl:for-each>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<xsl:for-each select="intellectualRights">
 				<Field name="conditionApplyingToAccessAndUse" string="{normalize-space(string(.))}" store="true" index="true"/>
+				<conditionApplyingToAccessAndUse><xsl:value-of select="normalize-space(string(.))"/></conditionApplyingToAccessAndUse>
 			</xsl:for-each>
 
 		</xsl:for-each>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		<!-- === Other stuff from the additionalMetadata block === -->
-
+		<!-- === Additional GeoNetwork fields === -->
 		<xsl:for-each select="additionalMetadata/metadata/gbif">
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -278,9 +285,6 @@
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 			<xsl:for-each select="physical">
-				<xsl:for-each select="dataFormat/externallyDefinedFormat/formatName">
-					<Field name="format" string="{string(.)}" store="true" index="true"/>
-				</xsl:for-each>
 
 				<!-- index online protocol -->
 				<xsl:if test="distribution/online/url/@function='download'">

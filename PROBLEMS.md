@@ -64,3 +64,23 @@ migration branch.
   `web/src/main/webapp/WEB-INF/data/config/encryptor.properties` key after a
   restart. Persist that key outside generated webapp content before relying on
   locally encrypted catalogue credentials.
+
+### P-001: EML KDB fields are missing from GeoNetwork search hits
+
+- **Status:** Resolved
+- **Severity:** Medium
+- **Component:** `schemas/eml-gbif/src/main/plugin/eml-gbif/index-fields/index.xsl`
+- **Description:** GeoNetwork's search-document serializer reads each `Field` element's text, not its `string` attribute. The EML index transform therefore stored empty values for fields emitted only through `Field@name`/`Field@string`.
+- **Impact:** Search clients such as KarstDB could not receive EML-specific contract fields from actual GeoNetwork hits. Existing EML publication, temporal, party, and rights values were also hidden when only emitted as `Field` attributes.
+- **Evidence:** The index transform now emits named child elements alongside `Field` entries, including standard EML values and the KDB contract. All 11 focused XSLT tests pass. A local GeoNetwork WAR built from this checkout imported all five EML-GBIF MEFs; Elasticsearch `gn-records` now contains all five with `kdbMetadataSchema=eml-gbif`, `kdbIndexVersion=1`, and populated party, identifier, link, and bounding-box projections. `core/src/main/java/org/fao/geonet/kernel/search/EsSearchManager.java:684` documents the serializer behavior.
+- **Recommended resolution:** Resolved by emitting serializer-visible named XML elements, testing the actual serializer projection, rebuilding GeoNetwork, and verifying indexed documents.
+
+### P-002: GeoNetwork deployment package references missing helpers
+
+- **Status:** Open
+- **Severity:** High
+- **Component:** `docker/izrk/scripts/package-deploy.sh`, `docker/izrk/README.md`, `docker/izrk/Dockerfile`
+- **Description:** The packaging script invokes `package-standalone-footer.py` and `package-imageio.py`, but neither file exists in this checkout. The deployment README also instructs operators to run `package-upload.sh`, which is absent.
+- **Impact:** A fresh application package cannot complete, so the EML index change cannot be safely deployed from the documented source procedure.
+- **Evidence:** `package-deploy.sh` invokes the two missing helpers, the Dockerfile copies `runtime/tomcat/lib/`, and the README references the missing upload script. The runtime library directory is absent from the checkout.
+- **Recommended resolution:** Restore the required packaging helpers and ImageIO libraries, or remove their references from the packaging and deployment flow.
