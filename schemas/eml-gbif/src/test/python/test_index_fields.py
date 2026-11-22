@@ -157,6 +157,21 @@ public class IndexDocument {
         self.assertEqual("CC BY 4.0", result["conditionApplyingToAccessAndUse"])
         self.assertEqual("Example Institute", result["orgName"])
 
+    def test_search_document_exposes_complete_kdb_contract(self):
+        result = self.index("<abstract>Example.</abstract>",
+                            organisation="Example Institute", text_format=True)
+        self.assertEqual("eml-gbif", result["kdbMetadataSchema"])
+        self.assertEqual("1", result["kdbIndexVersion"])
+        self.assertEqual([{
+            "name": "", "organisation": "Example Institute", "role": "author",
+            "email": "", "website": "",
+        }], result["kdbParties"])
+        self.assertEqual([], result["kdbIdentifiers"])
+        self.assertEqual([], result["kdbLinks"])
+        self.assertEqual([], result["kdbBboxes"])
+        self.assertEqual(["dataset"], result["type"])
+        self.assertEqual(["csv"], result["format"])
+
 
 if __name__ == "__main__":
     unittest.main()
